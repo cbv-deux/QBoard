@@ -1,0 +1,3963 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Q-board / Q-键盘</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --ink: #17191f;
+      --muted: #5c6270;
+      --line: #d8dde8;
+      --panel: #ffffff;
+      --panel-2: #eef3f8;
+      --stage: #24262c;
+      --accent: #007f78;
+      --key-size: 66px;
+      --key-slot-width: var(--key-size);
+      --key-center-x: calc(var(--key-slot-width) + var(--key-gap));
+      --key-step-y: calc(var(--key-center-x) * 0.8660254);
+      --hex-height: calc(var(--key-size) * 1.2);
+      --hex-width: calc(var(--hex-height) * 0.8660254);
+      --round-size: calc(var(--key-size) * 1.1);
+      --key-gap: 10px;
+      --row-gap: 0px;
+      --indent-step: calc(var(--key-center-x) * 0.5);
+      font-family:
+        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px clamp(14px, 3vw, 32px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 4;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-left: auto;
+      min-width: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, #ffffff 0 21%, transparent 22%),
+        conic-gradient(from 8deg, #c93c3c, #cf9e22, #58a331, #00957f, #2c78c8, #8759c4, #c93c3c);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+      flex: 0 0 auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.12rem, 1.7vw, 1.55rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .language-picker {
+      position: relative;
+      width: 42px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .language-picker:focus-within {
+      outline: 3px solid rgba(0, 127, 120, 0.24);
+      outline-offset: 2px;
+    }
+
+    .language-picker select {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .language-picker::after {
+      content: "";
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      width: 0;
+      height: 0;
+      border-left: 3.5px solid transparent;
+      border-right: 3.5px solid transparent;
+      border-top: 4.5px solid #303643;
+      pointer-events: none;
+    }
+
+    .flag-badge {
+      position: relative;
+      width: 25px;
+      height: 17px;
+      overflow: hidden;
+      border-radius: 3px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+      background: #eef3f8;
+    }
+
+    .flag-badge::before,
+    .flag-badge::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .flag-badge[data-flag="cn"] {
+      background:
+        #de2910
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 20'%3E%3Crect width='30' height='20' fill='%23de2910'/%3E%3Cpath id='s' d='M0-1.45.43-.45 1.52-.45.64.18.98 1.2 0 .58-.98 1.2-.64.18-1.52-.45-.43-.45z' fill='%23ffde00'/%3E%3Cuse href='%23s' transform='translate(5 5) scale(2.05)'/%3E%3Cuse href='%23s' transform='translate(10.2 2.2) rotate(22) scale(.72)'/%3E%3Cuse href='%23s' transform='translate(12.2 4.4) rotate(45) scale(.72)'/%3E%3Cuse href='%23s' transform='translate(12.1 7.2) rotate(68) scale(.72)'/%3E%3Cuse href='%23s' transform='translate(10.1 9.4) rotate(88) scale(.72)'/%3E%3C/svg%3E")
+        center / 100% 100% no-repeat;
+    }
+
+    .flag-badge[data-flag="gb"] {
+      background:
+        #012169
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' fill='%23012169'/%3E%3Cpath d='M0 0 60 40M60 0 0 40' stroke='%23fff' stroke-width='8'/%3E%3Cpath d='M0 0 60 40M60 0 0 40' stroke='%23c8102e' stroke-width='4.6'/%3E%3Cpath d='M30 0v40M0 20h60' stroke='%23fff' stroke-width='14'/%3E%3Cpath d='M30 0v40M0 20h60' stroke='%23c8102e' stroke-width='8'/%3E%3C/svg%3E")
+        center / 100% 100% no-repeat;
+    }
+
+    .flag-badge[data-flag="fr"] {
+      background: linear-gradient(90deg, #0055a4 0 33.33%, #ffffff 33.33% 66.66%, #ef4135 66.66%);
+    }
+
+    .flag-badge[data-flag="de"] {
+      background: linear-gradient(#000000 0 33.33%, #dd0000 33.33% 66.66%, #ffce00 66.66%);
+    }
+
+    .flag-badge[data-flag="es"] {
+      background: linear-gradient(#aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75%);
+    }
+
+    .flag-badge[data-flag="br"] {
+      background: #009b3a;
+    }
+
+    .flag-badge[data-flag="br"]::before {
+      left: 6px;
+      top: 2px;
+      width: 13px;
+      height: 13px;
+      background: #ffdf00;
+      transform: rotate(45deg);
+    }
+
+    .flag-badge[data-flag="br"]::after {
+      left: 9px;
+      top: 5px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #002776;
+    }
+
+    .flag-badge[data-flag="jp"] {
+      background: #ffffff;
+    }
+
+    .flag-badge[data-flag="jp"]::before {
+      left: 7px;
+      top: 3px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #bc002d;
+    }
+
+    .flag-badge[data-flag="sa"] {
+      background: #006c35;
+    }
+
+    .flag-badge[data-flag="sa"]::before {
+      left: 5px;
+      top: 8px;
+      width: 15px;
+      height: 1.8px;
+      background: #ffffff;
+      border-radius: 999px;
+    }
+
+    .flag-badge[data-flag="ru"] {
+      background: linear-gradient(#ffffff 0 33.33%, #0039a6 33.33% 66.66%, #d52b1e 66.66%);
+    }
+
+    .readout {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      min-width: 300px;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .readout strong {
+      display: inline-flex;
+      min-width: 86px;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #17191f;
+      color: #fff;
+      letter-spacing: 0;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 0.42fr);
+      grid-template-areas:
+        "global scale"
+        "keyboard scale";
+      gap: 8px;
+      padding: 10px clamp(10px, 2vw, 24px);
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      align-items: start;
+    }
+
+    .control-section {
+      display: grid;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      align-content: start;
+    }
+
+    .global-section {
+      grid-area: global;
+    }
+
+    .section-heading {
+      color: #303643;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns:
+        minmax(92px, 0.92fr)
+        minmax(60px, 0.56fr)
+        repeat(4, minmax(48px, 0.44fr))
+        minmax(138px, 1fr);
+      gap: 6px;
+      align-items: end;
+    }
+
+    .control-grid.music-row {
+      grid-template-columns:
+        minmax(104px, 0.92fr)
+        minmax(58px, 0.54fr)
+        minmax(54px, 0.5fr)
+        minmax(92px, 0.82fr)
+        minmax(68px, 0.62fr)
+        minmax(72px, 0.66fr)
+        minmax(48px, 0.45fr)
+        minmax(66px, 0.58fr);
+    }
+
+    .inline-pair {
+      display: grid;
+      grid-template-columns: 1fr 0.68fr;
+      gap: 4px;
+    }
+
+    .control-grid > *,
+    .profile-row > * {
+      min-width: 0;
+    }
+
+    .control {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .control label,
+    .group-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .control select,
+    .control input[type="number"],
+    .control input[type="range"] {
+      width: 100%;
+      min-width: 0;
+    }
+
+    select,
+    input[type="number"] {
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 4px 6px;
+      outline: none;
+      font-size: 0.86rem;
+    }
+
+    select:focus,
+    input[type="number"]:focus,
+    input[type="range"]:focus-visible,
+    button:focus-visible,
+    .vibrato-pad:focus-visible {
+      outline: 3px solid rgba(0, 127, 120, 0.24);
+      outline-offset: 2px;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(42px, 1fr));
+      gap: 6px;
+    }
+
+    .button-group.two {
+      grid-template-columns: repeat(2, minmax(42px, 1fr));
+    }
+
+    .color-stepper {
+      display: grid;
+      grid-template-columns: 28px auto 24px 28px;
+      gap: 4px;
+      align-items: center;
+      min-height: 30px;
+    }
+
+    .color-step {
+      min-width: 0;
+      width: 28px;
+      padding: 0;
+    }
+
+    .color-equals {
+      color: #303643;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .color-swatch {
+      --swatch-hue: 5;
+      width: 24px;
+      height: 24px;
+      border: 1px solid hsl(var(--swatch-hue) 48% 54%);
+      border-radius: 6px;
+      background: hsl(var(--swatch-hue) 62% 46%);
+      box-shadow: inset 0 0 0 3px hsl(var(--swatch-hue) 72% 86%);
+    }
+
+    @supports (color: oklch(60% 0.1 30)) {
+      .color-swatch {
+        border-color: oklch(55% 0.09 var(--swatch-hue));
+        background: oklch(63% 0.11 var(--swatch-hue));
+        box-shadow: inset 0 0 0 3px oklch(88% 0.04 var(--swatch-hue));
+      }
+    }
+
+    .keyboard-section {
+      grid-area: keyboard;
+      background: #ffffff;
+    }
+
+    .keyboard-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    .profile-rows {
+      display: grid;
+      gap: 6px;
+    }
+
+    .profile-row {
+      display: grid;
+      grid-template-columns: minmax(86px, 0.66fr) minmax(96px, 0.78fr) minmax(66px, 0.46fr) minmax(116px, 0.76fr) minmax(58px, auto);
+      gap: 6px;
+      align-items: end;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f7f9fc;
+    }
+
+    .profile-row.is-active {
+      border-color: rgba(0, 127, 120, 0.42);
+      background: #edf8f6;
+    }
+
+    .profile-name {
+      min-height: 30px;
+      justify-content: flex-start;
+      text-align: left;
+      font-weight: 800;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      min-width: 0;
+      overflow: hidden;
+      white-space: normal;
+    }
+
+    .profile-name span,
+    .profile-name small {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .profile-name small {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .command,
+    .toggle,
+    .vibrato-pad,
+    .color-step {
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+      color: var(--ink);
+      padding: 4px 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      user-select: none;
+      white-space: nowrap;
+      font-size: 0.86rem;
+    }
+
+    .command,
+    .toggle {
+      cursor: pointer;
+    }
+
+    .command:hover,
+    .toggle:hover,
+    .vibrato-pad:hover,
+    .color-step:hover {
+      border-color: #aab4c3;
+      background: #e7edf4;
+    }
+
+    .command:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .command.primary {
+      background: #e4f4f2;
+      border-color: rgba(0, 127, 120, 0.3);
+      color: #005f5a;
+      font-weight: 700;
+    }
+
+    .toggle input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .vibrato-pad {
+      position: relative;
+      overflow: hidden;
+      justify-content: space-between;
+      cursor: ew-resize;
+      --bend-x: 50%;
+    }
+
+    .vibrato-pad::before {
+      content: "";
+      position: absolute;
+      top: 5px;
+      bottom: 5px;
+      left: 50%;
+      width: 1px;
+      background: rgba(23, 25, 31, 0.32);
+    }
+
+    .vibrato-pad::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: var(--bend-x);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 5px rgba(0, 127, 120, 0.14);
+    }
+
+    .vibrato-pad span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .stage-wrap {
+      min-height: 0;
+      overflow: hidden;
+      display: grid;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,0.05) 1px, transparent 1px),
+        var(--stage);
+      background-size: 28px 28px;
+    }
+
+    .keyboard-scroll {
+      overflow: auto;
+      padding: 18px 0 26px;
+      scrollbar-color: #7b8290 var(--stage);
+    }
+
+    .keyboard {
+      min-width: max-content;
+      padding: 10px clamp(16px, 3vw, 34px) 30px;
+      display: grid;
+      gap: var(--row-gap);
+    }
+
+    .button-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: var(--key-step-y);
+      min-height: var(--key-step-y);
+    }
+
+    .row-label {
+      width: 58px;
+      color: #dbe3ee;
+      font-size: 0.78rem;
+      text-align: right;
+      flex: 0 0 auto;
+      opacity: 0.9;
+    }
+
+    .row-keys {
+      display: flex;
+      gap: var(--key-gap);
+      margin-left: calc(var(--indent) * var(--indent-step) + var(--range-offset, 0) * var(--key-center-x));
+      height: var(--key-step-y);
+      align-items: center;
+    }
+
+    .keyboard.shape-hex {
+      gap: var(--row-gap);
+    }
+
+    .keyboard.shape-hex .button-row {
+      height: var(--key-step-y);
+      min-height: var(--key-step-y);
+    }
+
+    .keyboard.shape-hex .row-keys {
+      gap: var(--key-gap);
+    }
+
+    .key {
+      --hue: 190;
+      --tone: hsl(var(--hue) 62% 46%);
+      --tone-soft: hsl(var(--hue) 72% 90%);
+      --tone-border: hsl(var(--hue) 46% 42%);
+      --key-fill: var(--tone-soft);
+      --key-stroke: var(--tone-border);
+      --key-outline: transparent;
+      width: var(--key-slot-width);
+      height: var(--key-step-y);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: #15181f;
+      box-shadow: none;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 1px;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      position: relative;
+      overflow: visible;
+      transition:
+        transform 80ms ease,
+        color 80ms ease,
+        filter 80ms ease;
+    }
+
+    .key::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: var(--key-size);
+      height: var(--key-size);
+      border-radius: 50%;
+      background: var(--key-stroke);
+      box-shadow: 0 0 0 4px var(--key-outline);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .key::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: calc(var(--key-size) - 4px);
+      height: calc(var(--key-size) - 4px);
+      border-radius: 50%;
+      background: var(--key-fill);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .keyboard.shape-hex .key::before {
+      width: var(--hex-width);
+      height: var(--hex-height);
+      border-radius: 0;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+
+    .keyboard.shape-hex .key::after {
+      width: calc(var(--hex-width) - 5px);
+      height: calc(var(--hex-height) - 5.8px);
+      border-radius: 0;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+
+    .keyboard.shape-round .key::before {
+      width: var(--round-size);
+      height: var(--round-size);
+      border-radius: 50%;
+      clip-path: none;
+    }
+
+    .keyboard.shape-round .key::after {
+      width: calc(var(--round-size) - 4px);
+      height: calc(var(--round-size) - 4px);
+      border-radius: 50%;
+      clip-path: none;
+    }
+
+    .key.is-dark-tone {
+      --key-fill: var(--tone);
+      --key-stroke: hsl(var(--hue) 72% 86%);
+      color: #ffffff;
+    }
+
+    @supports (color: oklch(60% 0.1 30)) {
+      .key {
+        --tone: oklch(63% 0.11 var(--hue));
+        --tone-soft: oklch(92% 0.035 var(--hue));
+        --tone-border: oklch(55% 0.09 var(--hue));
+      }
+
+      .key.is-dark-tone {
+        --key-stroke: oklch(88% 0.04 var(--hue));
+      }
+    }
+
+    .key:hover {
+      transform: translateY(-2px);
+      filter: saturate(1.08);
+    }
+
+    .key.is-active {
+      --key-fill: var(--tone);
+      --key-stroke: #17191f;
+      color: #ffffff;
+      transform: translateY(3px) scale(0.97);
+      filter: brightness(0.9);
+    }
+
+    .key.is-selected {
+      --key-outline: rgba(255, 255, 255, 0.86);
+    }
+
+    .key.is-q-anchor {
+      --key-outline: rgba(0, 127, 120, 0.42);
+    }
+
+    .note {
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0;
+      max-width: 54px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      z-index: 1;
+    }
+
+    .octave {
+      font-size: 0.78rem;
+      font-weight: 700;
+      opacity: 0.78;
+      line-height: 1;
+      z-index: 1;
+    }
+
+    .key-map {
+      position: absolute;
+      left: 50%;
+      bottom: calc((var(--key-step-y) - var(--key-size)) * 0.5 + 5px);
+      transform: translateX(-50%);
+      max-width: 52px;
+      padding: 1px 5px 2px;
+      border-radius: 999px;
+      background: rgba(23, 25, 31, 0.82);
+      color: #fff;
+      font-size: 0.64rem;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      z-index: 2;
+    }
+
+    .key.is-active .key-map {
+      background: rgba(255, 255, 255, 0.9);
+      color: #17191f;
+    }
+
+    .scale-dock {
+      grid-area: scale;
+      position: relative;
+      display: none;
+      min-width: 0;
+      min-height: 190px;
+      height: min(34vh, 280px);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      width: 100%;
+      align-self: start;
+    }
+
+    .scale-dock.is-open {
+      display: block;
+    }
+
+    .scale-tools {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      z-index: 3;
+      display: flex;
+      gap: 4px;
+      padding: 3px;
+      border: 1px solid rgba(216, 221, 232, 0.9);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(8px);
+    }
+
+    .scale-zoom {
+      width: 28px;
+      min-height: 26px;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #ffffff;
+      color: var(--ink);
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .scale-zoom:hover {
+      border-color: #aab4c3;
+      background: #e7edf4;
+    }
+
+    .staff-wrap {
+      height: 100%;
+      min-width: 0;
+      overflow: auto;
+    }
+
+    .staff-svg {
+      display: block;
+      min-width: 360px;
+    }
+
+    .staff-svg text {
+      font-family: Inter, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .staff-svg .music-symbol {
+      font-family: "Bravura", "Noto Music", "Segoe UI Symbol", "Apple Symbols", "Symbola", "DejaVu Sans", serif;
+      font-weight: 400;
+    }
+
+    .stage-wrap,
+    .keyboard-scroll,
+    .keyboard,
+    .button-row,
+    .row-keys,
+    .staff-wrap,
+    .staff-svg {
+      direction: ltr;
+    }
+
+    .scale-empty {
+      min-height: 150px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1180px) {
+      .control-grid {
+        grid-template-columns: repeat(5, minmax(86px, 1fr));
+      }
+
+      .control-grid.music-row {
+        grid-template-columns: repeat(5, minmax(86px, 1fr));
+      }
+
+      .profile-row {
+        grid-template-columns: minmax(150px, 1fr) minmax(120px, 1fr) minmax(88px, 0.6fr) minmax(160px, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .controls {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "global"
+          "keyboard"
+          "scale";
+      }
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --key-size: 58px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .readout {
+        min-width: 0;
+        flex: 1;
+        justify-content: space-between;
+        text-align: left;
+      }
+
+      .control-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .control-grid.music-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .profile-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .row-label {
+        width: 45px;
+      }
+
+      .note {
+        max-width: 48px;
+      }
+
+      .scale-dock {
+        grid-column: 1 / -1;
+      }
+
+    }
+
+    @media (max-width: 430px) {
+      :root {
+        --key-size: 52px;
+      }
+
+      .control-grid,
+      .control-grid.music-row,
+      .profile-row {
+        grid-template-columns: 1fr;
+      }
+
+      .command,
+      .toggle,
+      .vibrato-pad,
+      select,
+      input[type="number"] {
+        min-height: 42px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"></span>
+        <h1 id="appTitle">Q-board / Q-键盘</h1>
+      </div>
+      <div class="top-actions">
+        <div class="language-picker" id="languagePicker" title="语言">
+          <label class="sr-only" for="languageSelect">语言</label>
+          <span class="flag-badge" id="languageFlag" data-flag="cn" aria-hidden="true"></span>
+          <select id="languageSelect" aria-label="语言">
+            <option value="zh" selected>🇨🇳 中文</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="pt">🇧🇷 Português</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="ru">🇷🇺 Русский</option>
+          </select>
+        </div>
+        <div class="readout" aria-live="polite">
+          <span id="noteMeta">点击任意键</span>
+          <strong id="currentNote">--</strong>
+        </div>
+      </div>
+    </header>
+
+    <section class="controls" aria-label="键盘设置">
+      <div class="control-section global-section">
+        <div class="section-heading">全局设置</div>
+        <div class="control-grid layout-row">
+          <div class="control">
+            <label for="keySystem">排键</label>
+            <select id="keySystem">
+              <option value="b" selected>B-system</option>
+              <option value="c">C-system</option>
+              <option value="tonnetz">Tonnetz</option>
+              <option value="rightWholeLeftHalf">Q-System</option>
+              <option value="rightWholeRightUpHalf">Isomorphic</option>
+              <option value="guitar">Guitar</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="keyShape">形状</label>
+            <select id="keyShape">
+              <option value="hex" selected>竖六边形</option>
+              <option value="round">圆形</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="lowCol">低音列</label>
+            <input id="lowCol" type="number" step="1" value="-5">
+          </div>
+
+          <div class="control">
+            <label for="highCol">高音列</label>
+            <input id="highCol" type="number" step="1" value="18">
+          </div>
+
+          <div class="control">
+            <label for="upperRows">上方行</label>
+            <input id="upperRows" type="number" min="0" max="18" step="1" value="2">
+          </div>
+
+          <div class="control">
+            <label for="lowerRows">下方行</label>
+            <input id="lowerRows" type="number" min="0" max="18" step="1" value="2">
+          </div>
+
+          <div class="control">
+            <span class="group-label">横向扩展</span>
+            <div class="button-group">
+              <button class="command primary" id="centerView" type="button">居中</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-grid music-row">
+          <div class="control scale-choice">
+            <span class="group-label">音阶</span>
+            <div class="inline-pair">
+              <select id="tonicSelect"></select>
+              <select id="scaleMode">
+                <option value="major">大调</option>
+                <option value="minor">小调</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="control">
+            <label for="scaleAssist">辅助</label>
+            <select id="scaleAssist">
+              <option value="inDark" selected>调内深色</option>
+              <option value="outDark">调外深色</option>
+              <option value="allDark">全深色</option>
+              <option value="allLight">全浅色</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="labelMode">调外</label>
+            <select id="labelMode">
+              <option value="dual" selected>升降号</option>
+              <option value="sharp">升号</option>
+              <option value="flat">降号</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <span class="group-label">揉弦</span>
+            <div class="vibrato-pad" id="vibratoPad" tabindex="0">
+              <span id="vibratoLabel">0c</span>
+              <span>揉弦</span>
+            </div>
+          </div>
+
+          <label class="toggle">
+            <input id="longVibrato" type="checkbox" checked>
+            <span>长按揉弦</span>
+          </label>
+
+          <div class="control">
+            <label for="vibratoSensitivity">揉弦灵敏度</label>
+            <input id="vibratoSensitivity" type="range" min="0.1" max="1" step="0.05" value="1">
+          </div>
+
+          <button class="command primary" id="scaleToggle" type="button" aria-expanded="true">谱表</button>
+
+          <div class="control color-control">
+            <span class="group-label">键盘颜色</span>
+            <div class="color-stepper" aria-label="键盘颜色">
+              <button class="color-step" id="colorPrev" type="button" aria-label="上一个 C 色块">‹</button>
+              <span class="color-equals">C=</span>
+              <span class="color-swatch" id="colorSwatch" title="C 的颜色"></span>
+              <button class="color-step" id="colorNext" type="button" aria-label="下一个 C 色块">›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-section keyboard-section">
+        <div class="section-heading">键盘设置</div>
+        <div class="keyboard-layout" id="keyboardLayout">
+          <div class="profile-rows" id="profileRows"></div>
+        </div>
+      </div>
+
+      <aside class="scale-dock is-open" id="scaleDock" aria-label="调式谱表">
+        <div class="scale-tools" aria-label="谱表缩放">
+          <button class="scale-zoom" id="scaleZoomOut" type="button" aria-label="缩小谱表">−</button>
+          <button class="scale-zoom" id="scaleZoomIn" type="button" aria-label="放大谱表">+</button>
+        </div>
+        <div class="staff-wrap" id="staffWrap">
+          <svg class="staff-svg" id="staffSvg" role="img" aria-label="当前 Q 映射内的音阶五线谱"></svg>
+        </div>
+      </aside>
+    </section>
+
+    <main class="stage-wrap">
+      <div class="keyboard-scroll" id="keyboardScroll">
+        <div class="keyboard" id="keyboard" aria-label="Q-board button keyboard"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const ROW_COUNT = 3;
+    const keyboardSystems = {
+      b: {
+        label: "B-system",
+        baseOffset: 3,
+        rowStep: -1,
+        colStep: -3,
+        indent: "down-right",
+        octaveColStep: -4
+      },
+      c: {
+        label: "C-system",
+        baseOffset: 0,
+        rowStep: 2,
+        colStep: 3,
+        indent: "down-right",
+        octaveColStep: 4
+      },
+      tonnetz: {
+        label: "Tonnetz",
+        baseOffset: -2,
+        rowStep: 4,
+        colStep: 7,
+        indent: "down-right",
+        octaveColStep: null
+      },
+      rightWholeLeftHalf: {
+        label: "Q-System",
+        baseOffset: 0,
+        rowStep: -1,
+        colStep: 2,
+        indent: "down-right",
+        octaveColStep: 6
+      },
+      rightWholeRightUpHalf: {
+        label: "Isomorphic",
+        baseOffset: 0,
+        rowStep: 1,
+        colStep: 2,
+        indent: "down-right",
+        octaveColStep: 6
+      },
+      guitar: {
+        label: "Guitar",
+        baseOffset: 0,
+        rowOffset: row => (row <= 0 ? 4 + Math.abs(row) * 5 : -(row - 1) * 5),
+        colStep: 1,
+        indent: "guitar-compact",
+        octaveColStep: 12
+      }
+    };
+    const FIFTHS = [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5];
+    const FIFTH_INDEX = new Map(FIFTHS.map((pitchClass, index) => [pitchClass, index]));
+    const FIXED_OUTPUT_VOLUME = 0.44;
+    let cColorIndex = 0;
+    const languageOptions = [
+      ["zh", "中文", "cn", "🇨🇳"],
+      ["en", "English", "gb", "🇬🇧"],
+      ["fr", "Français", "fr", "🇫🇷"],
+      ["de", "Deutsch", "de", "🇩🇪"],
+      ["es", "Español", "es", "🇪🇸"],
+      ["pt", "Português", "br", "🇧🇷"],
+      ["ja", "日本語", "jp", "🇯🇵"],
+      ["ar", "العربية", "sa", "🇸🇦"],
+      ["ru", "Русский", "ru", "🇷🇺"]
+    ];
+    const supportedLanguages = new Set(languageOptions.map(([value]) => value));
+    const languageOptionByValue = new Map(languageOptions.map(([value, label, flag, emoji]) => [
+      value,
+      { label, flag, emoji }
+    ]));
+    function initialLanguage() {
+      try {
+        const stored = localStorage.getItem("qboard-language");
+        if (supportedLanguages.has(stored)) return stored;
+      } catch (error) {
+        // Ignore private-mode storage failures.
+      }
+      const browserLanguage = (navigator.language || "zh").slice(0, 2).toLowerCase();
+      return supportedLanguages.has(browserLanguage) ? browserLanguage : "zh";
+    }
+    let currentLanguage = initialLanguage();
+    const sharpNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const flatNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+    const dualNames = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
+
+    const hardwareRows = [
+      {
+        rowDelta: -1,
+        labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="],
+        codes: ["Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6", "Digit7", "Digit8", "Digit9", "Digit0", "Minus", "Equal"]
+      },
+      {
+        rowDelta: 0,
+        labels: ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]"],
+        codes: ["KeyQ", "KeyW", "KeyE", "KeyR", "KeyT", "KeyY", "KeyU", "KeyI", "KeyO", "KeyP", "BracketLeft", "BracketRight"]
+      },
+      {
+        rowDelta: 1,
+        labels: ["A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'"],
+        codes: ["KeyA", "KeyS", "KeyD", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyK", "KeyL", "Semicolon", "Quote"]
+      },
+      {
+        rowDelta: 2,
+        labels: ["Z", "X", "C", "V", "B", "N", "M", ",", ".", "/"],
+        codes: ["KeyZ", "KeyX", "KeyC", "KeyV", "KeyB", "KeyN", "KeyM", "Comma", "Period", "Slash"]
+      }
+    ];
+    const codeToLabel = new Map(
+      hardwareRows.flatMap(row => row.codes.map((code, index) => [code, row.labels[index]]))
+    );
+    const codeToHardwarePosition = new Map(
+      hardwareRows.flatMap(row => row.codes.map((code, index) => [code, {
+        rowDelta: row.rowDelta,
+        index,
+        label: row.labels[index]
+      }]))
+    );
+    const hidUsageToCode = new Map([
+      [0x04, "KeyA"], [0x05, "KeyB"], [0x06, "KeyC"], [0x07, "KeyD"], [0x08, "KeyE"], [0x09, "KeyF"],
+      [0x0A, "KeyG"], [0x0B, "KeyH"], [0x0C, "KeyI"], [0x0D, "KeyJ"], [0x0E, "KeyK"], [0x0F, "KeyL"],
+      [0x10, "KeyM"], [0x11, "KeyN"], [0x12, "KeyO"], [0x13, "KeyP"], [0x14, "KeyQ"], [0x15, "KeyR"],
+      [0x16, "KeyS"], [0x17, "KeyT"], [0x18, "KeyU"], [0x19, "KeyV"], [0x1A, "KeyW"], [0x1B, "KeyX"],
+      [0x1C, "KeyY"], [0x1D, "KeyZ"], [0x1E, "Digit1"], [0x1F, "Digit2"], [0x20, "Digit3"], [0x21, "Digit4"],
+      [0x22, "Digit5"], [0x23, "Digit6"], [0x24, "Digit7"], [0x25, "Digit8"], [0x26, "Digit9"], [0x27, "Digit0"],
+      [0x2D, "Minus"], [0x2E, "Equal"], [0x2F, "BracketLeft"], [0x30, "BracketRight"],
+      [0x33, "Semicolon"], [0x34, "Quote"], [0x36, "Comma"], [0x37, "Period"], [0x38, "Slash"]
+    ]);
+
+    const noteLetters = ["C", "D", "E", "F", "G", "A", "B"];
+    const naturalPitchClasses = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+    const accidentalChoices = [
+      { suffix: "bb", offset: -2 },
+      { suffix: "b", offset: -1 },
+      { suffix: "", offset: 0 },
+      { suffix: "#", offset: 1 },
+      { suffix: "x", offset: 2 }
+    ];
+    const scaleModes = {
+      major: { label: "大调", intervals: [0, 2, 4, 5, 7, 9, 11] },
+      minor: { label: "小调", intervals: [0, 2, 3, 5, 7, 8, 10] }
+    };
+    const signatureOrders = {
+      sharp: ["F", "C", "G", "D", "A", "E", "B"],
+      flat: ["B", "E", "A", "D", "G", "C", "F"]
+    };
+    const signatureSteps = {
+      sharp: {
+        treble: { F: 8, C: 5, G: 9, D: 6, A: 3, E: 7, B: 4 },
+        bass: { F: -6, C: -9, G: -5, D: -8, A: -11, E: -7, B: -10 }
+      },
+      flat: {
+        treble: { B: 4, E: 7, A: 3, D: 6, G: 2, C: 5, F: 1 },
+        bass: { B: -10, E: -7, A: -11, D: -8, G: -12, C: -9, F: -13 }
+      }
+    };
+    let mappingProfiles = [
+      {
+        id: "main",
+        label: "主键盘",
+        short: "主",
+        anchor: { row: 1, col: 0 },
+        instrument: "guitar",
+        outputShift: 0,
+        source: "browser",
+        pressedCodes: new Set()
+      }
+    ];
+    const instrumentOptions = [
+      ["accordion", "手风琴"],
+      ["piano", "钢琴"],
+      ["guitar", "吉他"],
+      ["violin", "小提琴"],
+      ["cello", "大提琴"],
+      ["flute", "长笛"],
+      ["trumpet", "小号"],
+      ["sax", "萨克斯"],
+      ["harpsichord", "古钢琴"],
+      ["quilled", "羽管键琴"],
+      ["theremin", "特雷门琴"],
+      ["harp", "竖琴"],
+      ["oboe", "双簧管"],
+      ["recorder", "竖笛"]
+    ];
+
+    const languageMeta = {
+      zh: { lang: "zh-CN", dir: "ltr" },
+      en: { lang: "en", dir: "ltr" },
+      fr: { lang: "fr", dir: "ltr" },
+      de: { lang: "de", dir: "ltr" },
+      es: { lang: "es", dir: "ltr" },
+      pt: { lang: "pt", dir: "ltr" },
+      ja: { lang: "ja", dir: "ltr" },
+      ar: { lang: "ar", dir: "rtl" },
+      ru: { lang: "ru", dir: "ltr" }
+    };
+
+    const translations = {
+      zh: {
+        appTitle: "Q-键盘 / Q-board",
+        globalSettings: "全局设置",
+        keyboardSettings: "键盘设置",
+        language: "语言",
+        layout: "排键",
+        shape: "形状",
+        hex: "竖六边形",
+        round: "圆形",
+        lowCol: "低音列",
+        highCol: "高音列",
+        upperRows: "上方行",
+        lowerRows: "下方行",
+        horizontalView: "横向扩展",
+        center: "居中",
+        scale: "音阶",
+        major: "大调",
+        minor: "小调",
+        assist: "辅助",
+        inDark: "调内深色",
+        outDark: "调外深色",
+        allDark: "全深色",
+        allLight: "全浅色",
+        outLabels: "调外",
+        dual: "升降号",
+        sharp: "升号",
+        flat: "降号",
+        vibrato: "揉弦",
+        longVibrato: "长按揉弦",
+        vibratoSensitivity: "揉弦灵敏度",
+        staff: "谱表",
+        keyColor: "键盘颜色",
+        prevC: "上一个 C 色块",
+        nextC: "下一个 C 色块",
+        cColorTitle: "C 色块 {index}/12",
+        staffScale: "谱表缩放",
+        zoomOut: "缩小谱表",
+        zoomIn: "放大谱表",
+        staffAria: "当前 Q 映射内的音阶五线谱",
+        keyboardAria: "Q-board 按钮键盘",
+        clickAnyKey: "点击任意键",
+        audioLabel: "音频",
+        audioError: "当前浏览器暂时不能初始化音频。",
+        mainKeyboard: "主键盘",
+        mainShort: "主",
+        touchComputer: "触屏/电脑",
+        sourceHid: "HID",
+        hidUnsupported: "当前浏览器不支持 WebHID；请用支持 WebHID 的 Chromium 系浏览器打开。",
+        hidNoDevice: "没有选择 HID 设备；普通办公键盘可能会被浏览器安全策略隐藏。",
+        hidAddBlocked: "HID 添加失败：浏览器未授权或该设备被保护。",
+        hidAddFailed: "HID 添加失败：{message}",
+        hidKeyboardName: "HID 键盘 {index}",
+        mainCannotDelete: "主键盘保留为默认键盘，不能删除。",
+        hidDisconnected: "{name} 已断开",
+        instrument: "音色",
+        outputShift: "输出偏移",
+        setQ: "设为 Q",
+        reset: "重置",
+        addHid: "添加 HID",
+        delete: "删除",
+        noScaleEntries: "{scale} 无可显示音",
+        row: "第{n}排",
+        upperRow: "上{n}",
+        lowerRow: "下{n}",
+        outputPrefix: "输出",
+        circleTitle: "五度圈 {index}",
+        instrumentAccordion: "手风琴",
+        instrumentPiano: "钢琴",
+        instrumentGuitar: "吉他",
+        instrumentViolin: "小提琴",
+        instrumentCello: "大提琴",
+        instrumentFlute: "长笛",
+        instrumentTrumpet: "小号",
+        instrumentSax: "萨克斯",
+        instrumentHarpsichord: "古钢琴",
+        instrumentQuilled: "羽管键琴",
+        instrumentTheremin: "特雷门琴",
+        instrumentHarp: "竖琴",
+        instrumentOboe: "双簧管",
+        instrumentRecorder: "竖笛"
+      },
+      en: {
+        appTitle: "Q-board",
+        globalSettings: "Global",
+        keyboardSettings: "Keyboards",
+        language: "Language",
+        layout: "System",
+        shape: "Shape",
+        hex: "Hex",
+        round: "Round",
+        lowCol: "Low",
+        highCol: "High",
+        upperRows: "Up",
+        lowerRows: "Down",
+        horizontalView: "View",
+        center: "Center",
+        scale: "Scale",
+        major: "major",
+        minor: "minor",
+        assist: "Assist",
+        inDark: "In dark",
+        outDark: "Out dark",
+        allDark: "All dark",
+        allLight: "All light",
+        outLabels: "Out names",
+        dual: "Both",
+        sharp: "Sharps",
+        flat: "Flats",
+        vibrato: "Vibrato",
+        longVibrato: "Hold vibrato",
+        vibratoSensitivity: "Vib sens.",
+        staff: "Staff",
+        keyColor: "Key color",
+        prevC: "Previous C color",
+        nextC: "Next C color",
+        cColorTitle: "C color {index}/12",
+        staffScale: "Staff zoom",
+        zoomOut: "Zoom out",
+        zoomIn: "Zoom in",
+        staffAria: "Scale staff for current Q mappings",
+        keyboardAria: "Q-board button keyboard",
+        clickAnyKey: "Click any key",
+        audioLabel: "Audio",
+        audioError: "This browser cannot initialize audio right now.",
+        mainKeyboard: "Main keyboard",
+        mainShort: "Main",
+        touchComputer: "Touch/computer",
+        sourceHid: "HID",
+        hidUnsupported: "This browser does not support WebHID; use a Chromium browser with WebHID.",
+        hidNoDevice: "No HID device was selected; regular office keyboards may be hidden by browser security.",
+        hidAddBlocked: "HID add failed: the browser did not grant access or the device is protected.",
+        hidAddFailed: "HID add failed: {message}",
+        hidKeyboardName: "HID keyboard {index}",
+        mainCannotDelete: "The main keyboard is the default and cannot be deleted.",
+        hidDisconnected: "{name} disconnected",
+        instrument: "Voice",
+        outputShift: "Output shift",
+        setQ: "Set Q",
+        reset: "Reset",
+        addHid: "Add HID",
+        delete: "Delete",
+        noScaleEntries: "No visible notes for {scale}",
+        row: "Row {n}",
+        upperRow: "Up {n}",
+        lowerRow: "Down {n}",
+        outputPrefix: "Output",
+        circleTitle: "Circle {index}",
+        instrumentAccordion: "Accordion",
+        instrumentPiano: "Piano",
+        instrumentGuitar: "Guitar",
+        instrumentViolin: "Violin",
+        instrumentCello: "Cello",
+        instrumentFlute: "Flute",
+        instrumentTrumpet: "Trumpet",
+        instrumentSax: "Saxophone",
+        instrumentHarpsichord: "Harpsichord",
+        instrumentQuilled: "Quilled keyboard",
+        instrumentTheremin: "Theremin",
+        instrumentHarp: "Harp",
+        instrumentOboe: "Oboe",
+        instrumentRecorder: "Recorder"
+      },
+      fr: {
+        appTitle: "Q-board",
+        globalSettings: "Global",
+        keyboardSettings: "Claviers",
+        language: "Langue",
+        layout: "Système",
+        shape: "Forme",
+        hex: "Hexa",
+        round: "Rond",
+        lowCol: "Grave",
+        highCol: "Aigu",
+        upperRows: "Haut",
+        lowerRows: "Bas",
+        horizontalView: "Vue",
+        center: "Centrer",
+        scale: "Gamme",
+        major: "majeur",
+        minor: "mineur",
+        assist: "Aide",
+        inDark: "Degré foncé",
+        outDark: "Hors foncé",
+        allDark: "Tout foncé",
+        allLight: "Tout clair",
+        outLabels: "Alt.",
+        dual: "Deux",
+        sharp: "Dièses",
+        flat: "Bémols",
+        vibrato: "Vibrato",
+        longVibrato: "Vib. tenue",
+        vibratoSensitivity: "Sens. vib.",
+        staff: "Portée",
+        keyColor: "Couleur",
+        prevC: "Couleur de C précédente",
+        nextC: "Couleur de C suivante",
+        cColorTitle: "Couleur de C {index}/12",
+        staffScale: "Zoom portée",
+        zoomOut: "Réduire",
+        zoomIn: "Agrandir",
+        staffAria: "Portée de la gamme pour les mappings Q",
+        keyboardAria: "Clavier à boutons Q-board",
+        clickAnyKey: "Cliquez une touche",
+        audioLabel: "Audio",
+        audioError: "Ce navigateur ne peut pas initialiser l'audio pour l'instant.",
+        mainKeyboard: "Clavier principal",
+        mainShort: "Princ.",
+        touchComputer: "Tactile/ordinateur",
+        sourceHid: "HID",
+        hidUnsupported: "Ce navigateur ne prend pas WebHID en charge ; utilisez un navigateur Chromium compatible.",
+        hidNoDevice: "Aucun périphérique HID sélectionné ; les claviers bureautiques peuvent être masqués par sécurité.",
+        hidAddBlocked: "Échec de l'ajout HID : accès non autorisé ou périphérique protégé.",
+        hidAddFailed: "Échec de l'ajout HID : {message}",
+        hidKeyboardName: "Clavier HID {index}",
+        mainCannotDelete: "Le clavier principal est le clavier par défaut et ne peut pas être supprimé.",
+        hidDisconnected: "{name} déconnecté",
+        instrument: "Timbre",
+        outputShift: "Décalage",
+        setQ: "Définir Q",
+        reset: "Réinit.",
+        addHid: "Ajouter HID",
+        delete: "Suppr.",
+        noScaleEntries: "Aucune note visible pour {scale}",
+        row: "Rang {n}",
+        upperRow: "Haut {n}",
+        lowerRow: "Bas {n}",
+        outputPrefix: "Sortie",
+        circleTitle: "Cycle {index}",
+        instrumentAccordion: "Accordéon",
+        instrumentPiano: "Piano",
+        instrumentGuitar: "Guitare",
+        instrumentViolin: "Violon",
+        instrumentCello: "Violoncelle",
+        instrumentFlute: "Flûte",
+        instrumentTrumpet: "Trompette",
+        instrumentSax: "Saxophone",
+        instrumentHarpsichord: "Clavecin",
+        instrumentQuilled: "Clavier à sautereaux",
+        instrumentTheremin: "Thérémine",
+        instrumentHarp: "Harpe",
+        instrumentOboe: "Hautbois",
+        instrumentRecorder: "Flûte à bec"
+      },
+      de: {
+        appTitle: "Q-Tastatur",
+        globalSettings: "Global",
+        keyboardSettings: "Tastaturen",
+        language: "Sprache",
+        layout: "System",
+        shape: "Form",
+        hex: "Hex",
+        round: "Rund",
+        lowCol: "Tief",
+        highCol: "Hoch",
+        upperRows: "Oben",
+        lowerRows: "Unten",
+        horizontalView: "Ansicht",
+        center: "Mitte",
+        scale: "Tonart",
+        major: "Dur",
+        minor: "Moll",
+        assist: "Hilfe",
+        inDark: "In dunkel",
+        outDark: "Außen dunkel",
+        allDark: "Alle dunkel",
+        allLight: "Alle hell",
+        outLabels: "Außen",
+        dual: "Beide",
+        sharp: "Kreuze",
+        flat: "Bes",
+        vibrato: "Vibrato",
+        longVibrato: "Halte-Vibrato",
+        vibratoSensitivity: "Vib.-Empf.",
+        staff: "Noten",
+        keyColor: "Farbe",
+        prevC: "Vorige C-Farbe",
+        nextC: "Nächste C-Farbe",
+        cColorTitle: "C-Farbe {index}/12",
+        staffScale: "Noten-Zoom",
+        zoomOut: "Verkleinern",
+        zoomIn: "Vergrößern",
+        staffAria: "Notensystem für aktuelle Q-Belegungen",
+        keyboardAria: "Q-board Knopftastatur",
+        clickAnyKey: "Taste anklicken",
+        audioLabel: "Audio",
+        audioError: "Dieser Browser kann Audio momentan nicht initialisieren.",
+        mainKeyboard: "Haupttastatur",
+        mainShort: "Haupt",
+        touchComputer: "Touch/Computer",
+        sourceHid: "HID",
+        hidUnsupported: "Dieser Browser unterstützt WebHID nicht; bitte einen Chromium-Browser mit WebHID verwenden.",
+        hidNoDevice: "Kein HID-Gerät ausgewählt; normale Bürotastaturen können aus Sicherheitsgründen verborgen sein.",
+        hidAddBlocked: "HID konnte nicht hinzugefügt werden: Zugriff verweigert oder Gerät geschützt.",
+        hidAddFailed: "HID konnte nicht hinzugefügt werden: {message}",
+        hidKeyboardName: "HID-Tastatur {index}",
+        mainCannotDelete: "Die Haupttastatur ist die Standardtastatur und kann nicht gelöscht werden.",
+        hidDisconnected: "{name} getrennt",
+        instrument: "Klang",
+        outputShift: "Ausgabeversatz",
+        setQ: "Q setzen",
+        reset: "Reset",
+        addHid: "HID hinzufügen",
+        delete: "Löschen",
+        noScaleEntries: "Keine sichtbaren Töne für {scale}",
+        row: "Reihe {n}",
+        upperRow: "Oben {n}",
+        lowerRow: "Unten {n}",
+        outputPrefix: "Ausgabe",
+        circleTitle: "Quintenzirkel {index}",
+        instrumentAccordion: "Akkordeon",
+        instrumentPiano: "Klavier",
+        instrumentGuitar: "Gitarre",
+        instrumentViolin: "Violine",
+        instrumentCello: "Cello",
+        instrumentFlute: "Flöte",
+        instrumentTrumpet: "Trompete",
+        instrumentSax: "Saxophon",
+        instrumentHarpsichord: "Cembalo",
+        instrumentQuilled: "Kielklavier",
+        instrumentTheremin: "Theremin",
+        instrumentHarp: "Harfe",
+        instrumentOboe: "Oboe",
+        instrumentRecorder: "Blockflöte"
+      },
+      es: {
+        appTitle: "Q-board",
+        globalSettings: "Global",
+        keyboardSettings: "Teclados",
+        language: "Idioma",
+        layout: "Sistema",
+        shape: "Forma",
+        hex: "Hex",
+        round: "Redondo",
+        lowCol: "Grave",
+        highCol: "Agudo",
+        upperRows: "Arriba",
+        lowerRows: "Abajo",
+        horizontalView: "Vista",
+        center: "Centrar",
+        scale: "Escala",
+        major: "mayor",
+        minor: "menor",
+        assist: "Ayuda",
+        inDark: "Dentro oscuro",
+        outDark: "Fuera oscuro",
+        allDark: "Todo oscuro",
+        allLight: "Todo claro",
+        outLabels: "Fuera",
+        dual: "Ambos",
+        sharp: "Sostenidos",
+        flat: "Bemoles",
+        vibrato: "Vibrato",
+        longVibrato: "Vibrato al mantener",
+        vibratoSensitivity: "Sens. vib.",
+        staff: "Pentagrama",
+        keyColor: "Color",
+        prevC: "Color de C anterior",
+        nextC: "Color de C siguiente",
+        cColorTitle: "Color de C {index}/12",
+        staffScale: "Zoom pentagrama",
+        zoomOut: "Reducir",
+        zoomIn: "Ampliar",
+        staffAria: "Pentagrama de escala para mapeos Q",
+        keyboardAria: "Teclado de botones Q-board",
+        clickAnyKey: "Pulsa una tecla",
+        audioLabel: "Audio",
+        audioError: "Este navegador no puede inicializar audio ahora.",
+        mainKeyboard: "Teclado principal",
+        mainShort: "Pral.",
+        touchComputer: "Táctil/ordenador",
+        sourceHid: "HID",
+        hidUnsupported: "Este navegador no admite WebHID; usa un navegador Chromium compatible.",
+        hidNoDevice: "No se seleccionó ningún dispositivo HID; los teclados comunes pueden estar ocultos por seguridad.",
+        hidAddBlocked: "Error al añadir HID: el navegador no autorizó el acceso o el dispositivo está protegido.",
+        hidAddFailed: "Error al añadir HID: {message}",
+        hidKeyboardName: "Teclado HID {index}",
+        mainCannotDelete: "El teclado principal es el predeterminado y no se puede eliminar.",
+        hidDisconnected: "{name} desconectado",
+        instrument: "Timbre",
+        outputShift: "Desplaz.",
+        setQ: "Asignar Q",
+        reset: "Rest.",
+        addHid: "Añadir HID",
+        delete: "Eliminar",
+        noScaleEntries: "No hay notas visibles para {scale}",
+        row: "Fila {n}",
+        upperRow: "Arriba {n}",
+        lowerRow: "Abajo {n}",
+        outputPrefix: "Salida",
+        circleTitle: "Círculo {index}",
+        instrumentAccordion: "Acordeón",
+        instrumentPiano: "Piano",
+        instrumentGuitar: "Guitarra",
+        instrumentViolin: "Violín",
+        instrumentCello: "Violonchelo",
+        instrumentFlute: "Flauta",
+        instrumentTrumpet: "Trompeta",
+        instrumentSax: "Saxofón",
+        instrumentHarpsichord: "Clave",
+        instrumentQuilled: "Teclado de plectros",
+        instrumentTheremin: "Theremín",
+        instrumentHarp: "Arpa",
+        instrumentOboe: "Oboe",
+        instrumentRecorder: "Flauta dulce"
+      },
+      pt: {
+        appTitle: "Q-board",
+        globalSettings: "Global",
+        keyboardSettings: "Teclados",
+        language: "Idioma",
+        layout: "Sistema",
+        shape: "Forma",
+        hex: "Hex",
+        round: "Redondo",
+        lowCol: "Grave",
+        highCol: "Agudo",
+        upperRows: "Cima",
+        lowerRows: "Baixo",
+        horizontalView: "Vista",
+        center: "Centrar",
+        scale: "Escala",
+        major: "maior",
+        minor: "menor",
+        assist: "Auxílio",
+        inDark: "Dentro escuro",
+        outDark: "Fora escuro",
+        allDark: "Tudo escuro",
+        allLight: "Tudo claro",
+        outLabels: "Fora",
+        dual: "Ambos",
+        sharp: "Sustenidos",
+        flat: "Bemóis",
+        vibrato: "Vibrato",
+        longVibrato: "Vibrato ao segurar",
+        vibratoSensitivity: "Sens. vib.",
+        staff: "Pauta",
+        keyColor: "Cor",
+        prevC: "Cor de C anterior",
+        nextC: "Cor de C seguinte",
+        cColorTitle: "Cor de C {index}/12",
+        staffScale: "Zoom da pauta",
+        zoomOut: "Diminuir",
+        zoomIn: "Ampliar",
+        staffAria: "Pauta da escala para mapeamentos Q",
+        keyboardAria: "Teclado de botões Q-board",
+        clickAnyKey: "Clique uma tecla",
+        audioLabel: "Áudio",
+        audioError: "Este navegador não consegue inicializar o áudio agora.",
+        mainKeyboard: "Teclado principal",
+        mainShort: "Princ.",
+        touchComputer: "Toque/computador",
+        sourceHid: "HID",
+        hidUnsupported: "Este navegador não suporta WebHID; use um navegador Chromium compatível.",
+        hidNoDevice: "Nenhum dispositivo HID foi selecionado; teclados comuns podem ficar ocultos por segurança.",
+        hidAddBlocked: "Falha ao adicionar HID: o navegador não autorizou ou o dispositivo é protegido.",
+        hidAddFailed: "Falha ao adicionar HID: {message}",
+        hidKeyboardName: "Teclado HID {index}",
+        mainCannotDelete: "O teclado principal é o padrão e não pode ser excluído.",
+        hidDisconnected: "{name} desconectado",
+        instrument: "Timbre",
+        outputShift: "Desloc.",
+        setQ: "Definir Q",
+        reset: "Repor",
+        addHid: "Adicionar HID",
+        delete: "Excluir",
+        noScaleEntries: "Sem notas visíveis para {scale}",
+        row: "Fila {n}",
+        upperRow: "Cima {n}",
+        lowerRow: "Baixo {n}",
+        outputPrefix: "Saída",
+        circleTitle: "Círculo {index}",
+        instrumentAccordion: "Acordeão",
+        instrumentPiano: "Piano",
+        instrumentGuitar: "Guitarra",
+        instrumentViolin: "Violino",
+        instrumentCello: "Violoncelo",
+        instrumentFlute: "Flauta",
+        instrumentTrumpet: "Trompete",
+        instrumentSax: "Saxofone",
+        instrumentHarpsichord: "Cravo",
+        instrumentQuilled: "Teclado de palhetas",
+        instrumentTheremin: "Theremin",
+        instrumentHarp: "Harpa",
+        instrumentOboe: "Oboé",
+        instrumentRecorder: "Flauta doce"
+      },
+      ja: {
+        appTitle: "Qボード",
+        globalSettings: "全体",
+        keyboardSettings: "鍵盤",
+        language: "言語",
+        layout: "配列",
+        shape: "形",
+        hex: "六角",
+        round: "丸",
+        lowCol: "低列",
+        highCol: "高列",
+        upperRows: "上行",
+        lowerRows: "下行",
+        horizontalView: "表示",
+        center: "中央",
+        scale: "音階",
+        major: "長調",
+        minor: "短調",
+        assist: "補助",
+        inDark: "内を濃く",
+        outDark: "外を濃く",
+        allDark: "全濃色",
+        allLight: "全淡色",
+        outLabels: "外音名",
+        dual: "両方",
+        sharp: "シャープ",
+        flat: "フラット",
+        vibrato: "ビブラート",
+        longVibrato: "長押しビブラート",
+        vibratoSensitivity: "ビブラート感度",
+        staff: "譜表",
+        keyColor: "色",
+        prevC: "前の C 色",
+        nextC: "次の C 色",
+        cColorTitle: "C 色 {index}/12",
+        staffScale: "譜表ズーム",
+        zoomOut: "縮小",
+        zoomIn: "拡大",
+        staffAria: "現在の Q マッピングの音階譜表",
+        keyboardAria: "Qボード・ボタン鍵盤",
+        clickAnyKey: "任意のキーをクリック",
+        audioLabel: "音声",
+        audioError: "このブラウザでは現在オーディオを初期化できません。",
+        mainKeyboard: "主鍵盤",
+        mainShort: "主",
+        touchComputer: "タッチ/PC",
+        sourceHid: "HID",
+        hidUnsupported: "このブラウザは WebHID に対応していません。対応する Chromium 系ブラウザを使ってください。",
+        hidNoDevice: "HID デバイスが選択されていません。一般的なキーボードは安全上非表示になることがあります。",
+        hidAddBlocked: "HID の追加に失敗しました: ブラウザが許可しないか、デバイスが保護されています。",
+        hidAddFailed: "HID の追加に失敗しました: {message}",
+        hidKeyboardName: "HID 鍵盤 {index}",
+        mainCannotDelete: "主鍵盤は既定の鍵盤なので削除できません。",
+        hidDisconnected: "{name} が切断されました",
+        instrument: "音色",
+        outputShift: "出力シフト",
+        setQ: "Q に設定",
+        reset: "戻す",
+        addHid: "HID 追加",
+        delete: "削除",
+        noScaleEntries: "{scale} に表示音なし",
+        row: "{n}行",
+        upperRow: "上{n}",
+        lowerRow: "下{n}",
+        outputPrefix: "出力",
+        circleTitle: "五度圏 {index}",
+        instrumentAccordion: "アコーディオン",
+        instrumentPiano: "ピアノ",
+        instrumentGuitar: "ギター",
+        instrumentViolin: "バイオリン",
+        instrumentCello: "チェロ",
+        instrumentFlute: "フルート",
+        instrumentTrumpet: "トランペット",
+        instrumentSax: "サックス",
+        instrumentHarpsichord: "チェンバロ",
+        instrumentQuilled: "撥弦鍵盤",
+        instrumentTheremin: "テルミン",
+        instrumentHarp: "ハープ",
+        instrumentOboe: "オーボエ",
+        instrumentRecorder: "リコーダー"
+      },
+      ar: {
+        appTitle: "لوحة Q",
+        globalSettings: "عام",
+        keyboardSettings: "لوحات",
+        language: "اللغة",
+        layout: "النظام",
+        shape: "الشكل",
+        hex: "سداسي",
+        round: "دائري",
+        lowCol: "منخفض",
+        highCol: "مرتفع",
+        upperRows: "أعلى",
+        lowerRows: "أسفل",
+        horizontalView: "العرض",
+        center: "توسيط",
+        scale: "السلم",
+        major: "كبير",
+        minor: "صغير",
+        assist: "مساعدة",
+        inDark: "داخل داكن",
+        outDark: "خارج داكن",
+        allDark: "كلها داكنة",
+        allLight: "كلها فاتحة",
+        outLabels: "الأسماء",
+        dual: "كلاهما",
+        sharp: "دييز",
+        flat: "بيمول",
+        vibrato: "فيبراتو",
+        longVibrato: "فيبراتو عند الضغط",
+        vibratoSensitivity: "حساسية الفيبراتو",
+        staff: "المدرج",
+        keyColor: "اللون",
+        prevC: "لون C السابق",
+        nextC: "لون C التالي",
+        cColorTitle: "لون C {index}/12",
+        staffScale: "تكبير المدرج",
+        zoomOut: "تصغير",
+        zoomIn: "تكبير",
+        staffAria: "مدرج السلم لتعيينات Q الحالية",
+        keyboardAria: "لوحة أزرار Q-board",
+        clickAnyKey: "انقر أي زر",
+        audioLabel: "الصوت",
+        audioError: "لا يستطيع هذا المتصفح تهيئة الصوت الآن.",
+        mainKeyboard: "اللوحة الرئيسية",
+        mainShort: "رئيسية",
+        touchComputer: "لمس/حاسوب",
+        sourceHid: "HID",
+        hidUnsupported: "هذا المتصفح لا يدعم WebHID؛ استخدم متصفح Chromium يدعمه.",
+        hidNoDevice: "لم يتم اختيار جهاز HID؛ قد تخفي حماية المتصفح لوحات المفاتيح العادية.",
+        hidAddBlocked: "فشلت إضافة HID: لم يمنح المتصفح الإذن أو الجهاز محمي.",
+        hidAddFailed: "فشلت إضافة HID: {message}",
+        hidKeyboardName: "لوحة HID {index}",
+        mainCannotDelete: "اللوحة الرئيسية هي الافتراضية ولا يمكن حذفها.",
+        hidDisconnected: "تم فصل {name}",
+        instrument: "الصوت",
+        outputShift: "إزاحة الخرج",
+        setQ: "عيّن Q",
+        reset: "إعادة",
+        addHid: "إضافة HID",
+        delete: "حذف",
+        noScaleEntries: "لا نغمات ظاهرة لـ {scale}",
+        row: "صف {n}",
+        upperRow: "أعلى {n}",
+        lowerRow: "أسفل {n}",
+        outputPrefix: "خرج",
+        circleTitle: "دائرة {index}",
+        instrumentAccordion: "أكورديون",
+        instrumentPiano: "بيانو",
+        instrumentGuitar: "غيتار",
+        instrumentViolin: "كمان",
+        instrumentCello: "تشيلو",
+        instrumentFlute: "فلوت",
+        instrumentTrumpet: "بوق",
+        instrumentSax: "ساكسفون",
+        instrumentHarpsichord: "هاربسيكورد",
+        instrumentQuilled: "لوحة ريشية",
+        instrumentTheremin: "ثيرمين",
+        instrumentHarp: "هارب",
+        instrumentOboe: "أوبوا",
+        instrumentRecorder: "ريكوردر"
+      },
+      ru: {
+        appTitle: "Q-клавиатура",
+        globalSettings: "Общие",
+        keyboardSettings: "Клавиатуры",
+        language: "Язык",
+        layout: "Система",
+        shape: "Форма",
+        hex: "Шестиуг.",
+        round: "Круг",
+        lowCol: "Низ",
+        highCol: "Верх",
+        upperRows: "Сверху",
+        lowerRows: "Снизу",
+        horizontalView: "Вид",
+        center: "Центр",
+        scale: "Лад",
+        major: "мажор",
+        minor: "минор",
+        assist: "Подсв.",
+        inDark: "В ладу темн.",
+        outDark: "Вне темн.",
+        allDark: "Все темн.",
+        allLight: "Все светл.",
+        outLabels: "Вне",
+        dual: "Оба",
+        sharp: "Диезы",
+        flat: "Бемоли",
+        vibrato: "Вибрато",
+        longVibrato: "Вибрато удерж.",
+        vibratoSensitivity: "Чувств.",
+        staff: "Ноты",
+        keyColor: "Цвет",
+        prevC: "Предыдущий цвет C",
+        nextC: "Следующий цвет C",
+        cColorTitle: "Цвет C {index}/12",
+        staffScale: "Масштаб нот",
+        zoomOut: "Меньше",
+        zoomIn: "Больше",
+        staffAria: "Нотный стан для текущих Q-привязок",
+        keyboardAria: "Кнопочная Q-клавиатура",
+        clickAnyKey: "Нажмите кнопку",
+        audioLabel: "Аудио",
+        audioError: "Этот браузер сейчас не может инициализировать звук.",
+        mainKeyboard: "Главная клавиатура",
+        mainShort: "Главн.",
+        touchComputer: "Сенсор/компьютер",
+        sourceHid: "HID",
+        hidUnsupported: "Этот браузер не поддерживает WebHID; используйте Chromium-браузер с WebHID.",
+        hidNoDevice: "HID-устройство не выбрано; обычные офисные клавиатуры могут быть скрыты защитой браузера.",
+        hidAddBlocked: "Не удалось добавить HID: браузер не дал доступ или устройство защищено.",
+        hidAddFailed: "Не удалось добавить HID: {message}",
+        hidKeyboardName: "HID-клавиатура {index}",
+        mainCannotDelete: "Главная клавиатура является клавиатурой по умолчанию и не удаляется.",
+        hidDisconnected: "{name} отключена",
+        instrument: "Тембр",
+        outputShift: "Сдвиг",
+        setQ: "Назн. Q",
+        reset: "Сброс",
+        addHid: "Добавить HID",
+        delete: "Удалить",
+        noScaleEntries: "Нет видимых нот для {scale}",
+        row: "Ряд {n}",
+        upperRow: "Верх {n}",
+        lowerRow: "Низ {n}",
+        outputPrefix: "Выход",
+        circleTitle: "Круг {index}",
+        instrumentAccordion: "Аккордеон",
+        instrumentPiano: "Фортепиано",
+        instrumentGuitar: "Гитара",
+        instrumentViolin: "Скрипка",
+        instrumentCello: "Виолончель",
+        instrumentFlute: "Флейта",
+        instrumentTrumpet: "Труба",
+        instrumentSax: "Саксофон",
+        instrumentHarpsichord: "Клавесин",
+        instrumentQuilled: "Щипковая клав.",
+        instrumentTheremin: "Терменвокс",
+        instrumentHarp: "Арфа",
+        instrumentOboe: "Гобой",
+        instrumentRecorder: "Блокфлейта"
+      }
+    };
+
+    const instruments = {
+      accordion: {
+        envelope: { attack: 0.018, decay: 0.12, sustain: 0.74, release: 0.22 },
+        filter: { type: "lowpass", frequency: 3200, q: 0.6 },
+        oscillators: [
+          { type: "sawtooth", ratio: 1, gain: 0.42, detune: -7 },
+          { type: "sawtooth", ratio: 1, gain: 0.42, detune: 7 },
+          { type: "triangle", ratio: 2, gain: 0.12, detune: 0 }
+        ]
+      },
+      piano: {
+        envelope: { attack: 0.006, decay: 0.55, sustain: 0.18, release: 0.42 },
+        filter: { type: "lowpass", frequency: 4200, q: 0.4 },
+        oscillators: [
+          { type: "triangle", ratio: 1, gain: 0.62, detune: 0 },
+          { type: "sine", ratio: 2, gain: 0.22, detune: 1 },
+          { type: "sine", ratio: 3, gain: 0.12, detune: -1 }
+        ]
+      },
+      guitar: {
+        envelope: { attack: 0.004, decay: 0.33, sustain: 0.28, release: 0.24 },
+        filter: { type: "lowpass", frequency: 2500, q: 0.7 },
+        oscillators: [
+          { type: "triangle", ratio: 1, gain: 0.54, detune: 0 },
+          { type: "sawtooth", ratio: 2, gain: 0.18, detune: -3 },
+          { type: "sine", ratio: 3, gain: 0.1, detune: 2 }
+        ]
+      },
+      violin: {
+        envelope: { attack: 0.09, decay: 0.18, sustain: 0.78, release: 0.32 },
+        filter: { type: "lowpass", frequency: 5600, q: 0.9 },
+        vibrato: { rate: 5.3, depth: 10 },
+        oscillators: [
+          { type: "sawtooth", ratio: 1, gain: 0.5, detune: 0 },
+          { type: "triangle", ratio: 2, gain: 0.18, detune: 2 },
+          { type: "sine", ratio: 3, gain: 0.08, detune: -2 }
+        ]
+      },
+      cello: {
+        envelope: { attack: 0.12, decay: 0.18, sustain: 0.82, release: 0.42 },
+        filter: { type: "lowpass", frequency: 2100, q: 0.8 },
+        vibrato: { rate: 4.7, depth: 8 },
+        oscillators: [
+          { type: "sawtooth", ratio: 0.5, gain: 0.18, detune: 0 },
+          { type: "triangle", ratio: 1, gain: 0.52, detune: 0 },
+          { type: "sawtooth", ratio: 2, gain: 0.14, detune: -2 }
+        ]
+      },
+      flute: {
+        envelope: { attack: 0.055, decay: 0.12, sustain: 0.76, release: 0.25 },
+        filter: { type: "lowpass", frequency: 6800, q: 0.5 },
+        vibrato: { rate: 5.0, depth: 5 },
+        noise: { gain: 0.016, type: "highpass", frequency: 2600 },
+        oscillators: [
+          { type: "sine", ratio: 1, gain: 0.72, detune: 0 },
+          { type: "triangle", ratio: 2, gain: 0.11, detune: 0 }
+        ]
+      },
+      trumpet: {
+        envelope: { attack: 0.028, decay: 0.16, sustain: 0.72, release: 0.2 },
+        filter: { type: "lowpass", frequency: 5200, q: 1.2 },
+        oscillators: [
+          { type: "sawtooth", ratio: 1, gain: 0.52, detune: 0 },
+          { type: "square", ratio: 2, gain: 0.18, detune: -1 },
+          { type: "sawtooth", ratio: 3, gain: 0.1, detune: 1 }
+        ]
+      },
+      sax: {
+        envelope: { attack: 0.045, decay: 0.18, sustain: 0.72, release: 0.28 },
+        filter: { type: "bandpass", frequency: 1650, q: 1.6 },
+        vibrato: { rate: 4.8, depth: 6 },
+        oscillators: [
+          { type: "sawtooth", ratio: 1, gain: 0.45, detune: 0 },
+          { type: "triangle", ratio: 2, gain: 0.22, detune: -2 },
+          { type: "square", ratio: 3, gain: 0.08, detune: 1 }
+        ]
+      },
+      harpsichord: {
+        envelope: { attack: 0.002, decay: 0.23, sustain: 0.04, release: 0.16 },
+        filter: { type: "highpass", frequency: 420, q: 0.6 },
+        oscillators: [
+          { type: "sawtooth", ratio: 1, gain: 0.38, detune: 0 },
+          { type: "square", ratio: 2, gain: 0.32, detune: 0 },
+          { type: "triangle", ratio: 4, gain: 0.1, detune: 0 }
+        ]
+      },
+      quilled: {
+        envelope: { attack: 0.001, decay: 0.18, sustain: 0.03, release: 0.12 },
+        filter: { type: "highpass", frequency: 620, q: 0.9 },
+        oscillators: [
+          { type: "square", ratio: 1, gain: 0.34, detune: 0 },
+          { type: "sawtooth", ratio: 2, gain: 0.28, detune: 1 },
+          { type: "triangle", ratio: 3, gain: 0.13, detune: -1 },
+          { type: "sine", ratio: 5, gain: 0.06, detune: 0 }
+        ]
+      },
+      theremin: {
+        envelope: { attack: 0.11, decay: 0.08, sustain: 0.88, release: 0.36 },
+        filter: { type: "lowpass", frequency: 3600, q: 0.3 },
+        vibrato: { rate: 6.2, depth: 18 },
+        oscillators: [
+          { type: "sine", ratio: 1, gain: 0.82, detune: 0 },
+          { type: "sine", ratio: 2, gain: 0.08, detune: 0 }
+        ]
+      },
+      harp: {
+        envelope: { attack: 0.003, decay: 0.74, sustain: 0.12, release: 0.74 },
+        filter: { type: "lowpass", frequency: 4800, q: 0.35 },
+        oscillators: [
+          { type: "triangle", ratio: 1, gain: 0.58, detune: 0 },
+          { type: "sine", ratio: 2, gain: 0.18, detune: 2 },
+          { type: "sine", ratio: 3, gain: 0.1, detune: -2 }
+        ]
+      },
+      oboe: {
+        envelope: { attack: 0.045, decay: 0.13, sustain: 0.76, release: 0.2 },
+        filter: { type: "bandpass", frequency: 1250, q: 2.8 },
+        vibrato: { rate: 5.2, depth: 5 },
+        oscillators: [
+          { type: "sawtooth", ratio: 1, gain: 0.46, detune: 0 },
+          { type: "square", ratio: 2, gain: 0.22, detune: 0 },
+          { type: "triangle", ratio: 3, gain: 0.1, detune: 0 }
+        ]
+      },
+      recorder: {
+        envelope: { attack: 0.035, decay: 0.1, sustain: 0.7, release: 0.22 },
+        filter: { type: "lowpass", frequency: 5200, q: 0.7 },
+        vibrato: { rate: 4.3, depth: 4 },
+        noise: { gain: 0.01, type: "highpass", frequency: 2200 },
+        oscillators: [
+          { type: "sine", ratio: 1, gain: 0.66, detune: 0 },
+          { type: "triangle", ratio: 2, gain: 0.14, detune: 0 },
+          { type: "sine", ratio: 3, gain: 0.06, detune: 0 }
+        ]
+      }
+    };
+
+    const els = {
+      appTitle: document.querySelector("#appTitle"),
+      languagePicker: document.querySelector("#languagePicker"),
+      languageSelect: document.querySelector("#languageSelect"),
+      languageFlag: document.querySelector("#languageFlag"),
+      keySystem: document.querySelector("#keySystem"),
+      lowCol: document.querySelector("#lowCol"),
+      highCol: document.querySelector("#highCol"),
+      upperRows: document.querySelector("#upperRows"),
+      lowerRows: document.querySelector("#lowerRows"),
+      labelMode: document.querySelector("#labelMode"),
+      keyShape: document.querySelector("#keyShape"),
+      scaleAssist: document.querySelector("#scaleAssist"),
+      colorPrev: document.querySelector("#colorPrev"),
+      colorNext: document.querySelector("#colorNext"),
+      colorSwatch: document.querySelector("#colorSwatch"),
+      longVibrato: document.querySelector("#longVibrato"),
+      vibratoSensitivity: document.querySelector("#vibratoSensitivity"),
+      centerView: document.querySelector("#centerView"),
+      profileRows: document.querySelector("#profileRows"),
+      scaleToggle: document.querySelector("#scaleToggle"),
+      scaleDock: document.querySelector("#scaleDock"),
+      scaleZoomOut: document.querySelector("#scaleZoomOut"),
+      scaleZoomIn: document.querySelector("#scaleZoomIn"),
+      tonicSelect: document.querySelector("#tonicSelect"),
+      scaleMode: document.querySelector("#scaleMode"),
+      staffSvg: document.querySelector("#staffSvg"),
+      keyboard: document.querySelector("#keyboard"),
+      keyboardScroll: document.querySelector("#keyboardScroll"),
+      currentNote: document.querySelector("#currentNote"),
+      noteMeta: document.querySelector("#noteMeta"),
+      vibratoPad: document.querySelector("#vibratoPad"),
+      vibratoLabel: document.querySelector("#vibratoLabel")
+    };
+
+    let audioContext;
+    let renderTimer = 0;
+    let ignoreNextClickUntil = 0;
+    let selectedCoord = { row: 1, col: 0 };
+    let activeProfileId = "main";
+    let qAnchor = { row: 1, col: 0 };
+    let manualBendCents = 0;
+    let longVibratoState = null;
+    let autoVibratoFrame = 0;
+    let staffZoom = 1;
+    const voices = new Map();
+    const codeToCoord = new Map();
+    const coordToLabels = new Map();
+    const hidSuppressedCodeUntil = new Map();
+    const pendingBrowserStarts = new Map();
+
+    function tr(key, values = {}) {
+      const dictionary = translations[currentLanguage] || translations.zh;
+      const template = dictionary[key] ?? translations.en[key] ?? translations.zh[key] ?? key;
+      return String(template).replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
+    }
+
+    function setText(selector, key, values) {
+      const element = typeof selector === "string" ? document.querySelector(selector) : selector;
+      if (element) element.textContent = tr(key, values);
+    }
+
+    function setLabel(forId, key) {
+      setText(`label[for="${forId}"]`, key);
+    }
+
+    function setOptionText(select, labels) {
+      for (const option of select.options) {
+        const key = labels[option.value];
+        if (key) option.textContent = tr(key);
+      }
+    }
+
+    function instrumentLabel(value) {
+      return tr(`instrument${value[0].toUpperCase()}${value.slice(1)}`);
+    }
+
+    function scaleModeLabel(value) {
+      return tr(value === "minor" ? "minor" : "major");
+    }
+
+    function updateLanguagePicker() {
+      const option = languageOptionByValue.get(currentLanguage) || languageOptionByValue.get("zh");
+      els.languageSelect.value = currentLanguage;
+      els.languageFlag.dataset.flag = option.flag;
+      els.languagePicker.title = `${tr("language")}: ${option.label}`;
+      els.languageSelect.setAttribute("aria-label", tr("language"));
+      els.languageSelect.title = option.label;
+    }
+
+    function populateLanguageSelect() {
+      for (const selectOption of els.languageSelect.options) {
+        const option = languageOptionByValue.get(selectOption.value);
+        if (option) selectOption.textContent = `${option.emoji} ${option.label}`;
+      }
+      els.languageSelect.value = currentLanguage;
+      updateLanguagePicker();
+    }
+
+    function applyTranslations() {
+      const meta = languageMeta[currentLanguage] || languageMeta.zh;
+      document.documentElement.lang = meta.lang;
+      document.documentElement.dir = meta.dir;
+      document.title = tr("appTitle");
+      updateLanguagePicker();
+
+      const mainProfile = mappingProfiles.find(profile => profile.id === "main");
+      if (mainProfile) {
+        mainProfile.label = tr("mainKeyboard");
+        mainProfile.short = tr("mainShort");
+      }
+
+      setText(els.appTitle, "appTitle");
+      setText(".global-section .section-heading", "globalSettings");
+      setText(".keyboard-section .section-heading", "keyboardSettings");
+      setLabel("languageSelect", "language");
+      setLabel("keySystem", "layout");
+      setLabel("keyShape", "shape");
+      setLabel("lowCol", "lowCol");
+      setLabel("highCol", "highCol");
+      setLabel("upperRows", "upperRows");
+      setLabel("lowerRows", "lowerRows");
+      setLabel("scaleAssist", "assist");
+      setLabel("labelMode", "outLabels");
+      setLabel("vibratoSensitivity", "vibratoSensitivity");
+
+      setText(".layout-row .group-label", "horizontalView");
+      setText("#centerView", "center");
+      setText(".scale-choice .group-label", "scale");
+      setText("#scaleToggle", "staff");
+      setText(".color-control .group-label", "keyColor");
+      setText("#vibratoPad span:last-child", "vibrato");
+      setText(".toggle span", "longVibrato");
+
+      setOptionText(els.keyShape, { hex: "hex", round: "round" });
+      setOptionText(els.scaleAssist, { inDark: "inDark", outDark: "outDark", allDark: "allDark", allLight: "allLight" });
+      setOptionText(els.labelMode, { dual: "dual", sharp: "sharp", flat: "flat" });
+      setOptionText(els.scaleMode, { major: "major", minor: "minor" });
+
+      els.colorPrev.setAttribute("aria-label", tr("prevC"));
+      els.colorNext.setAttribute("aria-label", tr("nextC"));
+      document.querySelector(".color-stepper")?.setAttribute("aria-label", tr("keyColor"));
+      els.scaleDock.setAttribute("aria-label", tr("staff"));
+      document.querySelector(".scale-tools")?.setAttribute("aria-label", tr("staffScale"));
+      els.scaleZoomOut.setAttribute("aria-label", tr("zoomOut"));
+      els.scaleZoomIn.setAttribute("aria-label", tr("zoomIn"));
+      els.staffSvg.setAttribute("aria-label", tr("staffAria"));
+      els.keyboard.setAttribute("aria-label", tr("keyboardAria"));
+      if (els.currentNote.textContent === "--") els.noteMeta.textContent = tr("clickAnyKey");
+      updateColorControl();
+    }
+
+    function clampNumber(value, fallback, min, max) {
+      const parsed = Number.parseInt(value, 10);
+      const safe = Number.isFinite(parsed) ? parsed : fallback;
+      return Math.min(max, Math.max(min, safe));
+    }
+
+    function mod(value, base) {
+      return ((value % base) + base) % base;
+    }
+
+    function coordKey(row, col) {
+      return `${row}:${col}`;
+    }
+
+    function sameCoord(a, b) {
+      return a.row === b.row && a.col === b.col;
+    }
+
+    function activeProfile() {
+      return mappingProfiles.find(profile => profile.id === activeProfileId) || mappingProfiles[0];
+    }
+
+    function browserProfile() {
+      return mappingProfiles.find(profile => profile.source === "browser") || mappingProfiles[0];
+    }
+
+    function syncQAnchorFromActiveProfile() {
+      qAnchor = { ...activeProfile().anchor };
+    }
+
+    function setActiveAnchor(coord) {
+      qAnchor = { row: coord.row, col: coord.col };
+      activeProfile().anchor = { ...qAnchor };
+    }
+
+    function renderMappingProfileOptions() {
+      const fragment = document.createDocumentFragment();
+
+      for (const profile of mappingProfiles) {
+        const row = document.createElement("div");
+        row.className = "profile-row";
+        if (profile.id === activeProfileId) row.classList.add("is-active");
+        row.dataset.profileId = profile.id;
+
+        const sourceText = profile.source === "hid" ? tr("sourceHid") : tr("touchComputer");
+        const nameButton = document.createElement("button");
+        nameButton.type = "button";
+        nameButton.className = profile.id === activeProfileId ? "command primary profile-name" : "command profile-name";
+        nameButton.dataset.profileAction = "activate";
+        const nameText = document.createElement("span");
+        nameText.textContent = profile.id === "main" ? tr("mainShort") : `${profile.short} · ${profile.label}`;
+        const sourceLabel = document.createElement("small");
+        sourceLabel.textContent = sourceText;
+        nameButton.append(nameText, sourceLabel);
+        row.append(nameButton);
+
+        const instrumentControl = document.createElement("div");
+        instrumentControl.className = "control";
+        const instrumentFieldLabel = document.createElement("label");
+        instrumentFieldLabel.textContent = tr("instrument");
+        const instrumentSelect = document.createElement("select");
+        instrumentSelect.dataset.profileField = "instrument";
+        for (const [value] of instrumentOptions) {
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = instrumentLabel(value);
+          option.selected = value === profile.instrument;
+          instrumentSelect.append(option);
+        }
+        instrumentControl.append(instrumentFieldLabel, instrumentSelect);
+        row.append(instrumentControl);
+
+        const shiftControl = document.createElement("div");
+        shiftControl.className = "control";
+        const shiftLabel = document.createElement("label");
+        shiftLabel.textContent = tr("outputShift");
+        const shiftInput = document.createElement("input");
+        shiftInput.type = "number";
+        shiftInput.min = "-24";
+        shiftInput.max = "24";
+        shiftInput.step = "1";
+        shiftInput.value = profile.outputShift || 0;
+        shiftInput.dataset.profileField = "outputShift";
+        shiftControl.append(shiftLabel, shiftInput);
+        row.append(shiftControl);
+
+        const qGroup = document.createElement("div");
+        qGroup.className = "button-group two";
+        const bindButton = document.createElement("button");
+        bindButton.type = "button";
+        bindButton.className = "command primary";
+        bindButton.dataset.profileAction = "bindQ";
+        bindButton.textContent = tr("setQ");
+        const resetButton = document.createElement("button");
+        resetButton.type = "button";
+        resetButton.className = "command";
+        resetButton.dataset.profileAction = "resetQ";
+        resetButton.textContent = tr("reset");
+        qGroup.append(bindButton, resetButton);
+        row.append(qGroup);
+
+        const rowActionButton = document.createElement("button");
+        rowActionButton.type = "button";
+        rowActionButton.className = profile.id === "main" ? "command primary" : "command";
+        rowActionButton.dataset.profileAction = profile.id === "main" ? "addHid" : "remove";
+        rowActionButton.textContent = profile.id === "main" ? tr("addHid") : tr("delete");
+        row.append(rowActionButton);
+
+        fragment.append(row);
+      }
+
+      els.profileRows.replaceChildren(fragment);
+    }
+
+    function syncProfileControls() {
+      // Profile controls are rendered row-by-row in renderMappingProfileOptions().
+    }
+
+    function setReadout(note, meta) {
+      els.currentNote.textContent = note;
+      els.noteMeta.textContent = meta;
+    }
+
+    function releaseControlFocus(event) {
+      const target = event?.currentTarget || document.activeElement;
+      requestAnimationFrame(() => target?.blur?.());
+    }
+
+    function clearFocusedControl(event) {
+      const active = document.activeElement;
+      if (!active || active === document.body) return;
+      if (event.target.closest("input, select, textarea")) return;
+      if (active.matches?.("input, select, textarea")) active.blur();
+    }
+
+    function primeAudioFromGesture(event) {
+      if (event?.target.closest('[data-profile-action="addHid"]')) return;
+      try {
+        ensureAudio();
+      } catch (error) {
+        setReadout(tr("audioLabel"), tr("audioError"));
+      }
+    }
+
+    function namesForMode() {
+      if (els.labelMode.value === "sharp") return sharpNames;
+      if (els.labelMode.value === "flat") return flatNames;
+      return dualNames;
+    }
+
+    function hueForPitchClass(pc) {
+      const fifthIndex = FIFTH_INDEX.get(mod(pc, 12)) ?? 0;
+      return mod(5 + mod(fifthIndex + cColorIndex, 12) * 30, 360);
+    }
+
+    const supportsOklch = Boolean(globalThis.CSS?.supports?.("color", "oklch(60% 0.1 30)"));
+
+    function toneCss(hue, lightness, chroma, fallbackSaturation, fallbackLightness) {
+      return supportsOklch
+        ? `oklch(${lightness}% ${chroma} ${hue})`
+        : `hsl(${hue} ${fallbackSaturation}% ${fallbackLightness}%)`;
+    }
+
+    function updateColorControl() {
+      const hue = hueForPitchClass(0);
+      els.colorSwatch.style.setProperty("--swatch-hue", String(hue));
+      els.colorSwatch.title = tr("cColorTitle", { index: cColorIndex + 1 });
+    }
+
+    function midiToInfo(midi) {
+      const pc = mod(midi, 12);
+      const octave = Math.floor(midi / 12) - 1;
+      const label = namesForMode()[pc];
+      const hz = 440 * Math.pow(2, (midi - 69) / 12);
+      const fifthIndex = FIFTH_INDEX.get(pc) ?? 0;
+      const hue = hueForPitchClass(pc);
+      return { pc, octave, label, hz, fifthIndex, hue };
+    }
+
+    function escapeSvg(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function accidentalText(offset) {
+      if (offset === 0) return "";
+      if (offset === 2) return "x";
+      if (offset === -2) return "bb";
+      if (offset > 0) return "#".repeat(offset);
+      return "b".repeat(Math.abs(offset));
+    }
+
+    function noteNameFromSpelling(spelling, withOctave = false) {
+      const octave = withOctave && Number.isFinite(spelling.octave) ? String(spelling.octave) : "";
+      return `${spelling.letter}${accidentalText(spelling.accidental)}${octave}`;
+    }
+
+    function populateTonicSelect() {
+      const fragment = document.createDocumentFragment();
+
+      for (const letter of noteLetters) {
+        for (const accidental of accidentalChoices) {
+          const value = `${letter}:${accidental.offset}`;
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = `${letter}${accidental.suffix}`;
+          if (value === "C:0") option.selected = true;
+          fragment.append(option);
+        }
+      }
+
+      els.tonicSelect.replaceChildren(fragment);
+    }
+
+    function selectedTonic() {
+      const [letter, accidentalValue] = els.tonicSelect.value.split(":");
+      const accidental = Number(accidentalValue);
+      const pc = mod(naturalPitchClasses[letter] + accidental, 12);
+      return { letter, accidental, pc };
+    }
+
+    function nearestAccidental(targetPc, naturalPc) {
+      let diff = mod(targetPc - naturalPc, 12);
+      if (diff > 6) diff -= 12;
+      return diff;
+    }
+
+    function scaleSpellings() {
+      const tonic = selectedTonic();
+      const mode = scaleModes[els.scaleMode.value] || scaleModes.major;
+      const tonicLetterIndex = noteLetters.indexOf(tonic.letter);
+
+      return mode.intervals.map((interval, degree) => {
+        const letter = noteLetters[(tonicLetterIndex + degree) % noteLetters.length];
+        const pc = mod(tonic.pc + interval, 12);
+        const accidental = nearestAccidental(pc, naturalPitchClasses[letter]);
+        return { letter, accidental, pc, degree };
+      });
+    }
+
+    function activeScaleSpellingByPc() {
+      return new Map(scaleSpellings().map(spelling => [spelling.pc, spelling]));
+    }
+
+    function shouldUseDarkKey(display) {
+      switch (els.scaleAssist.value) {
+        case "outDark":
+          return !display.inScale;
+        case "allDark":
+          return true;
+        case "allLight":
+          return false;
+        case "inDark":
+        default:
+          return display.inScale;
+      }
+    }
+
+    function displayNoteForMidi(midi, info, spellingByPc) {
+      const spelling = spellingByPc?.get(info.pc);
+      if (!spelling) {
+        return {
+          note: info.label,
+          octave: info.octave,
+          label: `${info.label}${info.octave}`,
+          inScale: false
+        };
+      }
+
+      const octave = octaveForSpelling(midi, spelling);
+      const note = noteNameFromSpelling(spelling);
+      return {
+        note,
+        octave,
+        label: `${note}${octave}`,
+        inScale: true
+      };
+    }
+
+    function sharpSvg(x, y, size = 18) {
+      const s = size / 18;
+      return `<g transform="translate(${x} ${y}) scale(${s})" stroke="#17191f" stroke-width="1.65" stroke-linecap="round">
+        <line x1="-4" y1="-10" x2="-4" y2="10"/>
+        <line x1="4" y1="-11" x2="4" y2="9"/>
+        <line x1="-9" y1="-3" x2="9" y2="-6"/>
+        <line x1="-9" y1="5" x2="9" y2="2"/>
+      </g>`;
+    }
+
+    function flatSvg(x, y, size = 18) {
+      const s = size / 18;
+      return `<g transform="translate(${x} ${y}) scale(${s})" fill="none" stroke="#17191f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M -4 -12 V 10 C 7 6 9 -3 2 -5 C -2 -6 -4 -3 -4 2"/>
+      </g>`;
+    }
+
+    function doubleSharpSvg(x, y, size = 18) {
+      const s = size / 18;
+      return `<g transform="translate(${x} ${y}) scale(${s})" stroke="#17191f" stroke-width="1.8" stroke-linecap="round">
+        <line x1="-7" y1="-7" x2="7" y2="7"/>
+        <line x1="7" y1="-7" x2="-7" y2="7"/>
+        <line x1="-9" y1="-2" x2="-4" y2="-7"/>
+        <line x1="4" y1="7" x2="9" y2="2"/>
+        <line x1="-9" y1="2" x2="-4" y2="7"/>
+        <line x1="4" y1="-7" x2="9" y2="-2"/>
+      </g>`;
+    }
+
+    function accidentalSvg(accidental, x, y, size = 18) {
+      if (accidental === 0) return "";
+      if (accidental === 2) return doubleSharpSvg(x, y, size);
+      if (accidental > 0) {
+        const gap = size * 0.42;
+        const start = -((accidental - 1) * gap) / 2;
+        return Array.from({ length: accidental }, (_, index) => sharpSvg(x + start + index * gap, y, size)).join("");
+      }
+
+      const count = Math.abs(accidental);
+      const gap = size * 0.42;
+      const start = -((count - 1) * gap) / 2;
+      return Array.from({ length: count }, (_, index) => flatSvg(x + start + index * gap, y, size)).join("");
+    }
+
+    function musicSymbolSvg(entity, x, y, size) {
+      return `<text class="music-symbol" x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" fill="#17191f" font-size="${size}">${entity}</text>`;
+    }
+
+    function trebleClefSvg(x, y, scale = 1) {
+      return musicSymbolSvg("&#x1D11E;", x, y, 58 * scale);
+    }
+
+    function bassClefSvg(x, y, scale = 1) {
+      return musicSymbolSvg("&#x1D122;", x, y, 48 * scale);
+    }
+
+    function keySignatureItems(spellings) {
+      const accidentalByLetter = new Map(
+        spellings
+          .filter(spelling => spelling.accidental !== 0)
+          .map(spelling => [spelling.letter, spelling.accidental])
+      );
+
+      if (accidentalByLetter.size === 0) return [];
+
+      const values = [...accidentalByLetter.values()];
+      const direction = values.every(value => value > 0) ? "sharp" : values.every(value => value < 0) ? "flat" : "sharp";
+      const order = direction === "sharp" ? signatureOrders.sharp : signatureOrders.flat;
+
+      return order
+        .filter(letter => accidentalByLetter.has(letter))
+        .map(letter => ({
+          letter,
+          accidental: accidentalByLetter.get(letter),
+          direction
+        }));
+    }
+
+    function octaveForSpelling(midi, spelling) {
+      const raw = (midi - spelling.accidental - naturalPitchClasses[spelling.letter]) / 12 - 1;
+      return Math.round(raw);
+    }
+
+    function diatonicIndex(letter, octave) {
+      return octave * 7 + noteLetters.indexOf(letter);
+    }
+
+    function qMappedEntries(profile = activeProfile()) {
+      const grouped = new Map();
+
+      for (const rowDef of hardwareRows) {
+        for (let index = 0; index < rowDef.codes.length; index += 1) {
+          const coord = {
+            row: profile.anchor.row + rowDef.rowDelta,
+            col: profile.anchor.col + index
+          };
+          const midi = buttonMidi(coord.row, coord.col);
+          const key = String(midi);
+          const existing = grouped.get(key) || {
+            midi,
+            labels: [],
+            coords: []
+          };
+
+          existing.labels.push(rowDef.labels[index]);
+          existing.coords.push(coord);
+          grouped.set(key, existing);
+        }
+      }
+
+      return [...grouped.values()].sort((a, b) => a.midi - b.midi);
+    }
+
+    function applyStaffZoom(baseWidth = Number(els.staffSvg.dataset.baseWidth), baseHeight = Number(els.staffSvg.dataset.baseHeight)) {
+      if (!Number.isFinite(baseWidth) || !Number.isFinite(baseHeight) || baseWidth <= 0 || baseHeight <= 0) return;
+      els.staffSvg.style.width = `${Math.round(baseWidth * staffZoom)}px`;
+      els.staffSvg.style.height = `${Math.round(baseHeight * staffZoom)}px`;
+    }
+
+    function setStaffSvgFrame(width, height) {
+      els.staffSvg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      els.staffSvg.dataset.baseWidth = String(width);
+      els.staffSvg.dataset.baseHeight = String(height);
+      applyStaffZoom(width, height);
+    }
+
+    function changeStaffZoom(delta) {
+      staffZoom = Math.max(0.5, Math.min(2.4, Math.round((staffZoom + delta) * 100) / 100));
+      applyStaffZoom();
+    }
+
+    function renderScaleStaff() {
+      if (!els.scaleDock.classList.contains("is-open")) return;
+
+      const spellings = scaleSpellings();
+      const spellingByPc = new Map(spellings.map(spelling => [spelling.pc, spelling]));
+      const tonic = selectedTonic();
+      const scaleName = `${noteNameFromSpelling(tonic)} ${scaleModeLabel(els.scaleMode.value)}`;
+      const signatureItems = keySignatureItems(spellings);
+      const panels = mappingProfiles.map(profile => {
+        const entries = qMappedEntries(profile);
+        const scaleEntries = entries
+          .filter(entry => spellingByPc.has(mod(entry.midi, 12)))
+          .map(entry => {
+            const spelling = spellingByPc.get(mod(entry.midi, 12));
+            const octave = octaveForSpelling(entry.midi, spelling);
+            const step = diatonicIndex(spelling.letter, octave) - diatonicIndex("E", 4);
+            return {
+              ...entry,
+              spelling: { ...spelling, octave },
+              step
+            };
+          });
+
+        const groupedEntries = new Map();
+
+        for (const entry of scaleEntries) {
+          const key = `${entry.step}:${entry.midi}`;
+          const existing = groupedEntries.get(key);
+          if (existing) {
+            existing.labels.push(...entry.labels);
+          } else {
+            groupedEntries.set(key, { ...entry, labels: [...entry.labels] });
+          }
+        }
+
+        return {
+          profile,
+          entries,
+          scaleEntries,
+          displayEntries: [...groupedEntries.values()].sort((a, b) => b.step - a.step)
+        };
+      });
+      const allDisplayEntries = panels.flatMap(panel => panel.displayEntries);
+      const totalScaleEntries = panels.reduce((sum, panel) => sum + panel.scaleEntries.length, 0);
+
+      if (totalScaleEntries === 0) {
+        setStaffSvgFrame(420, 92);
+        els.staffSvg.innerHTML = `<rect x="0" y="0" width="420" height="92" fill="#fbfcff"/><text x="210" y="49" text-anchor="middle" fill="#5c6270" font-size="13">${escapeSvg(tr("noScaleEntries", { scale: scaleName }))}</text>`;
+        return;
+      }
+
+      const staffStep = 9;
+      const clefX = 24;
+      const signatureStartX = 56;
+      const signatureGap = signatureItems.some(item => Math.abs(item.accidental) > 1) ? 19 : 12;
+      const signatureWidth = signatureItems.length ? (signatureItems.length - 1) * signatureGap + 24 : 0;
+      const lineColumnX = 104 + signatureWidth;
+      const spaceColumnX = lineColumnX + 88;
+      const panelGap = 8;
+      const rightPad = 10;
+      const panelWidth = spaceColumnX + 84 + rightPad;
+      const width = panels.length * panelWidth + (panels.length - 1) * panelGap;
+      const staffLeft = 34;
+      const staffRight = panelWidth - 18;
+      const maxStep = Math.max(10, ...allDisplayEntries.map(entry => entry.step)) + 1;
+      const minStep = Math.min(-14, ...allDisplayEntries.map(entry => entry.step)) - 1;
+      const topPad = 28;
+      const bottomPad = 18;
+      const height = topPad + (maxStep - minStep) * staffStep + bottomPad;
+      const yForStep = step => topPad + (maxStep - step) * staffStep;
+      const trebleLines = [0, 2, 4, 6, 8];
+      const bassLines = [-12, -10, -8, -6, -4];
+      const allStaffLines = [...trebleLines, ...bassLines];
+
+      const ledgerLines = entry => {
+        const lines = [];
+        if (entry.step > 8) {
+          for (let step = 10; step <= entry.step; step += 2) lines.push(step);
+        } else if (entry.step < -12) {
+          for (let step = -14; step >= entry.step; step -= 2) lines.push(step);
+        } else if (entry.step > -4 && entry.step < 0 && entry.step % 2 === 0) {
+          lines.push(entry.step);
+        }
+        return lines;
+      };
+
+      let svg = `<rect x="0" y="0" width="${width}" height="${height}" fill="#fbfcff"/>`;
+      panels.forEach((panel, panelIndex) => {
+        const offsetX = panelIndex * (panelWidth + panelGap);
+        svg += `<g transform="translate(${offsetX} 0)">`;
+        svg += `<rect x="0" y="0" width="${panelWidth}" height="${height}" fill="${panelIndex % 2 ? "#f6f8fb" : "#fbfcff"}" stroke="#d8dde8"/>`;
+        svg += `<text x="10" y="17" fill="#17191f" font-size="11" font-weight="800">${escapeSvg(panel.profile.label)}</text>`;
+        svg += `<text x="${panelWidth - 10}" y="17" text-anchor="end" fill="#5c6270" font-size="10">${escapeSvg(scaleName)}</text>`;
+
+        for (const step of allStaffLines) {
+          const y = yForStep(step);
+          svg += `<line x1="${staffLeft}" y1="${y}" x2="${staffRight}" y2="${y}" stroke="#17191f" stroke-width="1.15"/>`;
+        }
+
+        svg += `<line x1="${staffLeft}" y1="${yForStep(8)}" x2="${staffLeft}" y2="${yForStep(0)}" stroke="#17191f" stroke-width="1.2"/>`;
+        svg += `<line x1="${staffLeft}" y1="${yForStep(-4)}" x2="${staffLeft}" y2="${yForStep(-12)}" stroke="#17191f" stroke-width="1.2"/>`;
+        svg += trebleClefSvg(clefX, yForStep(4), 0.72);
+        svg += bassClefSvg(clefX + 2, yForStep(-8), 0.72);
+
+        signatureItems.forEach((item, index) => {
+          const x = signatureStartX + index * signatureGap;
+          const positionKind = item.accidental > 0 ? "sharp" : "flat";
+          const trebleY = yForStep(signatureSteps[positionKind].treble[item.letter]);
+          const bassY = yForStep(signatureSteps[positionKind].bass[item.letter]);
+          svg += accidentalSvg(item.accidental, x, trebleY, 17);
+          svg += accidentalSvg(item.accidental, x, bassY, 17);
+        });
+
+        panel.displayEntries.forEach(entry => {
+          const isLineTone = mod(entry.step, 2) === 0;
+          const x = isLineTone ? lineColumnX : spaceColumnX;
+          const y = yForStep(entry.step);
+          const keyLabel = [...new Set(entry.labels)].join("/");
+          const toneHue = midiToInfo(entry.midi).hue;
+          const markerWidth = Math.max(26, keyLabel.length * 7 + 12);
+          const markerHeight = 20;
+          const markerX = x - markerWidth / 2;
+          const markerY = y - markerHeight / 2;
+          const markerFill = toneCss(toneHue, 92, 0.035, 76, 94);
+          const markerStroke = toneCss(toneHue, 55, 0.09, 58, 46);
+
+          for (const step of ledgerLines(entry)) {
+            const ledgerY = yForStep(step);
+            svg += `<line x1="${x - markerWidth / 2 - 4}" y1="${ledgerY}" x2="${x + markerWidth / 2 + 4}" y2="${ledgerY}" stroke="#17191f" stroke-width="1.05"/>`;
+          }
+
+          svg += `<rect x="${markerX}" y="${markerY}" width="${markerWidth}" height="${markerHeight}" rx="${markerHeight / 2}" fill="${markerFill}" stroke="${markerStroke}" stroke-width="1.8"/>`;
+          svg += `<text x="${x}" y="${y + 4.6}" text-anchor="middle" fill="#17191f" font-size="13" font-weight="900">${escapeSvg(keyLabel)}</text>`;
+        });
+
+        svg += `</g>`;
+      });
+
+      setStaffSvgFrame(width, height);
+      els.staffSvg.innerHTML = svg;
+    }
+
+    function currentSystem() {
+      return keyboardSystems[els.keySystem.value] || keyboardSystems.b;
+    }
+
+    function rowIndentForSystem(system, row, firstRow, lastRow) {
+      return system.indent === "down-left" ? lastRow - row : row - firstRow;
+    }
+
+    function displayRangeForRow(row, low, high) {
+      const offsetFromSecondRow = row - 1;
+      if (offsetFromSecondRow < 0) {
+        const steps = Math.abs(offsetFromSecondRow);
+        return {
+          low: low + Math.floor(steps / 2),
+          high: high + Math.ceil(steps / 2)
+        };
+      }
+
+      return {
+        low: low - Math.ceil(offsetFromSecondRow / 2),
+        high: high - Math.floor(offsetFromSecondRow / 2)
+      };
+    }
+
+    function buttonMidi(row, col) {
+      const system = currentSystem();
+      const baseOctave = 5;
+      const rowOffset = system.rowOffset ? system.rowOffset(row) : system.rowStep * row;
+      return (baseOctave + 1) * 12 + system.baseOffset + rowOffset + system.colStep * col;
+    }
+
+    function rowName(row) {
+      if (row >= 0 && row < ROW_COUNT) return tr("row", { n: row + 1 });
+      if (row < 0) return tr("upperRow", { n: Math.abs(row) });
+      return tr("lowerRow", { n: row - ROW_COUNT + 1 });
+    }
+
+    function sanitizeRange() {
+      let low = clampNumber(els.lowCol.value, -5, -240, 240);
+      let high = clampNumber(els.highCol.value, 18, -240, 240);
+      const upper = clampNumber(els.upperRows.value, 2, 0, 18);
+      const lower = clampNumber(els.lowerRows.value, 2, 0, 18);
+
+      if (low > high) [low, high] = [high, low];
+      if (high - low > 180) high = low + 180;
+
+      els.lowCol.value = low;
+      els.highCol.value = high;
+      els.upperRows.value = upper;
+      els.lowerRows.value = lower;
+
+      return { low, high, upper, lower };
+    }
+
+    function includeCoord(coord) {
+      let low = clampNumber(els.lowCol.value, -5, -240, 240);
+      let high = clampNumber(els.highCol.value, 18, -240, 240);
+      let upper = clampNumber(els.upperRows.value, 2, 0, 18);
+      let lower = clampNumber(els.lowerRows.value, 2, 0, 18);
+
+      low = Math.min(low, coord.col);
+      high = Math.max(high, coord.col);
+      if (coord.row < 0) upper = Math.max(upper, Math.abs(coord.row));
+      if (coord.row >= ROW_COUNT) lower = Math.max(lower, coord.row - ROW_COUNT + 1);
+
+      els.lowCol.value = low;
+      els.highCol.value = high;
+      els.upperRows.value = Math.min(18, upper);
+      els.lowerRows.value = Math.min(18, lower);
+    }
+
+    function includeProfileHardwareRange(profile = activeProfile()) {
+      for (const rowDef of hardwareRows) {
+        for (let index = 0; index < rowDef.codes.length; index += 1) {
+          includeCoord({
+            row: profile.anchor.row + rowDef.rowDelta,
+            col: profile.anchor.col + index
+          });
+        }
+      }
+    }
+
+    function buildHardwareMap() {
+      codeToCoord.clear();
+      coordToLabels.clear();
+
+      for (const rowDef of hardwareRows) {
+        for (let index = 0; index < rowDef.codes.length; index += 1) {
+          const coord = {
+            row: qAnchor.row + rowDef.rowDelta,
+            col: qAnchor.col + index
+          };
+          const key = coordKey(coord.row, coord.col);
+          const labels = coordToLabels.get(key) || [];
+          labels.push(rowDef.labels[index]);
+          coordToLabels.set(key, labels);
+          codeToCoord.set(rowDef.codes[index], coord);
+        }
+      }
+    }
+
+    function findButton(row, col) {
+      return els.keyboard.querySelector(`.key[data-row="${row}"][data-col="${col}"]`);
+    }
+
+    function sourceFromCoord(row, col) {
+      const button = findButton(row, col);
+      if (button) return button;
+
+      const midi = buttonMidi(row, col);
+      const info = midiToInfo(midi);
+      const display = displayNoteForMidi(midi, info, activeScaleSpellingByPc());
+      return {
+        dataset: {
+          row: String(row),
+          col: String(col),
+          midi: String(midi),
+          label: display.label,
+          hz: info.hz.toFixed(2)
+        },
+        classList: {
+          add() {},
+          remove() {}
+        }
+      };
+    }
+
+    function coordForProfileCode(profile, code) {
+      const position = codeToHardwarePosition.get(code);
+      if (!position) return null;
+      return {
+        row: profile.anchor.row + position.rowDelta,
+        col: profile.anchor.col + position.index
+      };
+    }
+
+    function voicePrefixForProfileCode(profile, code) {
+      return `${profile.source}-${profile.id}-${code}`;
+    }
+
+    function cancelPendingBrowserCode(code) {
+      const pending = pendingBrowserStarts.get(code);
+      if (!pending) return;
+      window.clearTimeout(pending.timer);
+      pendingBrowserStarts.delete(code);
+    }
+
+    function scheduleBrowserCodeStart(code, profile, coord) {
+      cancelPendingBrowserCode(code);
+      const timer = window.setTimeout(() => {
+        pendingBrowserStarts.delete(code);
+        if (shouldSuppressBrowserCode(code)) return;
+        const source = sourceFromCoord(coord.row, coord.col);
+        startVoice(source, `computer-${profile.id}-${code}`, 0, profile);
+      }, 22);
+      pendingBrowserStarts.set(code, { timer, profileId: profile.id });
+    }
+
+    function pressedCodesFromHidReport(dataView) {
+      const bytes = Array.from({ length: dataView.byteLength }, (_, index) => dataView.getUint8(index));
+      const bootUsages = bytes.length >= 8 ? bytes.slice(2, 8) : bytes;
+      let codes = bootUsages
+        .filter(usage => usage > 0)
+        .map(usage => hidUsageToCode.get(usage))
+        .filter(Boolean);
+
+      if (codes.length === 0 && bytes.length > 8) {
+        codes = bytes
+          .filter(usage => usage > 0)
+          .map(usage => hidUsageToCode.get(usage))
+          .filter(Boolean);
+      }
+
+      if (codes.length === 0 && bytes.length > 1) {
+        const bitmapCodes = [];
+        for (let byteIndex = 0; byteIndex < bytes.length; byteIndex += 1) {
+          for (let bit = 0; bit < 8; bit += 1) {
+            if ((bytes[byteIndex] & (1 << bit)) === 0) continue;
+            const usage = byteIndex * 8 + bit;
+            const code = hidUsageToCode.get(usage);
+            if (code) bitmapCodes.push(code);
+          }
+        }
+        codes = bitmapCodes;
+      }
+
+      return new Set(codes);
+    }
+
+    function suppressBrowserCodeOnce(code) {
+      cancelPendingBrowserCode(code);
+      hidSuppressedCodeUntil.set(code, performance.now() + 180);
+      const profile = browserProfile();
+      stopVoiceByPrefix(`computer-${profile.id}-${code}`);
+    }
+
+    function shouldSuppressBrowserCode(code) {
+      const until = hidSuppressedCodeUntil.get(code) || 0;
+      if (until <= performance.now()) {
+        hidSuppressedCodeUntil.delete(code);
+        return false;
+      }
+      return true;
+    }
+
+    function handleProfileCodeDown(profile, code) {
+      const coord = coordForProfileCode(profile, code);
+      if (!coord) return;
+      suppressBrowserCodeOnce(code);
+      const source = sourceFromCoord(coord.row, coord.col);
+      startVoice(source, voicePrefixForProfileCode(profile, code), 0, profile);
+    }
+
+    function handleProfileCodeUp(profile, code) {
+      suppressBrowserCodeOnce(code);
+      stopVoiceByPrefix(voicePrefixForProfileCode(profile, code));
+    }
+
+    function releaseProfilePressedCodes(profile) {
+      for (const code of profile.pressedCodes || []) {
+        stopVoiceByPrefix(voicePrefixForProfileCode(profile, code));
+      }
+      profile.pressedCodes = new Set();
+    }
+
+    function handleHidInputReport(profile, event) {
+      const nextCodes = pressedCodesFromHidReport(event.data);
+      const previousCodes = profile.pressedCodes || new Set();
+
+      for (const code of nextCodes) {
+        if (!previousCodes.has(code)) handleProfileCodeDown(profile, code);
+      }
+
+      for (const code of previousCodes) {
+        if (!nextCodes.has(code)) handleProfileCodeUp(profile, code);
+      }
+
+      profile.pressedCodes = nextCodes;
+    }
+
+    function activateProfile(profile, { viewAnchor = null, keepScroll = true } = {}) {
+      activeProfileId = profile.id;
+      syncQAnchorFromActiveProfile();
+      selectedCoord = { ...qAnchor };
+      includeProfileHardwareRange(profile);
+      renderMappingProfileOptions();
+      syncProfileControls();
+      renderKeyboard({ viewAnchor, keepScroll });
+      updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
+    }
+
+    async function requestHidDevice() {
+      const attempts = [
+        { filters: [] },
+        { filters: [{ usagePage: 0x01, usage: 0x06 }] }
+      ];
+      let lastError = null;
+
+      for (const options of attempts) {
+        try {
+          const devices = await navigator.hid.requestDevice(options);
+          return devices[0] || null;
+        } catch (error) {
+          lastError = error;
+          if (error.name !== "TypeError") throw error;
+        }
+      }
+
+      throw lastError;
+    }
+
+    async function addHidKeyboard() {
+      if (!("hid" in navigator)) {
+        setReadout("HID", tr("hidUnsupported"));
+        return;
+      }
+
+      try {
+        const device = await requestHidDevice();
+        if (!device) {
+          setReadout("HID", tr("hidNoDevice"));
+          return;
+        }
+
+        const existing = mappingProfiles.find(profile => profile.device === device);
+        if (existing) {
+          if (!device.opened) await device.open();
+          activateProfile(existing);
+          return;
+        }
+
+        if (!device.opened) await device.open();
+
+        const hidIndex = mappingProfiles.filter(profile => profile.source === "hid").length + 1;
+        const profile = {
+          id: `hid-${Date.now()}-${hidIndex}`,
+          label: device.productName || tr("hidKeyboardName", { index: hidIndex }),
+          short: `H${hidIndex}`,
+          anchor: { row: 1, col: 0 },
+          instrument: activeProfile().instrument || "accordion",
+          outputShift: 0,
+          source: "hid",
+          device,
+          pressedCodes: new Set()
+        };
+
+        profile.reportHandler = event => handleHidInputReport(profile, event);
+        device.addEventListener("inputreport", profile.reportHandler);
+        mappingProfiles.push(profile);
+        activateProfile(profile);
+      } catch (error) {
+        const message = error.name === "NotAllowedError"
+          ? tr("hidAddBlocked")
+          : tr("hidAddFailed", { message: error.message || error });
+        setReadout("HID", message);
+      }
+    }
+
+    async function removeActiveKeyboard(profile = activeProfile()) {
+      if (profile.id === "main") {
+        setReadout(tr("mainKeyboard"), tr("mainCannotDelete"));
+        return;
+      }
+
+      releaseProfilePressedCodes(profile);
+
+      if (profile.device && profile.reportHandler) {
+        profile.device.removeEventListener("inputreport", profile.reportHandler);
+      }
+
+      const wasActive = profile.id === activeProfileId;
+      mappingProfiles = mappingProfiles.filter(item => item.id !== profile.id);
+      if (wasActive) activeProfileId = "main";
+      syncQAnchorFromActiveProfile();
+      selectedCoord = { ...qAnchor };
+      renderMappingProfileOptions();
+      syncProfileControls();
+      includeProfileHardwareRange();
+      renderKeyboard();
+      renderScaleStaff();
+      updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
+
+      if (profile.device?.opened) {
+        try {
+          await profile.device.close();
+        } catch (error) {
+          // The OS/browser may already have closed a disconnected HID device.
+        }
+      }
+    }
+
+    function updateReadoutForCoord(prefix, row, col) {
+      const source = sourceFromCoord(row, col);
+      const bend = manualBendCents ? ` · ${manualBendCents > 0 ? "+" : ""}${manualBendCents}c` : "";
+      const profile = activeProfile();
+      const shift = profile.outputShift ? ` · ${tr("outputPrefix")}${profile.outputShift > 0 ? "+" : ""}${profile.outputShift}` : "";
+      els.currentNote.textContent = source.dataset.label;
+      els.noteMeta.textContent = `${prefix} · ${source.dataset.hz} Hz · MIDI ${source.dataset.midi}${shift}${bend}`;
+    }
+
+    function selectButton(target) {
+      selectedCoord = {
+        row: Number(target.dataset.row),
+        col: Number(target.dataset.col)
+      };
+
+      els.keyboard.querySelectorAll(".is-selected").forEach(key => key.classList.remove("is-selected"));
+      target.classList.add("is-selected");
+    }
+
+    function updateAnchorState() {
+      els.keyboard.querySelectorAll(".is-q-anchor").forEach(key => key.classList.remove("is-q-anchor"));
+      const qButton = findButton(qAnchor.row, qAnchor.col);
+      if (qButton) qButton.classList.add("is-q-anchor");
+    }
+
+    function captureViewAnchor() {
+      const candidate =
+        findButton(selectedCoord.row, selectedCoord.col) ||
+        findButton(qAnchor.row, qAnchor.col) ||
+        els.keyboard.querySelector(".key");
+
+      if (!candidate) return null;
+      const keyRect = candidate.getBoundingClientRect();
+      const scrollRect = els.keyboardScroll.getBoundingClientRect();
+
+      return {
+        row: Number(candidate.dataset.row),
+        col: Number(candidate.dataset.col),
+        x: keyRect.left - scrollRect.left,
+        y: keyRect.top - scrollRect.top
+      };
+    }
+
+    function restoreViewAnchor(anchor) {
+      if (!anchor) return;
+      const candidate = findButton(anchor.row, anchor.col);
+      if (!candidate) return;
+
+      const keyRect = candidate.getBoundingClientRect();
+      const scrollRect = els.keyboardScroll.getBoundingClientRect();
+      els.keyboardScroll.scrollLeft += keyRect.left - scrollRect.left - anchor.x;
+      els.keyboardScroll.scrollTop += keyRect.top - scrollRect.top - anchor.y;
+    }
+
+    function renderKeyboard({ keepScroll = true, viewAnchor = null } = {}) {
+      stopAllVoices();
+      buildHardwareMap();
+      const keyShape = els.keyShape.value === "round" ? "round" : "hex";
+      els.keyboard.classList.toggle("shape-hex", keyShape === "hex");
+      els.keyboard.classList.toggle("shape-round", keyShape === "round");
+
+      const previousLeft = els.keyboardScroll.scrollLeft;
+      const previousTop = els.keyboardScroll.scrollTop;
+      const { low, high, upper, lower } = sanitizeRange();
+      const fragment = document.createDocumentFragment();
+      const firstRow = -upper;
+      const lastRow = ROW_COUNT - 1 + lower;
+      const system = currentSystem();
+      const spellingByPc = activeScaleSpellingByPc();
+
+      for (let row = firstRow; row <= lastRow; row += 1) {
+        const rowEl = document.createElement("div");
+        rowEl.className = "button-row";
+
+        const rowLabel = document.createElement("span");
+        rowLabel.className = "row-label";
+        rowLabel.textContent = rowName(row);
+        rowEl.append(rowLabel);
+
+        const rowKeys = document.createElement("div");
+        rowKeys.className = "row-keys";
+        const rowIndex = rowIndentForSystem(system, row, firstRow, lastRow);
+        rowKeys.style.setProperty("--indent", rowIndex);
+        const rowRange = displayRangeForRow(row, low, high);
+        rowKeys.style.setProperty("--range-offset", rowRange.low - low);
+
+        for (let col = rowRange.low; col <= rowRange.high; col += 1) {
+          const midi = buttonMidi(row, col);
+          const info = midiToInfo(midi);
+          const display = displayNoteForMidi(midi, info, spellingByPc);
+          const key = document.createElement("button");
+          const hardwareLabels = coordToLabels.get(coordKey(row, col));
+
+          key.type = "button";
+          key.className = "key";
+          if (spellingByPc) {
+            key.classList.add(display.inScale ? "is-scale-tone" : "is-out-scale");
+            if (shouldUseDarkKey(display)) key.classList.add("is-dark-tone");
+          }
+          key.style.setProperty("--hue", String(info.hue));
+          key.dataset.midi = String(midi);
+          key.dataset.label = display.label;
+          key.dataset.hz = info.hz.toFixed(2);
+          key.dataset.col = String(col);
+          key.dataset.row = String(row);
+          key.title = `${display.label} · ${info.hz.toFixed(2)} Hz · MIDI ${midi} · ${tr("circleTitle", { index: info.fifthIndex + 1 })}`;
+          key.setAttribute("aria-label", key.title);
+          key.innerHTML = `<span class="note">${display.note}</span><span class="octave">${display.octave}</span>`;
+
+          if (hardwareLabels) {
+            const map = document.createElement("span");
+            map.className = "key-map";
+            map.textContent = hardwareLabels.join("/");
+            key.append(map);
+          }
+
+          if (sameCoord(selectedCoord, { row, col })) key.classList.add("is-selected");
+          rowKeys.append(key);
+        }
+
+        rowEl.append(rowKeys);
+        fragment.append(rowEl);
+      }
+
+      els.keyboard.replaceChildren(fragment);
+      updateAnchorState();
+      renderScaleStaff();
+
+      requestAnimationFrame(() => {
+        if (viewAnchor) {
+          restoreViewAnchor(viewAnchor);
+        } else if (keepScroll) {
+          els.keyboardScroll.scrollLeft = previousLeft;
+          els.keyboardScroll.scrollTop = previousTop;
+        } else {
+          centerKeyboard();
+        }
+      });
+    }
+
+    function scheduleRender() {
+      window.clearTimeout(renderTimer);
+      const viewAnchor = captureViewAnchor();
+      renderTimer = window.setTimeout(() => renderKeyboard({ viewAnchor }), 50);
+    }
+
+    function shiftKeyboardColor(step) {
+      cColorIndex = mod(cColorIndex + step, 12);
+      const viewAnchor = captureViewAnchor();
+      updateColorControl();
+      renderKeyboard({ viewAnchor });
+      updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
+    }
+
+    function centerKeyboard() {
+      const scroller = els.keyboardScroll;
+      scroller.scrollLeft = Math.max(0, (scroller.scrollWidth - scroller.clientWidth) / 2);
+      scroller.scrollTop = Math.max(0, (scroller.scrollHeight - scroller.clientHeight) / 2);
+    }
+
+    function ensureAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === "suspended") audioContext.resume();
+      return audioContext;
+    }
+
+    function createNoiseSource(context, duration = 2) {
+      const length = Math.max(1, Math.floor(context.sampleRate * duration));
+      const buffer = context.createBuffer(1, length, context.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i += 1) data[i] = Math.random() * 2 - 1;
+      const source = context.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+      return source;
+    }
+
+    function applyPitchToVoice(voice) {
+      if (!audioContext) return;
+      const now = audioContext.currentTime;
+      for (const item of voice.oscillators) {
+        item.osc.detune.setTargetAtTime(item.baseDetune + manualBendCents, now, 0.012);
+      }
+    }
+
+    function setManualBend(cents) {
+      manualBendCents = Math.max(-80, Math.min(80, Math.round(cents)));
+      const percent = 50 + manualBendCents / 160 * 100;
+      els.vibratoPad.style.setProperty("--bend-x", `${percent}%`);
+      els.vibratoLabel.textContent = `${manualBendCents > 0 ? "+" : ""}${manualBendCents}c`;
+
+      for (const voice of voices.values()) applyPitchToVoice(voice);
+      if (voices.size === 0) updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
+    }
+
+    function vibratoSensitivity() {
+      const value = Number(els.vibratoSensitivity.value);
+      return Number.isFinite(value) ? Math.max(0.1, Math.min(1, value)) : 1;
+    }
+
+    function voiceKey(target, voiceId = "single") {
+      return `${voiceId}:${target.dataset.row}:${target.dataset.col}:${target.dataset.midi}`;
+    }
+
+    function showNote(target, profile = activeProfile()) {
+      const bend = manualBendCents ? ` · ${manualBendCents > 0 ? "+" : ""}${manualBendCents}c` : "";
+      const shift = profile.outputShift ? ` · ${tr("outputPrefix")}${profile.outputShift > 0 ? "+" : ""}${profile.outputShift}` : "";
+      els.currentNote.textContent = target.dataset.label;
+      els.noteMeta.textContent = `${profile.short} · ${target.dataset.hz} Hz · MIDI ${target.dataset.midi}${shift}${bend}`;
+    }
+
+    function startVoice(target, voiceId = "single", autoStopMs = 0, profile = activeProfile()) {
+      const context = ensureAudio();
+      const id = voiceKey(target, voiceId);
+      if (voices.has(id)) return;
+
+      const preset = instruments[profile.instrument] || instruments.accordion;
+      const now = context.currentTime;
+      const outputShift = Number(profile.outputShift) || 0;
+      const baseHz = Number(target.dataset.hz) * Math.pow(2, outputShift / 12);
+      const output = context.createGain();
+      const envelope = preset.envelope;
+      const peakGain = Math.max(0.0001, FIXED_OUTPUT_VOLUME * 0.42);
+
+      output.gain.setValueAtTime(0.0001, now);
+      output.gain.exponentialRampToValueAtTime(peakGain, now + envelope.attack);
+      output.gain.exponentialRampToValueAtTime(Math.max(0.0001, peakGain * envelope.sustain), now + envelope.attack + envelope.decay);
+
+      let destination = output;
+      if (preset.filter) {
+        const filter = context.createBiquadFilter();
+        filter.type = preset.filter.type;
+        filter.frequency.setValueAtTime(preset.filter.frequency, now);
+        filter.Q.setValueAtTime(preset.filter.q, now);
+        filter.connect(output);
+        destination = filter;
+      }
+
+      output.connect(context.destination);
+
+      const voice = { target, output, oscillators: [], sources: [], release: envelope.release };
+
+      for (const spec of preset.oscillators) {
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+        osc.type = spec.type;
+        osc.frequency.setValueAtTime(baseHz * spec.ratio, now);
+        osc.detune.setValueAtTime((spec.detune || 0) + manualBendCents, now);
+        gain.gain.setValueAtTime(spec.gain, now);
+        osc.connect(gain);
+        gain.connect(destination);
+        osc.start(now);
+        voice.oscillators.push({ osc, baseDetune: spec.detune || 0 });
+        voice.sources.push(osc);
+      }
+
+      if (preset.noise) {
+        const noise = createNoiseSource(context);
+        const noiseGain = context.createGain();
+        const noiseFilter = context.createBiquadFilter();
+        noiseFilter.type = preset.noise.type;
+        noiseFilter.frequency.setValueAtTime(preset.noise.frequency, now);
+        noiseGain.gain.setValueAtTime(preset.noise.gain, now);
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(destination);
+        noise.start(now);
+        voice.sources.push(noise);
+      }
+
+      if (preset.vibrato) {
+        const lfo = context.createOscillator();
+        const lfoGain = context.createGain();
+        lfo.type = "sine";
+        lfo.frequency.setValueAtTime(preset.vibrato.rate, now);
+        lfoGain.gain.setValueAtTime(preset.vibrato.depth, now);
+        lfo.connect(lfoGain);
+        for (const item of voice.oscillators) lfoGain.connect(item.osc.detune);
+        lfo.start(now);
+        voice.sources.push(lfo);
+      }
+
+      voices.set(id, voice);
+      target.classList.add("is-active");
+      showNote(target, profile);
+
+      if (autoStopMs > 0) {
+        window.setTimeout(() => stopVoice(id), autoStopMs);
+      }
+    }
+
+    function stopVoice(id) {
+      const voice = voices.get(id);
+      if (!voice || !audioContext) return;
+
+      const now = audioContext.currentTime;
+      const release = Math.max(0.05, voice.release || 0.2);
+      voice.output.gain.cancelScheduledValues(now);
+      voice.output.gain.setValueAtTime(Math.max(voice.output.gain.value, 0.0001), now);
+      voice.output.gain.exponentialRampToValueAtTime(0.0001, now + release);
+
+      for (const source of voice.sources) {
+        try {
+          source.stop(now + release + 0.04);
+        } catch (error) {
+          // Some Web Audio sources can be stopped only once.
+        }
+      }
+
+      voices.delete(id);
+
+      const stillActive = [...voices.values()].some(active => active.target === voice.target);
+      if (!stillActive) voice.target.classList.remove("is-active");
+    }
+
+    function stopVoiceByPrefix(prefix) {
+      for (const id of [...voices.keys()]) {
+        if (id.startsWith(`${prefix}:`)) stopVoice(id);
+      }
+    }
+
+    function stopAllVoices() {
+      for (const [code, pending] of pendingBrowserStarts) {
+        window.clearTimeout(pending.timer);
+        pendingBrowserStarts.delete(code);
+      }
+      for (const id of [...voices.keys()]) stopVoice(id);
+      els.keyboard.querySelectorAll(".is-active").forEach(key => key.classList.remove("is-active"));
+    }
+
+    function findIntervalCoord(deltaSemitones) {
+      const targetMidi = buttonMidi(qAnchor.row, qAnchor.col) + deltaSemitones;
+      let best = null;
+
+      for (let row = qAnchor.row - 6; row <= qAnchor.row + 6; row += 1) {
+        for (let col = qAnchor.col - 10; col <= qAnchor.col + 10; col += 1) {
+          if (buttonMidi(row, col) !== targetMidi) continue;
+          const score = Math.abs(row - qAnchor.row) * 4 + Math.abs(col - qAnchor.col);
+          if (!best || score < best.score) best = { row, col, score };
+        }
+      }
+
+      return best ? { row: best.row, col: best.col } : null;
+    }
+
+    function moveQBy(deltaSemitones, prefix) {
+      const viewAnchor = captureViewAnchor();
+      const system = currentSystem();
+      const next =
+        Math.abs(deltaSemitones) === 12 && system.octaveColStep !== null
+          ? { row: qAnchor.row, col: qAnchor.col + system.octaveColStep * Math.sign(deltaSemitones) }
+          : findIntervalCoord(deltaSemitones);
+
+      if (!next) return;
+
+      setActiveAnchor(next);
+      selectedCoord = { ...next };
+      includeProfileHardwareRange();
+      renderKeyboard({ viewAnchor });
+      updateReadoutForCoord(prefix, qAnchor.row, qAnchor.col);
+    }
+
+    function isTypingTarget(target) {
+      const tag = target?.tagName;
+      return target?.isContentEditable || tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA";
+    }
+
+    function updateBendFromPointer(event) {
+      const rect = els.vibratoPad.getBoundingClientRect();
+      const normalized = (event.clientX - rect.left) / rect.width;
+      setManualBend((normalized - 0.5) * 160 * vibratoSensitivity());
+    }
+
+    function runAutoVibrato(timestamp) {
+      if (!longVibratoState?.active) return;
+      if (!longVibratoState.startedAt) longVibratoState.startedAt = timestamp;
+      const elapsedSeconds = (timestamp - longVibratoState.startedAt) / 1000;
+      const depthCents = 16;
+      const rateHz = 5.6;
+      setManualBend(Math.sin(elapsedSeconds * Math.PI * 2 * rateHz) * depthCents);
+      autoVibratoFrame = requestAnimationFrame(runAutoVibrato);
+    }
+
+    function startAutoVibrato(pointerId) {
+      if (!longVibratoState || longVibratoState.pointerId !== pointerId) return;
+      longVibratoState.active = true;
+      longVibratoState.startedAt = 0;
+      cancelAnimationFrame(autoVibratoFrame);
+      autoVibratoFrame = requestAnimationFrame(runAutoVibrato);
+    }
+
+    function endLongVibrato(event) {
+      if (!longVibratoState || event.pointerId !== longVibratoState.pointerId) return;
+      window.clearTimeout(longVibratoState.timer);
+      cancelAnimationFrame(autoVibratoFrame);
+      longVibratoState = null;
+      setManualBend(0);
+    }
+
+    els.keyboard.addEventListener("pointerdown", event => {
+      const target = event.target.closest(".key");
+      if (!target) return;
+      event.preventDefault();
+      ignoreNextClickUntil = performance.now() + 300;
+      selectButton(target);
+      const profile = browserProfile();
+
+      target.setPointerCapture?.(event.pointerId);
+      startVoice(target, `pointer-${event.pointerId}`, 0, profile);
+
+      if (els.longVibrato.checked) {
+        longVibratoState = {
+          pointerId: event.pointerId,
+          active: false,
+          timer: window.setTimeout(() => startAutoVibrato(event.pointerId), 260)
+        };
+      }
+    });
+
+    els.keyboard.addEventListener("pointerup", event => {
+      stopVoiceByPrefix(`pointer-${event.pointerId}`);
+      endLongVibrato(event);
+    });
+
+    els.keyboard.addEventListener("pointercancel", event => {
+      stopVoiceByPrefix(`pointer-${event.pointerId}`);
+      endLongVibrato(event);
+    });
+
+    els.keyboard.addEventListener("click", event => {
+      const target = event.target.closest(".key");
+      if (!target) return;
+      if (performance.now() < ignoreNextClickUntil) return;
+      selectButton(target);
+      const profile = browserProfile();
+      startVoice(target, "click", 240, profile);
+    });
+
+    document.addEventListener("pointerdown", event => {
+      clearFocusedControl(event);
+      primeAudioFromGesture(event);
+    }, { capture: true });
+
+    window.addEventListener("keydown", event => {
+      if (isTypingTarget(event.target)) return;
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
+
+      const arrowMap = {
+        ArrowUp: [12, "Q +8"],
+        ArrowDown: [-12, "Q -8"],
+        ArrowRight: [7, "Q +5"],
+        ArrowLeft: [-7, "Q -5"]
+      };
+
+      if (arrowMap[event.key]) {
+        event.preventDefault();
+        const [delta, label] = arrowMap[event.key];
+        moveQBy(delta, label);
+        return;
+      }
+
+      if (shouldSuppressBrowserCode(event.code)) {
+        event.preventDefault();
+        return;
+      }
+      if (event.repeat) return;
+      const profile = browserProfile();
+      const coord = coordForProfileCode(profile, event.code);
+      if (!coord) return;
+
+      event.preventDefault();
+      scheduleBrowserCodeStart(event.code, profile, coord);
+    });
+
+    window.addEventListener("keyup", event => {
+      if (isTypingTarget(event.target)) return;
+      if (shouldSuppressBrowserCode(event.code)) event.preventDefault();
+      const profile = browserProfile();
+      if (coordForProfileCode(profile, event.code)) {
+        event.preventDefault();
+        cancelPendingBrowserCode(event.code);
+        stopVoiceByPrefix(`computer-${profile.id}-${event.code}`);
+      }
+    });
+
+    els.centerView.addEventListener("click", centerKeyboard);
+
+    els.languageSelect.addEventListener("change", event => {
+      releaseControlFocus(event);
+      currentLanguage = supportedLanguages.has(event.target.value) ? event.target.value : "zh";
+      try {
+        localStorage.setItem("qboard-language", currentLanguage);
+      } catch (error) {
+        // Language still changes for this session if storage is unavailable.
+      }
+      const viewAnchor = captureViewAnchor();
+      applyTranslations();
+      renderMappingProfileOptions();
+      renderKeyboard({ viewAnchor });
+      renderScaleStaff();
+      updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
+    });
+
+    els.profileRows.addEventListener("click", event => {
+      const row = event.target.closest(".profile-row");
+      const actionTarget = event.target.closest("[data-profile-action]");
+      if (!row || !actionTarget) return;
+      const profile = mappingProfiles.find(item => item.id === row.dataset.profileId);
+      if (!profile) return;
+      const viewAnchor = captureViewAnchor();
+      const action = actionTarget.dataset.profileAction;
+      releaseControlFocus(event);
+
+      if (action === "activate") {
+        activateProfile(profile, { viewAnchor });
+      } else if (action === "bindQ") {
+        activeProfileId = profile.id;
+        setActiveAnchor(selectedCoord);
+        includeProfileHardwareRange(profile);
+        renderMappingProfileOptions();
+        renderKeyboard({ viewAnchor });
+        updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
+      } else if (action === "resetQ") {
+        activeProfileId = profile.id;
+        setActiveAnchor({ row: 1, col: 0 });
+        selectedCoord = { ...qAnchor };
+        includeProfileHardwareRange(profile);
+        renderMappingProfileOptions();
+        renderKeyboard({ viewAnchor });
+        updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
+      } else if (action === "remove") {
+        removeActiveKeyboard(profile);
+      } else if (action === "addHid") {
+        addHidKeyboard();
+      }
+    });
+
+    els.profileRows.addEventListener("change", event => {
+      const field = event.target.dataset.profileField;
+      if (!field) return;
+      const row = event.target.closest(".profile-row");
+      const profile = mappingProfiles.find(item => item.id === row?.dataset.profileId);
+      if (!profile) return;
+      releaseControlFocus(event);
+
+      if (field === "instrument") {
+        profile.instrument = event.target.value;
+        stopAllVoices();
+      } else if (field === "outputShift") {
+        profile.outputShift = clampNumber(event.target.value, 0, -24, 24);
+        event.target.value = profile.outputShift;
+        stopAllVoices();
+        renderScaleStaff();
+      }
+
+      renderMappingProfileOptions();
+      if (profile.id === activeProfileId) updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
+    });
+
+    els.profileRows.addEventListener("input", event => {
+      if (event.target.dataset.profileField !== "outputShift") return;
+      const row = event.target.closest(".profile-row");
+      const profile = mappingProfiles.find(item => item.id === row?.dataset.profileId);
+      if (!profile) return;
+      profile.outputShift = clampNumber(event.target.value, 0, -24, 24);
+    });
+
+    els.keySystem.addEventListener("change", event => {
+      releaseControlFocus(event);
+      const viewAnchor = captureViewAnchor();
+      renderKeyboard({ viewAnchor });
+      updateReadoutForCoord(currentSystem().label, qAnchor.row, qAnchor.col);
+    });
+
+    for (const control of [els.lowCol, els.highCol, els.upperRows, els.lowerRows, els.labelMode, els.keyShape, els.scaleAssist]) {
+      control.addEventListener("change", event => {
+        releaseControlFocus(event);
+        scheduleRender();
+      });
+      control.addEventListener("input", scheduleRender);
+    }
+
+    els.colorPrev.addEventListener("click", event => {
+      releaseControlFocus(event);
+      shiftKeyboardColor(-1);
+    });
+
+    els.colorNext.addEventListener("click", event => {
+      releaseControlFocus(event);
+      shiftKeyboardColor(1);
+    });
+
+    els.longVibrato.addEventListener("change", event => {
+      releaseControlFocus(event);
+      if (!els.longVibrato.checked) {
+        if (longVibratoState) window.clearTimeout(longVibratoState.timer);
+        cancelAnimationFrame(autoVibratoFrame);
+        longVibratoState = null;
+        setManualBend(0);
+      }
+    });
+
+    els.vibratoSensitivity.addEventListener("change", releaseControlFocus);
+
+    els.vibratoPad.addEventListener("pointermove", updateBendFromPointer);
+    els.vibratoPad.addEventListener("pointerleave", () => setManualBend(0));
+    els.vibratoPad.addEventListener("pointercancel", () => setManualBend(0));
+
+    els.scaleToggle.addEventListener("click", () => {
+      const isOpen = els.scaleDock.classList.toggle("is-open");
+      els.scaleToggle.setAttribute("aria-expanded", String(isOpen));
+      if (isOpen) renderScaleStaff();
+    });
+
+    els.scaleZoomOut.addEventListener("click", event => {
+      releaseControlFocus(event);
+      changeStaffZoom(-0.15);
+    });
+
+    els.scaleZoomIn.addEventListener("click", event => {
+      releaseControlFocus(event);
+      changeStaffZoom(0.15);
+    });
+
+    els.tonicSelect.addEventListener("change", event => {
+      releaseControlFocus(event);
+      scheduleRender();
+      renderScaleStaff();
+    });
+    els.scaleMode.addEventListener("change", event => {
+      releaseControlFocus(event);
+      scheduleRender();
+      renderScaleStaff();
+    });
+
+    if ("hid" in navigator) {
+      navigator.hid.addEventListener("disconnect", event => {
+        const profile = mappingProfiles.find(item => item.device === event.device);
+        if (!profile) return;
+        releaseProfilePressedCodes(profile);
+        if (activeProfileId === profile.id) {
+          activeProfileId = "main";
+          syncQAnchorFromActiveProfile();
+          selectedCoord = { ...qAnchor };
+          renderMappingProfileOptions();
+          syncProfileControls();
+          includeProfileHardwareRange();
+          renderKeyboard();
+        }
+        setReadout("HID", tr("hidDisconnected", { name: profile.label }));
+      });
+    }
+
+    populateTonicSelect();
+    populateLanguageSelect();
+    applyTranslations();
+    renderMappingProfileOptions();
+    syncProfileControls();
+    includeProfileHardwareRange();
+    renderKeyboard({ keepScroll: false });
+    renderScaleStaff();
+    updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
+  </script>
+</body>
+</html>
