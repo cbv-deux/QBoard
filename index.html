@@ -57,8 +57,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
-      padding: 12px clamp(14px, 3vw, 32px);
+      gap: 10px;
+      padding: 7px clamp(10px, 2vw, 22px);
       border-bottom: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.78);
       backdrop-filter: blur(12px);
@@ -71,21 +71,62 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 10px;
+      gap: 7px;
       margin-left: auto;
       min-width: 0;
+    }
+
+    .menu-tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .menu-tab {
+      min-height: 22px;
+      border: 1px solid var(--line);
+      border-bottom-color: #bfc7d6;
+      border-radius: 6px 6px 0 0;
+      background: #eef3f8;
+      color: #303643;
+      padding: 2px 7px 3px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .menu-tab.is-active {
+      background: #17191f;
+      border-color: #17191f;
+      color: #ffffff;
+    }
+
+    .menu-tab.menu-collapse {
+      border-radius: 6px;
+      background: #ffffff;
+    }
+
+    .menu-tab.menu-collapse.is-active {
+      background: #303643;
+      border-color: #303643;
+      color: #ffffff;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       min-width: 0;
     }
 
     .mark {
-      width: 36px;
-      height: 36px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background:
         radial-gradient(circle at 50% 50%, #ffffff 0 21%, transparent 22%),
@@ -96,7 +137,7 @@
 
     h1 {
       margin: 0;
-      font-size: clamp(1.12rem, 1.7vw, 1.55rem);
+      font-size: clamp(0.96rem, 1.35vw, 1.2rem);
       line-height: 1.08;
       letter-spacing: 0;
       white-space: nowrap;
@@ -116,13 +157,13 @@
 
     .language-picker {
       position: relative;
-      width: 42px;
-      height: 30px;
+      width: 34px;
+      height: 23px;
       display: grid;
       place-items: center;
       flex: 0 0 auto;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 6px;
       background: #ffffff;
     }
 
@@ -143,20 +184,20 @@
     .language-picker::after {
       content: "";
       position: absolute;
-      right: 5px;
-      bottom: 5px;
+      right: 4px;
+      bottom: 4px;
       width: 0;
       height: 0;
-      border-left: 3.5px solid transparent;
-      border-right: 3.5px solid transparent;
-      border-top: 4.5px solid #303643;
+      border-left: 3px solid transparent;
+      border-right: 3px solid transparent;
+      border-top: 4px solid #303643;
       pointer-events: none;
     }
 
     .flag-badge {
       position: relative;
-      width: 25px;
-      height: 17px;
+      width: 21px;
+      height: 14px;
       overflow: hidden;
       border-radius: 3px;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
@@ -252,17 +293,17 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 12px;
-      min-width: 300px;
+      gap: 8px;
+      min-width: 250px;
       color: var(--muted);
       text-align: right;
     }
 
     .readout strong {
       display: inline-flex;
-      min-width: 86px;
+      min-width: 70px;
       justify-content: center;
-      padding: 6px 10px;
+      padding: 4px 8px;
       border-radius: 999px;
       background: #17191f;
       color: #fff;
@@ -271,21 +312,23 @@
 
     .controls {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(340px, 0.42fr);
-      grid-template-areas:
-        "global scale"
-        "keyboard scale";
-      gap: 8px;
-      padding: 10px clamp(10px, 2vw, 24px);
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "panel";
+      gap: 5px;
+      padding: 6px clamp(7px, 1.4vw, 16px);
       border-bottom: 1px solid var(--line);
       background: var(--panel);
       align-items: start;
     }
 
+    .controls.is-collapsed {
+      display: none;
+    }
+
     .control-section {
       display: grid;
-      gap: 8px;
-      padding: 8px;
+      gap: 5px;
+      padding: 5px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcff;
@@ -296,9 +339,13 @@
       grid-area: global;
     }
 
+    .manual-section {
+      grid-area: manual;
+    }
+
     .section-heading {
       color: #303643;
-      font-size: 0.82rem;
+      font-size: 0.72rem;
       font-weight: 800;
     }
 
@@ -309,7 +356,7 @@
         minmax(60px, 0.56fr)
         repeat(4, minmax(48px, 0.44fr))
         minmax(138px, 1fr);
-      gap: 6px;
+      gap: 4px;
       align-items: end;
     }
 
@@ -320,6 +367,7 @@
         minmax(54px, 0.5fr)
         minmax(92px, 0.82fr)
         minmax(68px, 0.62fr)
+        minmax(82px, 0.68fr)
         minmax(72px, 0.66fr)
         minmax(48px, 0.45fr)
         minmax(66px, 0.58fr);
@@ -328,7 +376,7 @@
     .inline-pair {
       display: grid;
       grid-template-columns: 1fr 0.68fr;
-      gap: 4px;
+      gap: 3px;
     }
 
     .control-grid > *,
@@ -338,13 +386,13 @@
 
     .control {
       display: grid;
-      gap: 4px;
+      gap: 3px;
       min-width: 0;
     }
 
     .control label,
     .group-label {
-      font-size: 0.7rem;
+      font-size: 0.64rem;
       color: var(--muted);
     }
 
@@ -357,14 +405,14 @@
 
     select,
     input[type="number"] {
-      min-height: 30px;
+      min-height: 24px;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 6px;
       background: #fff;
       color: var(--ink);
-      padding: 4px 6px;
+      padding: 2px 5px;
       outline: none;
-      font-size: 0.86rem;
+      font-size: 0.78rem;
     }
 
     select:focus,
@@ -379,7 +427,7 @@
     .button-group {
       display: grid;
       grid-template-columns: repeat(3, minmax(42px, 1fr));
-      gap: 6px;
+      gap: 4px;
     }
 
     .button-group.two {
@@ -388,21 +436,21 @@
 
     .color-stepper {
       display: grid;
-      grid-template-columns: 28px auto 24px 28px;
-      gap: 4px;
+      grid-template-columns: 22px auto 20px 22px;
+      gap: 3px;
       align-items: center;
-      min-height: 30px;
+      min-height: 24px;
     }
 
     .color-step {
       min-width: 0;
-      width: 28px;
+      width: 22px;
       padding: 0;
     }
 
     .color-equals {
       color: #303643;
-      font-size: 0.82rem;
+      font-size: 0.72rem;
       font-weight: 800;
       text-align: right;
       white-space: nowrap;
@@ -410,8 +458,8 @@
 
     .color-swatch {
       --swatch-hue: 5;
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       border: 1px solid hsl(var(--swatch-hue) 48% 54%);
       border-radius: 6px;
       background: hsl(var(--swatch-hue) 62% 46%);
@@ -432,24 +480,30 @@
     }
 
     .keyboard-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 8px;
-      align-items: start;
+      display: block;
       min-width: 0;
     }
 
     .profile-rows {
       display: grid;
-      gap: 6px;
+      gap: 4px;
     }
 
     .profile-row {
       display: grid;
-      grid-template-columns: minmax(86px, 0.66fr) minmax(96px, 0.78fr) minmax(66px, 0.46fr) minmax(116px, 0.76fr) minmax(58px, auto);
-      gap: 6px;
+      grid-template-columns:
+        minmax(78px, 0.56fr)
+        minmax(80px, 0.58fr)
+        minmax(50px, 0.34fr)
+        minmax(74px, 0.48fr)
+        minmax(66px, 0.42fr)
+        minmax(78px, 0.5fr)
+        minmax(68px, 0.44fr)
+        minmax(96px, 0.66fr)
+        minmax(54px, auto);
+      gap: 4px;
       align-items: end;
-      padding: 5px;
+      padding: 3px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #f7f9fc;
@@ -460,8 +514,13 @@
       background: #edf8f6;
     }
 
+    .profile-row.is-pointer {
+      border-style: dashed;
+      background: #fbfcff;
+    }
+
     .profile-name {
-      min-height: 30px;
+      min-height: 24px;
       justify-content: flex-start;
       text-align: left;
       font-weight: 800;
@@ -483,27 +542,96 @@
 
     .profile-name small {
       color: var(--muted);
-      font-size: 0.72rem;
+      font-size: 0.64rem;
       font-weight: 700;
+    }
+
+    .profile-static-name {
+      cursor: default;
+    }
+
+    .profile-static-name:hover {
+      border-color: var(--line);
+      background: var(--panel-2);
+    }
+
+    .profile-volume {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 3px;
+      align-items: center;
+    }
+
+    .profile-volume output {
+      min-width: 34px;
+      color: var(--muted);
+      font-size: 0.66rem;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .profile-long-vibrato {
+      align-self: end;
+      min-width: 0;
+    }
+
+    .profile-follow-pedal {
+      align-self: end;
+      min-width: 0;
+    }
+
+    .profile-placeholder {
+      min-height: 24px;
+    }
+
+    .manual-body {
+      display: grid;
+      gap: 8px;
+      color: #303643;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      max-height: min(48vh, 520px);
+      overflow: auto;
+      padding: 2px 2px 4px;
+    }
+
+    .manual-body h3 {
+      margin: 0 0 3px;
+      color: #17191f;
+      font-size: 0.86rem;
+    }
+
+    .manual-body p,
+    .manual-body ul {
+      margin: 0;
+    }
+
+    .manual-body ul {
+      padding-left: 1.2rem;
+    }
+
+    html[dir="rtl"] .manual-body ul {
+      padding-left: 0;
+      padding-right: 1.2rem;
     }
 
     .command,
     .toggle,
     .vibrato-pad,
     .color-step {
-      min-height: 30px;
+      min-height: 24px;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 6px;
       background: var(--panel-2);
       color: var(--ink);
-      padding: 4px 6px;
+      padding: 2px 5px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 5px;
       user-select: none;
       white-space: nowrap;
-      font-size: 0.86rem;
+      font-size: 0.78rem;
     }
 
     .command,
@@ -519,6 +647,11 @@
       background: #e7edf4;
     }
 
+    .command.profile-static-name:hover {
+      border-color: var(--line);
+      background: var(--panel-2);
+    }
+
     .command:disabled {
       cursor: not-allowed;
       opacity: 0.45;
@@ -532,8 +665,8 @@
     }
 
     .toggle input {
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
       accent-color: var(--accent);
     }
 
@@ -807,12 +940,11 @@
     }
 
     .scale-dock {
-      grid-area: scale;
       position: relative;
-      display: none;
+      display: block;
       min-width: 0;
-      min-height: 190px;
-      height: min(34vh, 280px);
+      min-height: 135px;
+      height: min(24vh, 196px);
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -821,33 +953,89 @@
       align-self: start;
     }
 
-    .scale-dock.is-open {
+    .controls .control-section {
+      grid-area: panel;
+      display: none;
+    }
+
+    .controls > .scale-dock {
+      display: none;
+    }
+
+    .controls[data-active-panel="settings"] {
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.36fr);
+      grid-template-areas:
+        "global staff"
+        "keyboard staff";
+      align-items: stretch;
+    }
+
+    .controls[data-active-panel="settings"] .global-section,
+    .controls[data-active-panel="settings"] .keyboard-section {
+      display: grid;
+    }
+
+    .controls[data-active-panel="settings"] .global-section {
+      grid-area: global;
+    }
+
+    .controls[data-active-panel="settings"] .keyboard-section {
+      grid-area: keyboard;
+    }
+
+    .controls[data-active-panel="settings"] > .scale-dock {
       display: block;
+      grid-area: staff;
+      align-self: stretch;
+      height: auto;
+      min-height: 176px;
+    }
+
+    .controls[data-active-panel="settings"] > .scale-dock:not(.is-open) {
+      display: none;
+    }
+
+    .controls[data-active-panel="settings"].is-staff-hidden {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "global"
+        "keyboard";
+    }
+
+    .controls[data-active-panel="settings"]:has(> .scale-dock:not(.is-open)) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "global"
+        "keyboard";
+    }
+
+    .controls[data-active-panel="manual"] .manual-section {
+      display: grid;
     }
 
     .scale-tools {
       position: absolute;
-      top: 6px;
-      right: 6px;
+      top: 4px;
+      right: 4px;
       z-index: 3;
       display: flex;
-      gap: 4px;
-      padding: 3px;
+      gap: 3px;
+      padding: 2px;
       border: 1px solid rgba(216, 221, 232, 0.9);
-      border-radius: 8px;
+      border-radius: 6px;
       background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(8px);
     }
 
     .scale-zoom {
-      width: 28px;
-      min-height: 26px;
+      width: 23px;
+      min-height: 21px;
       padding: 0;
       border: 1px solid var(--line);
-      border-radius: 7px;
+      border-radius: 6px;
       background: #ffffff;
       color: var(--ink);
-      font-size: 1rem;
+      font-size: 0.82rem;
       font-weight: 800;
       line-height: 1;
       cursor: pointer;
@@ -906,17 +1094,31 @@
       }
 
       .profile-row {
-        grid-template-columns: minmax(150px, 1fr) minmax(120px, 1fr) minmax(88px, 0.6fr) minmax(160px, 1fr);
+        grid-template-columns: minmax(130px, 1fr) minmax(104px, 0.9fr) minmax(72px, 0.55fr) minmax(112px, 0.85fr);
       }
     }
 
     @media (max-width: 900px) {
       .controls {
         grid-template-columns: 1fr;
+        grid-template-areas: "panel";
+      }
+
+      .controls[data-active-panel="settings"] {
+        grid-template-columns: 1fr;
         grid-template-areas:
           "global"
           "keyboard"
-          "scale";
+          "staff";
+      }
+
+      .controls[data-active-panel="settings"] > .scale-dock {
+        height: min(26vh, 210px);
+        min-height: 150px;
+      }
+
+      .keyboard-layout {
+        grid-template-columns: minmax(0, 1fr);
       }
     }
 
@@ -933,6 +1135,11 @@
       .top-actions {
         width: 100%;
         justify-content: space-between;
+      }
+
+      .menu-tabs {
+        width: 100%;
+        flex: 0 0 auto;
       }
 
       .readout {
@@ -1004,6 +1211,11 @@
         <span class="mark" aria-hidden="true"></span>
         <h1 id="appTitle">Q-board / Q-键盘</h1>
       </div>
+      <nav class="menu-tabs" id="menuTabs" aria-label="选项标签">
+        <button class="menu-tab is-active" id="menuSettings" type="button" data-menu-panel="settings" aria-controls="controlsPanel" aria-selected="true">设置</button>
+        <button class="menu-tab" id="menuManual" type="button" data-menu-panel="manual" aria-controls="controlsPanel" aria-selected="false">说明书</button>
+        <button class="menu-tab menu-collapse" id="menuCollapse" type="button" aria-controls="controlsPanel" aria-expanded="true">收起</button>
+      </nav>
       <div class="top-actions">
         <div class="language-picker" id="languagePicker" title="语言">
           <label class="sr-only" for="languageSelect">语言</label>
@@ -1027,15 +1239,15 @@
       </div>
     </header>
 
-    <section class="controls" aria-label="键盘设置">
+    <section class="controls" id="controlsPanel" data-active-panel="settings" aria-label="设置">
       <div class="control-section global-section">
         <div class="section-heading">全局设置</div>
         <div class="control-grid layout-row">
           <div class="control">
             <label for="keySystem">排键</label>
             <select id="keySystem">
-              <option value="b" selected>B-system</option>
-              <option value="c">C-system</option>
+              <option value="b">B-system</option>
+              <option value="c" selected>C-system</option>
               <option value="tonnetz">Tonnetz</option>
               <option value="rightWholeLeftHalf">Q-System</option>
               <option value="rightWholeRightUpHalf">Isomorphic</option>
@@ -1118,17 +1330,23 @@
             </div>
           </div>
 
-          <label class="toggle">
-            <input id="longVibrato" type="checkbox" checked>
-            <span>长按揉弦</span>
-          </label>
-
           <div class="control">
             <label for="vibratoSensitivity">揉弦灵敏度</label>
             <input id="vibratoSensitivity" type="range" min="0.1" max="1" step="0.05" value="1">
           </div>
 
-          <button class="command primary" id="scaleToggle" type="button" aria-expanded="true">谱表</button>
+          <div class="control">
+            <label for="sustainTime">踏板淡出</label>
+            <div class="profile-volume">
+              <input id="sustainTime" type="range" min="0.1" max="3" step="0.1" value="0.8">
+              <output id="sustainTimeValue">0.8s</output>
+            </div>
+          </div>
+
+          <label class="toggle">
+            <input id="showStaff" type="checkbox" checked>
+            <span>谱表</span>
+          </label>
 
           <div class="control color-control">
             <span class="group-label">键盘颜色</span>
@@ -1158,6 +1376,11 @@
           <svg class="staff-svg" id="staffSvg" role="img" aria-label="当前 Q 映射内的音阶五线谱"></svg>
         </div>
       </aside>
+
+      <div class="control-section manual-section">
+        <div class="section-heading">说明书</div>
+        <div class="manual-body" id="manualBody"></div>
+      </div>
     </section>
 
     <main class="stage-wrap">
@@ -1221,7 +1444,11 @@
     };
     const FIFTHS = [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5];
     const FIFTH_INDEX = new Map(FIFTHS.map((pitchClass, index) => [pitchClass, index]));
-    const FIXED_OUTPUT_VOLUME = 0.44;
+    const FIXED_OUTPUT_VOLUME = 0.9;
+    const DEFAULT_PROFILE_VOLUME = 1;
+    const DEFAULT_GLOBAL_SUSTAIN_TIME = 0.8;
+    const DEFAULT_POINTER_FADE_TIME = 2;
+    const SUSTAIN_CODES = new Set(["Space", "ShiftRight"]);
     let cColorIndex = 0;
     const languageOptions = [
       ["zh", "中文", "cn", "🇨🇳"],
@@ -1293,8 +1520,10 @@
       [0x16, "KeyS"], [0x17, "KeyT"], [0x18, "KeyU"], [0x19, "KeyV"], [0x1A, "KeyW"], [0x1B, "KeyX"],
       [0x1C, "KeyY"], [0x1D, "KeyZ"], [0x1E, "Digit1"], [0x1F, "Digit2"], [0x20, "Digit3"], [0x21, "Digit4"],
       [0x22, "Digit5"], [0x23, "Digit6"], [0x24, "Digit7"], [0x25, "Digit8"], [0x26, "Digit9"], [0x27, "Digit0"],
+      [0x2C, "Space"],
       [0x2D, "Minus"], [0x2E, "Equal"], [0x2F, "BracketLeft"], [0x30, "BracketRight"],
-      [0x33, "Semicolon"], [0x34, "Quote"], [0x36, "Comma"], [0x37, "Period"], [0x38, "Slash"]
+      [0x33, "Semicolon"], [0x34, "Quote"], [0x36, "Comma"], [0x37, "Period"], [0x38, "Slash"],
+      [0xE5, "ShiftRight"]
     ]);
 
     const noteLetters = ["C", "D", "E", "F", "G", "A", "B"];
@@ -1330,12 +1559,29 @@
         label: "主键盘",
         short: "主",
         anchor: { row: 1, col: 0 },
-        instrument: "guitar",
+        instrument: "piano",
         outputShift: 0,
+        volume: DEFAULT_PROFILE_VOLUME,
+        longVibrato: false,
+        sustainEnabled: true,
+        sustainPedal: false,
         source: "browser",
         pressedCodes: new Set()
       }
     ];
+    const pointerProfile = {
+      id: "pointer",
+      label: "鼠标/触屏",
+      short: "触",
+      instrument: "violin",
+      outputShift: 12,
+      volume: DEFAULT_PROFILE_VOLUME,
+      longVibrato: true,
+      fadeSustainTime: DEFAULT_POINTER_FADE_TIME,
+      followSustainPedal: false,
+      source: "pointer",
+      monophonic: true
+    };
     const instrumentOptions = [
       ["accordion", "手风琴"],
       ["piano", "钢琴"],
@@ -1368,8 +1614,13 @@
     const translations = {
       zh: {
         appTitle: "Q-键盘 / Q-board",
+        settings: "设置",
         globalSettings: "全局设置",
         keyboardSettings: "键盘设置",
+        manualSettings: "说明书",
+        menuTabs: "选项标签",
+        collapseOptions: "收起",
+        showOptions: "展开",
         language: "语言",
         layout: "排键",
         shape: "形状",
@@ -1396,6 +1647,8 @@
         vibrato: "揉弦",
         longVibrato: "长按揉弦",
         vibratoSensitivity: "揉弦灵敏度",
+        sustainTime: "踏板淡出",
+        showStaff: "谱表",
         staff: "谱表",
         keyColor: "键盘颜色",
         prevC: "上一个 C 色块",
@@ -1412,6 +1665,10 @@
         mainKeyboard: "主键盘",
         mainShort: "主",
         touchComputer: "触屏/电脑",
+        computerKeyboard: "电脑键盘",
+        mouseTouch: "鼠标/触屏",
+        mouseShort: "触",
+        monoSource: "单音",
         sourceHid: "HID",
         hidUnsupported: "当前浏览器不支持 WebHID；请用支持 WebHID 的 Chromium 系浏览器打开。",
         hidNoDevice: "没有选择 HID 设备；普通办公键盘可能会被浏览器安全策略隐藏。",
@@ -1422,6 +1679,13 @@
         hidDisconnected: "{name} 已断开",
         instrument: "音色",
         outputShift: "输出偏移",
+        volume: "音量",
+        pointerFade: "触屏延音",
+        followPedal: "跟随踏板",
+        keyboardSustain: "键盘延音",
+        sustainPedal: "延音踏板",
+        sustainPedalOn: "Space/右 Shift 踏板已按下",
+        sustainPedalOff: "踏板淡出 {time}s",
         setQ: "设为 Q",
         reset: "重置",
         addHid: "添加 HID",
@@ -1449,8 +1713,13 @@
       },
       en: {
         appTitle: "Q-board",
+        settings: "Settings",
         globalSettings: "Global",
         keyboardSettings: "Keyboards",
+        manualSettings: "Manual",
+        menuTabs: "Option tabs",
+        collapseOptions: "Collapse",
+        showOptions: "Expand",
         language: "Language",
         layout: "System",
         shape: "Shape",
@@ -1477,6 +1746,8 @@
         vibrato: "Vibrato",
         longVibrato: "Hold vibrato",
         vibratoSensitivity: "Vib sens.",
+        sustainTime: "Pedal fade",
+        showStaff: "Staff",
         staff: "Staff",
         keyColor: "Key color",
         prevC: "Previous C color",
@@ -1493,6 +1764,10 @@
         mainKeyboard: "Main keyboard",
         mainShort: "Main",
         touchComputer: "Touch/computer",
+        computerKeyboard: "Computer keyboard",
+        mouseTouch: "Mouse/touch",
+        mouseShort: "Touch",
+        monoSource: "Mono",
         sourceHid: "HID",
         hidUnsupported: "This browser does not support WebHID; use a Chromium browser with WebHID.",
         hidNoDevice: "No HID device was selected; regular office keyboards may be hidden by browser security.",
@@ -1503,6 +1778,13 @@
         hidDisconnected: "{name} disconnected",
         instrument: "Voice",
         outputShift: "Output shift",
+        volume: "Volume",
+        pointerFade: "Touch sustain",
+        followPedal: "Follow pedal",
+        keyboardSustain: "Key sustain",
+        sustainPedal: "Sustain pedal",
+        sustainPedalOn: "Space/Right Shift pedal down",
+        sustainPedalOff: "Pedal fade {time}s",
         setQ: "Set Q",
         reset: "Reset",
         addHid: "Add HID",
@@ -1532,6 +1814,9 @@
         appTitle: "Q-board",
         globalSettings: "Global",
         keyboardSettings: "Claviers",
+        menuTabs: "Onglets",
+        collapseOptions: "Replier",
+        showOptions: "Afficher",
         language: "Langue",
         layout: "Système",
         shape: "Forme",
@@ -1574,6 +1859,10 @@
         mainKeyboard: "Clavier principal",
         mainShort: "Princ.",
         touchComputer: "Tactile/ordinateur",
+        computerKeyboard: "Clavier ordinateur",
+        mouseTouch: "Souris/tactile",
+        mouseShort: "Tact.",
+        monoSource: "Mono",
         sourceHid: "HID",
         hidUnsupported: "Ce navigateur ne prend pas WebHID en charge ; utilisez un navigateur Chromium compatible.",
         hidNoDevice: "Aucun périphérique HID sélectionné ; les claviers bureautiques peuvent être masqués par sécurité.",
@@ -1584,6 +1873,7 @@
         hidDisconnected: "{name} déconnecté",
         instrument: "Timbre",
         outputShift: "Décalage",
+        volume: "Volume",
         setQ: "Définir Q",
         reset: "Réinit.",
         addHid: "Ajouter HID",
@@ -1613,6 +1903,9 @@
         appTitle: "Q-Tastatur",
         globalSettings: "Global",
         keyboardSettings: "Tastaturen",
+        menuTabs: "Register",
+        collapseOptions: "Einklappen",
+        showOptions: "Anzeigen",
         language: "Sprache",
         layout: "System",
         shape: "Form",
@@ -1655,6 +1948,10 @@
         mainKeyboard: "Haupttastatur",
         mainShort: "Haupt",
         touchComputer: "Touch/Computer",
+        computerKeyboard: "Computertastatur",
+        mouseTouch: "Maus/Touch",
+        mouseShort: "Touch",
+        monoSource: "Mono",
         sourceHid: "HID",
         hidUnsupported: "Dieser Browser unterstützt WebHID nicht; bitte einen Chromium-Browser mit WebHID verwenden.",
         hidNoDevice: "Kein HID-Gerät ausgewählt; normale Bürotastaturen können aus Sicherheitsgründen verborgen sein.",
@@ -1665,6 +1962,7 @@
         hidDisconnected: "{name} getrennt",
         instrument: "Klang",
         outputShift: "Ausgabeversatz",
+        volume: "Lautstärke",
         setQ: "Q setzen",
         reset: "Reset",
         addHid: "HID hinzufügen",
@@ -1694,6 +1992,9 @@
         appTitle: "Q-board",
         globalSettings: "Global",
         keyboardSettings: "Teclados",
+        menuTabs: "Pestañas",
+        collapseOptions: "Plegar",
+        showOptions: "Mostrar",
         language: "Idioma",
         layout: "Sistema",
         shape: "Forma",
@@ -1736,6 +2037,10 @@
         mainKeyboard: "Teclado principal",
         mainShort: "Pral.",
         touchComputer: "Táctil/ordenador",
+        computerKeyboard: "Teclado del ordenador",
+        mouseTouch: "Ratón/táctil",
+        mouseShort: "Táctil",
+        monoSource: "Mono",
         sourceHid: "HID",
         hidUnsupported: "Este navegador no admite WebHID; usa un navegador Chromium compatible.",
         hidNoDevice: "No se seleccionó ningún dispositivo HID; los teclados comunes pueden estar ocultos por seguridad.",
@@ -1746,6 +2051,7 @@
         hidDisconnected: "{name} desconectado",
         instrument: "Timbre",
         outputShift: "Desplaz.",
+        volume: "Volumen",
         setQ: "Asignar Q",
         reset: "Rest.",
         addHid: "Añadir HID",
@@ -1775,6 +2081,9 @@
         appTitle: "Q-board",
         globalSettings: "Global",
         keyboardSettings: "Teclados",
+        menuTabs: "Abas",
+        collapseOptions: "Recolher",
+        showOptions: "Mostrar",
         language: "Idioma",
         layout: "Sistema",
         shape: "Forma",
@@ -1817,6 +2126,10 @@
         mainKeyboard: "Teclado principal",
         mainShort: "Princ.",
         touchComputer: "Toque/computador",
+        computerKeyboard: "Teclado do computador",
+        mouseTouch: "Mouse/toque",
+        mouseShort: "Toque",
+        monoSource: "Mono",
         sourceHid: "HID",
         hidUnsupported: "Este navegador não suporta WebHID; use um navegador Chromium compatível.",
         hidNoDevice: "Nenhum dispositivo HID foi selecionado; teclados comuns podem ficar ocultos por segurança.",
@@ -1827,6 +2140,7 @@
         hidDisconnected: "{name} desconectado",
         instrument: "Timbre",
         outputShift: "Desloc.",
+        volume: "Volume",
         setQ: "Definir Q",
         reset: "Repor",
         addHid: "Adicionar HID",
@@ -1856,6 +2170,9 @@
         appTitle: "Qボード",
         globalSettings: "全体",
         keyboardSettings: "鍵盤",
+        menuTabs: "タブ",
+        collapseOptions: "折りたたむ",
+        showOptions: "表示",
         language: "言語",
         layout: "配列",
         shape: "形",
@@ -1898,6 +2215,10 @@
         mainKeyboard: "主鍵盤",
         mainShort: "主",
         touchComputer: "タッチ/PC",
+        computerKeyboard: "PCキーボード",
+        mouseTouch: "マウス/タッチ",
+        mouseShort: "触",
+        monoSource: "単音",
         sourceHid: "HID",
         hidUnsupported: "このブラウザは WebHID に対応していません。対応する Chromium 系ブラウザを使ってください。",
         hidNoDevice: "HID デバイスが選択されていません。一般的なキーボードは安全上非表示になることがあります。",
@@ -1908,6 +2229,7 @@
         hidDisconnected: "{name} が切断されました",
         instrument: "音色",
         outputShift: "出力シフト",
+        volume: "音量",
         setQ: "Q に設定",
         reset: "戻す",
         addHid: "HID 追加",
@@ -1937,6 +2259,9 @@
         appTitle: "لوحة Q",
         globalSettings: "عام",
         keyboardSettings: "لوحات",
+        menuTabs: "تبويبات",
+        collapseOptions: "طي",
+        showOptions: "إظهار",
         language: "اللغة",
         layout: "النظام",
         shape: "الشكل",
@@ -1979,6 +2304,10 @@
         mainKeyboard: "اللوحة الرئيسية",
         mainShort: "رئيسية",
         touchComputer: "لمس/حاسوب",
+        computerKeyboard: "لوحة الحاسوب",
+        mouseTouch: "فأرة/لمس",
+        mouseShort: "لمس",
+        monoSource: "أحادي",
         sourceHid: "HID",
         hidUnsupported: "هذا المتصفح لا يدعم WebHID؛ استخدم متصفح Chromium يدعمه.",
         hidNoDevice: "لم يتم اختيار جهاز HID؛ قد تخفي حماية المتصفح لوحات المفاتيح العادية.",
@@ -1989,6 +2318,7 @@
         hidDisconnected: "تم فصل {name}",
         instrument: "الصوت",
         outputShift: "إزاحة الخرج",
+        volume: "الصوت",
         setQ: "عيّن Q",
         reset: "إعادة",
         addHid: "إضافة HID",
@@ -2018,6 +2348,9 @@
         appTitle: "Q-клавиатура",
         globalSettings: "Общие",
         keyboardSettings: "Клавиатуры",
+        menuTabs: "Вкладки",
+        collapseOptions: "Свернуть",
+        showOptions: "Показать",
         language: "Язык",
         layout: "Система",
         shape: "Форма",
@@ -2060,6 +2393,10 @@
         mainKeyboard: "Главная клавиатура",
         mainShort: "Главн.",
         touchComputer: "Сенсор/компьютер",
+        computerKeyboard: "Клавиатура ПК",
+        mouseTouch: "Мышь/сенсор",
+        mouseShort: "Сенс.",
+        monoSource: "Моно",
         sourceHid: "HID",
         hidUnsupported: "Этот браузер не поддерживает WebHID; используйте Chromium-браузер с WebHID.",
         hidNoDevice: "HID-устройство не выбрано; обычные офисные клавиатуры могут быть скрыты защитой браузера.",
@@ -2070,6 +2407,7 @@
         hidDisconnected: "{name} отключена",
         instrument: "Тембр",
         outputShift: "Сдвиг",
+        volume: "Громкость",
         setQ: "Назн. Q",
         reset: "Сброс",
         addHid: "Добавить HID",
@@ -2094,6 +2432,67 @@
         instrumentHarp: "Арфа",
         instrumentOboe: "Гобой",
         instrumentRecorder: "Блокфлейта"
+      }
+    };
+
+    const manualCopies = {
+      zh: {
+        intro: "Q-board 是一个可扩展的同构键盘：屏幕按键、电脑键盘和外接 HID 键盘可以各自选择音色、音量、输出偏移和长按揉弦。",
+        sections: [
+          {
+            title: "演奏",
+            items: [
+              "电脑键盘使用 1 到 =、Q 到 ]、A 到 '、Z 到 / 四排按巴扬规则映射；可同时按多个键演奏和弦。",
+              "鼠标/触屏是独立单音乐器，有自己的音色、音量、输出偏移、长按揉弦和淡出延音。",
+              "方向键会移动当前 Q 映射：上下走左上/右下一格，左右移动八度，屏幕相对位置保持稳定。"
+            ]
+          },
+          {
+            title: "踏板与揉弦",
+            items: [
+              "电脑键盘或 HID 键盘按住空格或右 Shift 时启用淡出延音踏板；松开普通按键后声音会挂起，松开踏板后按全局的踏板淡出时间消失。",
+              "鼠标/触屏的触屏延音时间只影响鼠标/触屏单音；打开跟随踏板后会取消这条独立延音，只在空格踏板按下时跟随踏板。",
+              "揉弦区域可用鼠标左右滑动微调音高；每个输入源也可以独立开关长按自动揉弦。"
+            ]
+          },
+          {
+            title: "布局与谱表",
+            items: [
+              "排键系统、按键形状、扩展行列和音阶辅助在设置页中调整。",
+              "同一设置页中可为主键盘和每个 HID 键盘分别设为 Q、重置 Q、选择音色、调音量、输出偏移和键盘延音。",
+              "谱表显示当前实体键盘的 Q 映射，可用右侧按钮缩放。"
+            ]
+          }
+        ]
+      },
+      en: {
+        intro: "Q-board is an expandable isomorphic keyboard. The screen pointer, computer keyboard, and HID keyboards can each have their own instrument, volume, output shift, and hold vibrato.",
+        sections: [
+          {
+            title: "Playing",
+            items: [
+              "The computer keyboard maps 1 to =, Q to ], A to ', and Z to / by the selected Bayan-style layout, and supports chords.",
+              "Mouse/touch is an independent monophonic instrument with its own timbre, volume, output shift, hold vibrato, and fade sustain.",
+              "Arrow keys move the current Q mapping: up/down along the left-up/right-down diagonal and left/right by octaves while keeping the screen position stable."
+            ]
+          },
+          {
+            title: "Pedal And Vibrato",
+            items: [
+              "Hold Space or Right Shift on a computer or HID keyboard to enable the fade sustain pedal. Released notes are held until the pedal key is released, then fade by the global pedal time.",
+              "Mouse/touch sustain only affects the pointer voice. If Follow pedal is enabled, that independent sustain is disabled and the pointer follows the Space pedal instead.",
+              "Drag left or right in the vibrato pad to bend pitch; each input source has its own hold-vibrato switch."
+            ]
+          },
+          {
+            title: "Layout And Staff",
+            items: [
+              "Layout system, key shape, extension rows/columns, and scale assistance live on the Settings page.",
+              "The same Settings page lets the main keyboard and each HID keyboard set Q, reset Q, choose instrument, volume, output shift, and key sustain.",
+              "The staff shows the current physical-keyboard Q mappings and can be zoomed with the staff buttons."
+            ]
+          }
+        ]
       }
     };
 
@@ -2236,6 +2635,12 @@
 
     const els = {
       appTitle: document.querySelector("#appTitle"),
+      controls: document.querySelector("#controlsPanel"),
+      menuTabs: document.querySelector("#menuTabs"),
+      menuPanelButtons: [...document.querySelectorAll("[data-menu-panel]")],
+      menuCollapse: document.querySelector("#menuCollapse"),
+      menuSettings: document.querySelector("#menuSettings"),
+      menuManual: document.querySelector("#menuManual"),
       languagePicker: document.querySelector("#languagePicker"),
       languageSelect: document.querySelector("#languageSelect"),
       languageFlag: document.querySelector("#languageFlag"),
@@ -2250,11 +2655,12 @@
       colorPrev: document.querySelector("#colorPrev"),
       colorNext: document.querySelector("#colorNext"),
       colorSwatch: document.querySelector("#colorSwatch"),
-      longVibrato: document.querySelector("#longVibrato"),
       vibratoSensitivity: document.querySelector("#vibratoSensitivity"),
+      sustainTime: document.querySelector("#sustainTime"),
+      sustainTimeValue: document.querySelector("#sustainTimeValue"),
+      showStaff: document.querySelector("#showStaff"),
       centerView: document.querySelector("#centerView"),
       profileRows: document.querySelector("#profileRows"),
-      scaleToggle: document.querySelector("#scaleToggle"),
       scaleDock: document.querySelector("#scaleDock"),
       scaleZoomOut: document.querySelector("#scaleZoomOut"),
       scaleZoomIn: document.querySelector("#scaleZoomIn"),
@@ -2265,6 +2671,7 @@
       keyboardScroll: document.querySelector("#keyboardScroll"),
       currentNote: document.querySelector("#currentNote"),
       noteMeta: document.querySelector("#noteMeta"),
+      manualBody: document.querySelector("#manualBody"),
       vibratoPad: document.querySelector("#vibratoPad"),
       vibratoLabel: document.querySelector("#vibratoLabel")
     };
@@ -2277,6 +2684,7 @@
     let qAnchor = { row: 1, col: 0 };
     let manualBendCents = 0;
     let longVibratoState = null;
+    const longVibratoHolds = new Map();
     let autoVibratoFrame = 0;
     let staffZoom = 1;
     const voices = new Map();
@@ -2315,6 +2723,42 @@
       return tr(value === "minor" ? "minor" : "major");
     }
 
+    function formatSeconds(value) {
+      const rounded = Math.round(Number(value) * 10) / 10;
+      return `${rounded.toFixed(rounded % 1 === 0 ? 0 : 1)}s`;
+    }
+
+    function globalSustainTime() {
+      return clampFloat(els.sustainTime?.value, DEFAULT_GLOBAL_SUSTAIN_TIME, 0.1, 3);
+    }
+
+    function pointerFadeTime() {
+      return clampFloat(pointerProfile.fadeSustainTime, DEFAULT_POINTER_FADE_TIME, 0.1, 3);
+    }
+
+    function updateSustainTimeOutput() {
+      if (els.sustainTimeValue) els.sustainTimeValue.textContent = formatSeconds(globalSustainTime());
+    }
+
+    function syncStaffVisibility() {
+      const visible = els.showStaff?.checked !== false;
+      els.scaleDock.classList.toggle("is-open", visible);
+      els.controls.classList.toggle("is-staff-hidden", !visible);
+      if (visible) renderScaleStaff();
+    }
+
+    function renderManual() {
+      if (!els.manualBody) return;
+      const copy = manualCopies[currentLanguage] || manualCopies.en;
+      const sections = copy.sections.map(section => {
+        const items = section.items
+          .map(item => `<li>${escapeSvg(item)}</li>`)
+          .join("");
+        return `<section><h3>${escapeSvg(section.title)}</h3><ul>${items}</ul></section>`;
+      }).join("");
+      els.manualBody.innerHTML = `<p>${escapeSvg(copy.intro)}</p>${sections}`;
+    }
+
     function updateLanguagePicker() {
       const option = languageOptionByValue.get(currentLanguage) || languageOptionByValue.get("zh");
       els.languageSelect.value = currentLanguage;
@@ -2345,10 +2789,17 @@
         mainProfile.label = tr("mainKeyboard");
         mainProfile.short = tr("mainShort");
       }
+      pointerProfile.label = tr("mouseTouch");
+      pointerProfile.short = tr("mouseShort");
 
       setText(els.appTitle, "appTitle");
+      els.menuTabs.setAttribute("aria-label", tr("menuTabs"));
+      els.controls.setAttribute("aria-label", tr("menuTabs"));
+      setText("#menuSettings", "settings");
+      setText("#menuManual", "manualSettings");
       setText(".global-section .section-heading", "globalSettings");
       setText(".keyboard-section .section-heading", "keyboardSettings");
+      setText(".manual-section .section-heading", "manualSettings");
       setLabel("languageSelect", "language");
       setLabel("keySystem", "layout");
       setLabel("keyShape", "shape");
@@ -2359,14 +2810,14 @@
       setLabel("scaleAssist", "assist");
       setLabel("labelMode", "outLabels");
       setLabel("vibratoSensitivity", "vibratoSensitivity");
+      setLabel("sustainTime", "sustainTime");
 
       setText(".layout-row .group-label", "horizontalView");
       setText("#centerView", "center");
       setText(".scale-choice .group-label", "scale");
-      setText("#scaleToggle", "staff");
       setText(".color-control .group-label", "keyColor");
+      setText("#showStaff + span", "showStaff");
       setText("#vibratoPad span:last-child", "vibrato");
-      setText(".toggle span", "longVibrato");
 
       setOptionText(els.keyShape, { hex: "hex", round: "round" });
       setOptionText(els.scaleAssist, { inDark: "inDark", outDark: "outDark", allDark: "allDark", allLight: "allLight" });
@@ -2384,10 +2835,57 @@
       els.keyboard.setAttribute("aria-label", tr("keyboardAria"));
       if (els.currentNote.textContent === "--") els.noteMeta.textContent = tr("clickAnyKey");
       updateColorControl();
+      updateSustainTimeOutput();
+      renderManual();
+      syncStaffVisibility();
+      syncMenuTabs();
+    }
+
+    function activeMenuPanel() {
+      const panel = els.controls.dataset.activePanel || "settings";
+      return ["settings", "manual"].includes(panel) ? panel : "settings";
+    }
+
+    function syncMenuTabs() {
+      const collapsed = els.controls.classList.contains("is-collapsed");
+      const activePanel = activeMenuPanel();
+      for (const button of els.menuPanelButtons) {
+        const isActive = !collapsed && button.dataset.menuPanel === activePanel;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-selected", String(isActive));
+      }
+
+      els.menuCollapse.classList.toggle("is-active", collapsed);
+      els.menuCollapse.textContent = tr(collapsed ? "showOptions" : "collapseOptions");
+      els.menuCollapse.setAttribute("aria-expanded", String(!collapsed));
+      els.controls.setAttribute("aria-hidden", String(collapsed));
+    }
+
+    function showMenuPanel(panel) {
+      if (!["settings", "manual"].includes(panel)) return;
+      els.controls.dataset.activePanel = panel;
+      els.controls.classList.remove("is-collapsed");
+      syncMenuTabs();
+      if (panel === "settings") renderScaleStaff();
+    }
+
+    function toggleMenuCollapse() {
+      if (els.controls.classList.contains("is-collapsed")) {
+        showMenuPanel(activeMenuPanel());
+        return;
+      }
+      els.controls.classList.add("is-collapsed");
+      syncMenuTabs();
     }
 
     function clampNumber(value, fallback, min, max) {
       const parsed = Number.parseInt(value, 10);
+      const safe = Number.isFinite(parsed) ? parsed : fallback;
+      return Math.min(max, Math.max(min, safe));
+    }
+
+    function clampFloat(value, fallback, min, max) {
+      const parsed = Number.parseFloat(value);
       const safe = Number.isFinite(parsed) ? parsed : fallback;
       return Math.min(max, Math.max(min, safe));
     }
@@ -2404,12 +2902,33 @@
       return a.row === b.row && a.col === b.col;
     }
 
+    function isSustainCode(code) {
+      return SUSTAIN_CODES.has(code);
+    }
+
     function activeProfile() {
       return mappingProfiles.find(profile => profile.id === activeProfileId) || mappingProfiles[0];
     }
 
+    function profileById(id) {
+      if (id === pointerProfile.id) return pointerProfile;
+      return mappingProfiles.find(profile => profile.id === id);
+    }
+
     function browserProfile() {
       return mappingProfiles.find(profile => profile.source === "browser") || mappingProfiles[0];
+    }
+
+    function profileVolume(profile) {
+      return clampFloat(profile?.volume, DEFAULT_PROFILE_VOLUME, 0, 1);
+    }
+
+    function volumeLabel(value) {
+      return `${Math.round(profileVolume({ volume: value }) * 100)}%`;
+    }
+
+    function profileAllowsLongVibrato(profile) {
+      return profile?.longVibrato !== false;
     }
 
     function syncQAnchorFromActiveProfile() {
@@ -2424,13 +2943,162 @@
     function renderMappingProfileOptions() {
       const fragment = document.createDocumentFragment();
 
+      function createInstrumentControl(profile) {
+        const instrumentControl = document.createElement("div");
+        instrumentControl.className = "control";
+        const instrumentFieldLabel = document.createElement("label");
+        instrumentFieldLabel.textContent = tr("instrument");
+        const instrumentSelect = document.createElement("select");
+        instrumentSelect.dataset.profileField = "instrument";
+        for (const [value] of instrumentOptions) {
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = instrumentLabel(value);
+          option.selected = value === profile.instrument;
+          instrumentSelect.append(option);
+        }
+        instrumentControl.append(instrumentFieldLabel, instrumentSelect);
+        return instrumentControl;
+      }
+
+      function createShiftControl(profile) {
+        const shiftControl = document.createElement("div");
+        shiftControl.className = "control";
+        const shiftLabel = document.createElement("label");
+        shiftLabel.textContent = tr("outputShift");
+        const shiftInput = document.createElement("input");
+        shiftInput.type = "number";
+        shiftInput.min = "-24";
+        shiftInput.max = "24";
+        shiftInput.step = "1";
+        shiftInput.value = profile.outputShift || 0;
+        shiftInput.dataset.profileField = "outputShift";
+        shiftControl.append(shiftLabel, shiftInput);
+        return shiftControl;
+      }
+
+      function createVolumeControl(profile) {
+        const volumeControl = document.createElement("div");
+        volumeControl.className = "control";
+        const volumeFieldLabel = document.createElement("label");
+        volumeFieldLabel.textContent = tr("volume");
+        const volumeWrap = document.createElement("div");
+        volumeWrap.className = "profile-volume";
+        const volumeInput = document.createElement("input");
+        volumeInput.type = "range";
+        volumeInput.min = "0";
+        volumeInput.max = "1";
+        volumeInput.step = "0.05";
+        volumeInput.value = String(profileVolume(profile));
+        volumeInput.dataset.profileField = "volume";
+        const volumeOutput = document.createElement("output");
+        volumeOutput.dataset.profileVolumeOutput = "";
+        volumeOutput.textContent = volumeLabel(volumeInput.value);
+        volumeWrap.append(volumeInput, volumeOutput);
+        volumeControl.append(volumeFieldLabel, volumeWrap);
+        return volumeControl;
+      }
+
+      function createLongVibratoControl(profile) {
+        const label = document.createElement("label");
+        label.className = "toggle profile-long-vibrato";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = profileAllowsLongVibrato(profile);
+        input.dataset.profileField = "longVibrato";
+        const span = document.createElement("span");
+        span.textContent = tr("longVibrato");
+        label.append(input, span);
+        return label;
+      }
+
+      function createPointerFadeControl() {
+        const fadeControl = document.createElement("div");
+        fadeControl.className = "control";
+        const fadeLabel = document.createElement("label");
+        fadeLabel.textContent = tr("pointerFade");
+        const fadeWrap = document.createElement("div");
+        fadeWrap.className = "profile-volume";
+        const fadeInput = document.createElement("input");
+        fadeInput.type = "range";
+        fadeInput.min = "0.1";
+        fadeInput.max = "3";
+        fadeInput.step = "0.05";
+        fadeInput.value = String(pointerFadeTime());
+        fadeInput.disabled = Boolean(pointerProfile.followSustainPedal);
+        fadeInput.dataset.profileField = "fadeSustainTime";
+        const fadeOutput = document.createElement("output");
+        fadeOutput.dataset.profileFadeOutput = "";
+        fadeOutput.textContent = formatSeconds(fadeInput.value);
+        fadeWrap.append(fadeInput, fadeOutput);
+        fadeControl.append(fadeLabel, fadeWrap);
+        return fadeControl;
+      }
+
+      function createFollowPedalControl() {
+        const label = document.createElement("label");
+        label.className = "toggle profile-follow-pedal";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = Boolean(pointerProfile.followSustainPedal);
+        input.dataset.profileField = "followSustainPedal";
+        const span = document.createElement("span");
+        span.textContent = tr("followPedal");
+        label.append(input, span);
+        return label;
+      }
+
+      function createKeyboardSustainControl(profile) {
+        const label = document.createElement("label");
+        label.className = "toggle profile-follow-pedal";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = profile.sustainEnabled !== false;
+        input.dataset.profileField = "sustainEnabled";
+        const span = document.createElement("span");
+        span.textContent = tr("keyboardSustain");
+        label.append(input, span);
+        return label;
+      }
+
+      function createPlaceholder() {
+        const placeholder = document.createElement("span");
+        placeholder.className = "profile-placeholder";
+        return placeholder;
+      }
+
+      const pointerRow = document.createElement("div");
+      pointerRow.className = "profile-row is-pointer";
+      pointerRow.dataset.profileId = pointerProfile.id;
+      const pointerName = document.createElement("button");
+      pointerName.type = "button";
+      pointerName.className = "command profile-name profile-static-name";
+      pointerName.tabIndex = -1;
+      const pointerNameText = document.createElement("span");
+      pointerNameText.textContent = tr("mouseTouch");
+      const pointerSource = document.createElement("small");
+      pointerSource.textContent = tr("monoSource");
+      pointerName.append(pointerNameText, pointerSource);
+      pointerRow.append(
+        pointerName,
+        createInstrumentControl(pointerProfile),
+        createShiftControl(pointerProfile),
+        createVolumeControl(pointerProfile),
+        createLongVibratoControl(pointerProfile),
+        createPointerFadeControl(),
+        createFollowPedalControl(),
+        createPlaceholder(),
+        createPlaceholder()
+      );
+      fragment.append(pointerRow);
+
       for (const profile of mappingProfiles) {
         const row = document.createElement("div");
         row.className = "profile-row";
         if (profile.id === activeProfileId) row.classList.add("is-active");
         row.dataset.profileId = profile.id;
 
-        const sourceText = profile.source === "hid" ? tr("sourceHid") : tr("touchComputer");
+        const sourceText = profile.source === "hid" ? tr("sourceHid") : tr("computerKeyboard");
         const nameButton = document.createElement("button");
         nameButton.type = "button";
         nameButton.className = profile.id === activeProfileId ? "command primary profile-name" : "command profile-name";
@@ -2471,6 +3139,9 @@
         shiftInput.dataset.profileField = "outputShift";
         shiftControl.append(shiftLabel, shiftInput);
         row.append(shiftControl);
+        row.append(createVolumeControl(profile));
+        row.append(createLongVibratoControl(profile));
+        row.append(createKeyboardSustainControl(profile), createPlaceholder());
 
         const qGroup = document.createElement("div");
         qGroup.className = "button-group two";
@@ -2969,7 +3640,7 @@
 
     function buttonMidi(row, col) {
       const system = currentSystem();
-      const baseOctave = 5;
+      const baseOctave = 4;
       const rowOffset = system.rowOffset ? system.rowOffset(row) : system.rowStep * row;
       return (baseOctave + 1) * 12 + system.baseOffset + rowOffset + system.colStep * col;
     }
@@ -3109,6 +3780,10 @@
         .map(usage => hidUsageToCode.get(usage))
         .filter(Boolean);
 
+      if (bytes.length >= 8 && (bytes[0] & 0x20) !== 0) {
+        codes.push("ShiftRight");
+      }
+
       if (codes.length === 0 && bytes.length > 8) {
         codes = bytes
           .filter(usage => usage > 0)
@@ -3149,6 +3824,11 @@
     }
 
     function handleProfileCodeDown(profile, code) {
+      if (isSustainCode(code)) {
+        suppressBrowserCodeOnce(code);
+        setSustainPedal(profile, true);
+        return;
+      }
       const coord = coordForProfileCode(profile, code);
       if (!coord) return;
       suppressBrowserCodeOnce(code);
@@ -3157,14 +3837,21 @@
     }
 
     function handleProfileCodeUp(profile, code) {
+      if (isSustainCode(code)) {
+        suppressBrowserCodeOnce(code);
+        setSustainPedal(profile, false);
+        return;
+      }
       suppressBrowserCodeOnce(code);
-      stopVoiceByPrefix(voicePrefixForProfileCode(profile, code));
+      releaseVoicePrefixForProfile(voicePrefixForProfileCode(profile, code), profile);
     }
 
     function releaseProfilePressedCodes(profile) {
       for (const code of profile.pressedCodes || []) {
         stopVoiceByPrefix(voicePrefixForProfileCode(profile, code));
       }
+      setSustainPedal(profile, false);
+      releaseSustainedVoices(profile, 0.08);
       profile.pressedCodes = new Set();
     }
 
@@ -3244,6 +3931,10 @@
           anchor: { row: 1, col: 0 },
           instrument: activeProfile().instrument || "accordion",
           outputShift: 0,
+          volume: profileVolume(activeProfile()),
+          longVibrato: profileAllowsLongVibrato(activeProfile()),
+          sustainEnabled: activeProfile().sustainEnabled !== false,
+          sustainPedal: false,
           source: "hid",
           device,
           pressedCodes: new Set()
@@ -3510,7 +4201,14 @@
     function startVoice(target, voiceId = "single", autoStopMs = 0, profile = activeProfile()) {
       const context = ensureAudio();
       const id = voiceKey(target, voiceId);
-      if (voices.has(id)) return;
+      const existingVoice = voices.get(id);
+      if (existingVoice) {
+        if (existingVoice.sustained) {
+          stopVoice(id, 0.03);
+        } else {
+          return;
+        }
+      }
 
       const preset = instruments[profile.instrument] || instruments.accordion;
       const now = context.currentTime;
@@ -3518,7 +4216,7 @@
       const baseHz = Number(target.dataset.hz) * Math.pow(2, outputShift / 12);
       const output = context.createGain();
       const envelope = preset.envelope;
-      const peakGain = Math.max(0.0001, FIXED_OUTPUT_VOLUME * 0.42);
+      const peakGain = Math.max(0.0001, FIXED_OUTPUT_VOLUME * profileVolume(profile) * 0.42);
 
       output.gain.setValueAtTime(0.0001, now);
       output.gain.exponentialRampToValueAtTime(peakGain, now + envelope.attack);
@@ -3536,7 +4234,16 @@
 
       output.connect(context.destination);
 
-      const voice = { target, output, oscillators: [], sources: [], release: envelope.release };
+      const voice = {
+        target,
+        output,
+        oscillators: [],
+        sources: [],
+        release: envelope.release,
+        profile,
+        sustained: false,
+        sustainProfile: null
+      };
 
       for (const spec of preset.oscillators) {
         const osc = context.createOscillator();
@@ -3579,6 +4286,7 @@
       }
 
       voices.set(id, voice);
+      if (autoStopMs <= 0) beginLongVibratoHold(id, profile);
       target.classList.add("is-active");
       showNote(target, profile);
 
@@ -3587,12 +4295,12 @@
       }
     }
 
-    function stopVoice(id) {
+    function stopVoice(id, releaseOverride = null) {
       const voice = voices.get(id);
       if (!voice || !audioContext) return;
 
       const now = audioContext.currentTime;
-      const release = Math.max(0.05, voice.release || 0.2);
+      const release = Math.max(0.03, releaseOverride ?? voice.release ?? 0.2);
       voice.output.gain.cancelScheduledValues(now);
       voice.output.gain.setValueAtTime(Math.max(voice.output.gain.value, 0.0001), now);
       voice.output.gain.exponentialRampToValueAtTime(0.0001, now + release);
@@ -3606,14 +4314,88 @@
       }
 
       voices.delete(id);
+      voice.sustained = false;
+      voice.sustainProfile = null;
+      endLongVibratoHold(id);
 
       const stillActive = [...voices.values()].some(active => active.target === voice.target);
       if (!stillActive) voice.target.classList.remove("is-active");
     }
 
-    function stopVoiceByPrefix(prefix) {
+    function stopVoiceByPrefix(prefix, releaseOverride = null) {
       for (const id of [...voices.keys()]) {
-        if (id.startsWith(`${prefix}:`)) stopVoice(id);
+        if (id.startsWith(`${prefix}:`)) stopVoice(id, releaseOverride);
+      }
+    }
+
+    function sustainVoice(id, profile) {
+      const voice = voices.get(id);
+      if (!voice) return;
+      voice.sustained = true;
+      voice.sustainProfile = profile;
+      endLongVibratoHold(id);
+    }
+
+    function sustainVoiceByPrefix(prefix, profile) {
+      for (const id of [...voices.keys()]) {
+        if (id.startsWith(`${prefix}:`)) sustainVoice(id, profile);
+      }
+    }
+
+    function releaseSustainedVoices(profile, releaseTime = globalSustainTime()) {
+      for (const [id, voice] of [...voices.entries()]) {
+        if (voice.sustained && voice.sustainProfile === profile) stopVoice(id, releaseTime);
+      }
+    }
+
+    function anySustainPedalActive() {
+      return mappingProfiles.some(profile => profile.sustainEnabled !== false && profile.sustainPedal);
+    }
+
+    function setSustainPedal(profile, active) {
+      if (!profile || profile.source === "pointer") return;
+      if (profile.sustainEnabled === false) {
+        profile.sustainPedal = false;
+        releaseSustainedVoices(profile, 0.08);
+        return;
+      }
+      if (Boolean(profile.sustainPedal) === Boolean(active)) return;
+      profile.sustainPedal = Boolean(active);
+
+      if (profile.sustainPedal) {
+        setReadout(tr("sustainPedal"), tr("sustainPedalOn"));
+        return;
+      }
+
+      const releaseTime = globalSustainTime();
+      releaseSustainedVoices(profile, releaseTime);
+      if (!anySustainPedalActive()) releaseSustainedVoices(pointerProfile, releaseTime);
+      setReadout(tr("sustainPedal"), tr("sustainPedalOff", { time: formatSeconds(releaseTime) }));
+    }
+
+    function releaseVoicePrefixForProfile(prefix, profile) {
+      if (profile?.sustainEnabled !== false && profile?.sustainPedal) {
+        sustainVoiceByPrefix(prefix, profile);
+        return;
+      }
+      stopVoiceByPrefix(prefix);
+    }
+
+    function releasePointerVoicePrefix(prefix) {
+      if (pointerProfile.followSustainPedal) {
+        if (anySustainPedalActive()) {
+          sustainVoiceByPrefix(prefix, pointerProfile);
+          return;
+        }
+        stopVoiceByPrefix(prefix);
+        return;
+      }
+      stopVoiceByPrefix(prefix, pointerFadeTime());
+    }
+
+    function stopPointerVoices() {
+      for (const id of [...voices.keys()]) {
+        if (id.startsWith("pointer-") || id.startsWith("click:")) stopVoice(id);
       }
     }
 
@@ -3623,7 +4405,9 @@
         pendingBrowserStarts.delete(code);
       }
       for (const id of [...voices.keys()]) stopVoice(id);
+      for (const profile of mappingProfiles) profile.sustainPedal = false;
       els.keyboard.querySelectorAll(".is-active").forEach(key => key.classList.remove("is-active"));
+      clearLongVibrato();
     }
 
     function findIntervalCoord(deltaSemitones) {
@@ -3658,6 +4442,15 @@
       updateReadoutForCoord(prefix, qAnchor.row, qAnchor.col);
     }
 
+    function moveQToCoord(coord, prefix) {
+      const viewAnchor = captureViewAnchor();
+      setActiveAnchor(coord);
+      selectedCoord = { ...coord };
+      includeProfileHardwareRange();
+      renderKeyboard({ viewAnchor });
+      updateReadoutForCoord(prefix, qAnchor.row, qAnchor.col);
+    }
+
     function isTypingTarget(target) {
       const tag = target?.tagName;
       return target?.isContentEditable || tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA";
@@ -3670,7 +4463,12 @@
     }
 
     function runAutoVibrato(timestamp) {
-      if (!longVibratoState?.active) return;
+      const hold = longVibratoState ? longVibratoHolds.get(longVibratoState.holdId) : null;
+      if (!longVibratoState?.active || !hold || !profileAllowsLongVibrato(hold.profile)) {
+        longVibratoState = null;
+        setManualBend(0);
+        return;
+      }
       if (!longVibratoState.startedAt) longVibratoState.startedAt = timestamp;
       const elapsedSeconds = (timestamp - longVibratoState.startedAt) / 1000;
       const depthCents = 16;
@@ -3679,19 +4477,65 @@
       autoVibratoFrame = requestAnimationFrame(runAutoVibrato);
     }
 
-    function startAutoVibrato(pointerId) {
-      if (!longVibratoState || longVibratoState.pointerId !== pointerId) return;
-      longVibratoState.active = true;
-      longVibratoState.startedAt = 0;
+    function activateLongVibratoHold(holdId) {
+      const hold = longVibratoHolds.get(holdId);
+      if (!hold || !profileAllowsLongVibrato(hold.profile)) return;
+      longVibratoState = { holdId, active: true, startedAt: 0 };
       cancelAnimationFrame(autoVibratoFrame);
       autoVibratoFrame = requestAnimationFrame(runAutoVibrato);
     }
 
-    function endLongVibrato(event) {
-      if (!longVibratoState || event.pointerId !== longVibratoState.pointerId) return;
-      window.clearTimeout(longVibratoState.timer);
-      cancelAnimationFrame(autoVibratoFrame);
+    function beginLongVibratoHold(holdId, profile) {
+      if (!profileAllowsLongVibrato(profile) || longVibratoHolds.has(holdId)) return;
+      const timer = window.setTimeout(() => activateLongVibratoHold(holdId), 260);
+      longVibratoHolds.set(holdId, { timer, profile });
+    }
+
+    function endLongVibratoHold(holdId) {
+      const hold = longVibratoHolds.get(holdId);
+      if (hold) window.clearTimeout(hold.timer);
+      longVibratoHolds.delete(holdId);
+
+      if (longVibratoState?.holdId !== holdId) return;
+      const nextHoldId = [...longVibratoHolds.entries()]
+        .find(([, nextHold]) => profileAllowsLongVibrato(nextHold.profile))?.[0];
+      if (nextHoldId) {
+        activateLongVibratoHold(nextHoldId);
+        return;
+      }
+
       longVibratoState = null;
+      cancelAnimationFrame(autoVibratoFrame);
+      setManualBend(0);
+    }
+
+    function clearLongVibrato() {
+      for (const hold of longVibratoHolds.values()) window.clearTimeout(hold.timer);
+      longVibratoHolds.clear();
+      longVibratoState = null;
+      cancelAnimationFrame(autoVibratoFrame);
+      setManualBend(0);
+    }
+
+    function clearLongVibratoForProfile(profile) {
+      let removedActiveHold = false;
+      for (const [holdId, hold] of [...longVibratoHolds.entries()]) {
+        if (hold.profile !== profile) continue;
+        window.clearTimeout(hold.timer);
+        longVibratoHolds.delete(holdId);
+        if (longVibratoState?.holdId === holdId) removedActiveHold = true;
+      }
+
+      if (!removedActiveHold) return;
+      const nextHoldId = [...longVibratoHolds.entries()]
+        .find(([, nextHold]) => profileAllowsLongVibrato(nextHold.profile))?.[0];
+      if (nextHoldId) {
+        activateLongVibratoHold(nextHoldId);
+        return;
+      }
+
+      longVibratoState = null;
+      cancelAnimationFrame(autoVibratoFrame);
       setManualBend(0);
     }
 
@@ -3701,28 +4545,18 @@
       event.preventDefault();
       ignoreNextClickUntil = performance.now() + 300;
       selectButton(target);
-      const profile = browserProfile();
 
       target.setPointerCapture?.(event.pointerId);
-      startVoice(target, `pointer-${event.pointerId}`, 0, profile);
-
-      if (els.longVibrato.checked) {
-        longVibratoState = {
-          pointerId: event.pointerId,
-          active: false,
-          timer: window.setTimeout(() => startAutoVibrato(event.pointerId), 260)
-        };
-      }
+      stopPointerVoices();
+      startVoice(target, `pointer-${event.pointerId}`, 0, pointerProfile);
     });
 
     els.keyboard.addEventListener("pointerup", event => {
-      stopVoiceByPrefix(`pointer-${event.pointerId}`);
-      endLongVibrato(event);
+      releasePointerVoicePrefix(`pointer-${event.pointerId}`);
     });
 
     els.keyboard.addEventListener("pointercancel", event => {
-      stopVoiceByPrefix(`pointer-${event.pointerId}`);
-      endLongVibrato(event);
+      releasePointerVoicePrefix(`pointer-${event.pointerId}`);
     });
 
     els.keyboard.addEventListener("click", event => {
@@ -3730,8 +4564,9 @@
       if (!target) return;
       if (performance.now() < ignoreNextClickUntil) return;
       selectButton(target);
-      const profile = browserProfile();
-      startVoice(target, "click", 240, profile);
+      stopPointerVoices();
+      startVoice(target, "click", 0, pointerProfile);
+      window.setTimeout(() => releasePointerVoicePrefix("click"), 140);
     });
 
     document.addEventListener("pointerdown", event => {
@@ -3744,16 +4579,15 @@
       if (event.ctrlKey || event.metaKey || event.altKey) return;
 
       const arrowMap = {
-        ArrowUp: [12, "Q +8"],
-        ArrowDown: [-12, "Q -8"],
-        ArrowRight: [7, "Q +5"],
-        ArrowLeft: [-7, "Q -5"]
+        ArrowUp: () => moveQToCoord({ row: qAnchor.row - 1, col: qAnchor.col }, "Q 左上"),
+        ArrowDown: () => moveQToCoord({ row: qAnchor.row + 1, col: qAnchor.col }, "Q 右下"),
+        ArrowRight: () => moveQBy(12, "Q +8"),
+        ArrowLeft: () => moveQBy(-12, "Q -8")
       };
 
       if (arrowMap[event.key]) {
         event.preventDefault();
-        const [delta, label] = arrowMap[event.key];
-        moveQBy(delta, label);
+        arrowMap[event.key]();
         return;
       }
 
@@ -3761,8 +4595,13 @@
         event.preventDefault();
         return;
       }
-      if (event.repeat) return;
       const profile = browserProfile();
+      if (isSustainCode(event.code)) {
+        event.preventDefault();
+        if (!event.repeat) setSustainPedal(profile, true);
+        return;
+      }
+      if (event.repeat) return;
       const coord = coordForProfileCode(profile, event.code);
       if (!coord) return;
 
@@ -3772,12 +4611,20 @@
 
     window.addEventListener("keyup", event => {
       if (isTypingTarget(event.target)) return;
-      if (shouldSuppressBrowserCode(event.code)) event.preventDefault();
+      if (shouldSuppressBrowserCode(event.code)) {
+        event.preventDefault();
+        return;
+      }
       const profile = browserProfile();
+      if (isSustainCode(event.code)) {
+        event.preventDefault();
+        setSustainPedal(profile, false);
+        return;
+      }
       if (coordForProfileCode(profile, event.code)) {
         event.preventDefault();
         cancelPendingBrowserCode(event.code);
-        stopVoiceByPrefix(`computer-${profile.id}-${event.code}`);
+        releaseVoicePrefixForProfile(`computer-${profile.id}-${event.code}`, profile);
       }
     });
 
@@ -3803,7 +4650,7 @@
       const row = event.target.closest(".profile-row");
       const actionTarget = event.target.closest("[data-profile-action]");
       if (!row || !actionTarget) return;
-      const profile = mappingProfiles.find(item => item.id === row.dataset.profileId);
+      const profile = profileById(row.dataset.profileId);
       if (!profile) return;
       const viewAnchor = captureViewAnchor();
       const action = actionTarget.dataset.profileAction;
@@ -3837,7 +4684,7 @@
       const field = event.target.dataset.profileField;
       if (!field) return;
       const row = event.target.closest(".profile-row");
-      const profile = mappingProfiles.find(item => item.id === row?.dataset.profileId);
+      const profile = profileById(row?.dataset.profileId);
       if (!profile) return;
       releaseControlFocus(event);
 
@@ -3849,6 +4696,27 @@
         event.target.value = profile.outputShift;
         stopAllVoices();
         renderScaleStaff();
+      } else if (field === "volume") {
+        profile.volume = clampFloat(event.target.value, DEFAULT_PROFILE_VOLUME, 0, 1);
+        event.target.value = profile.volume;
+        event.target.closest(".profile-volume")?.querySelector("[data-profile-volume-output]")?.replaceChildren(volumeLabel(profile.volume));
+      } else if (field === "longVibrato") {
+        profile.longVibrato = event.target.checked;
+        if (!profile.longVibrato) clearLongVibratoForProfile(profile);
+      } else if (field === "sustainEnabled") {
+        profile.sustainEnabled = event.target.checked;
+        if (!profile.sustainEnabled) {
+          setSustainPedal(profile, false);
+          releaseSustainedVoices(profile, 0.08);
+          if (!anySustainPedalActive()) releaseSustainedVoices(pointerProfile, 0.08);
+        }
+      } else if (field === "fadeSustainTime") {
+        pointerProfile.fadeSustainTime = clampFloat(event.target.value, DEFAULT_POINTER_FADE_TIME, 0.1, 3);
+        event.target.value = pointerProfile.fadeSustainTime;
+        event.target.closest(".profile-volume")?.querySelector("[data-profile-fade-output]")?.replaceChildren(formatSeconds(pointerProfile.fadeSustainTime));
+      } else if (field === "followSustainPedal") {
+        pointerProfile.followSustainPedal = event.target.checked;
+        if (pointerProfile.followSustainPedal && !anySustainPedalActive()) releaseSustainedVoices(pointerProfile, 0.08);
       }
 
       renderMappingProfileOptions();
@@ -3856,11 +4724,20 @@
     });
 
     els.profileRows.addEventListener("input", event => {
-      if (event.target.dataset.profileField !== "outputShift") return;
+      const field = event.target.dataset.profileField;
+      if (field !== "outputShift" && field !== "volume" && field !== "fadeSustainTime") return;
       const row = event.target.closest(".profile-row");
-      const profile = mappingProfiles.find(item => item.id === row?.dataset.profileId);
+      const profile = profileById(row?.dataset.profileId);
       if (!profile) return;
-      profile.outputShift = clampNumber(event.target.value, 0, -24, 24);
+      if (field === "outputShift") {
+        profile.outputShift = clampNumber(event.target.value, 0, -24, 24);
+      } else if (field === "volume") {
+        profile.volume = clampFloat(event.target.value, DEFAULT_PROFILE_VOLUME, 0, 1);
+        event.target.closest(".profile-volume")?.querySelector("[data-profile-volume-output]")?.replaceChildren(volumeLabel(profile.volume));
+      } else if (field === "fadeSustainTime") {
+        pointerProfile.fadeSustainTime = clampFloat(event.target.value, DEFAULT_POINTER_FADE_TIME, 0.1, 3);
+        event.target.closest(".profile-volume")?.querySelector("[data-profile-fade-output]")?.replaceChildren(formatSeconds(pointerProfile.fadeSustainTime));
+      }
     });
 
     els.keySystem.addEventListener("change", event => {
@@ -3888,26 +4765,35 @@
       shiftKeyboardColor(1);
     });
 
-    els.longVibrato.addEventListener("change", event => {
+    els.vibratoSensitivity.addEventListener("change", releaseControlFocus);
+
+    els.sustainTime.addEventListener("input", updateSustainTimeOutput);
+    els.sustainTime.addEventListener("change", event => {
       releaseControlFocus(event);
-      if (!els.longVibrato.checked) {
-        if (longVibratoState) window.clearTimeout(longVibratoState.timer);
-        cancelAnimationFrame(autoVibratoFrame);
-        longVibratoState = null;
-        setManualBend(0);
-      }
+      updateSustainTimeOutput();
     });
 
-    els.vibratoSensitivity.addEventListener("change", releaseControlFocus);
+    els.showStaff.addEventListener("change", event => {
+      releaseControlFocus(event);
+      syncStaffVisibility();
+    });
 
     els.vibratoPad.addEventListener("pointermove", updateBendFromPointer);
     els.vibratoPad.addEventListener("pointerleave", () => setManualBend(0));
     els.vibratoPad.addEventListener("pointercancel", () => setManualBend(0));
 
-    els.scaleToggle.addEventListener("click", () => {
-      const isOpen = els.scaleDock.classList.toggle("is-open");
-      els.scaleToggle.setAttribute("aria-expanded", String(isOpen));
-      if (isOpen) renderScaleStaff();
+    els.menuTabs.addEventListener("click", event => {
+      const panelButton = event.target.closest("[data-menu-panel]");
+      if (panelButton) {
+        releaseControlFocus(event);
+        showMenuPanel(panelButton.dataset.menuPanel);
+        return;
+      }
+
+      if (event.target.closest("#menuCollapse")) {
+        releaseControlFocus(event);
+        toggleMenuCollapse();
+      }
     });
 
     els.scaleZoomOut.addEventListener("click", event => {
