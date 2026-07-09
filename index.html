@@ -368,7 +368,7 @@
         minmax(92px, 0.82fr)
         minmax(68px, 0.62fr)
         minmax(82px, 0.68fr)
-        minmax(72px, 0.66fr)
+        minmax(112px, 0.9fr)
         minmax(48px, 0.45fr)
         minmax(66px, 0.58fr);
     }
@@ -446,6 +446,65 @@
       min-width: 0;
       width: 22px;
       padding: 0;
+    }
+
+    .metronome-stepper {
+      display: grid;
+      grid-template-columns: 19px 19px minmax(44px, 1fr) 19px 19px;
+      gap: 2px;
+      align-items: center;
+      min-height: 24px;
+    }
+
+    .metro-step,
+    .metro-display {
+      min-width: 0;
+      min-height: 24px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel-2);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .metro-step {
+      padding: 0;
+      font-size: 0.9rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .metro-display {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 0 3px;
+      font-size: 0.76rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .metro-display small {
+      color: var(--muted);
+      font-size: 0.52rem;
+      font-weight: 900;
+    }
+
+    .metro-step:hover,
+    .metro-display:hover {
+      border-color: rgba(0, 127, 120, 0.42);
+      background: #eef8f6;
+    }
+
+    .metro-display.is-active {
+      border-color: #17191f;
+      background: #17191f;
+      color: #fff;
+    }
+
+    .metro-display.is-active small {
+      color: rgba(255, 255, 255, 0.72);
     }
 
     .color-equals {
@@ -1336,10 +1395,23 @@
           </div>
 
           <div class="control">
-            <label for="sustainTime">踏板淡出</label>
+            <label for="sustainTime">延音阻尼</label>
             <div class="profile-volume">
-              <input id="sustainTime" type="range" min="0.1" max="3" step="0.1" value="0.8">
+              <input id="sustainTime" type="range" min="0.1" max="10" step="0.1" value="0.8">
               <output id="sustainTimeValue">0.8s</output>
+            </div>
+          </div>
+
+          <div class="control metronome-control">
+            <span class="group-label">节拍器</span>
+            <div class="metronome-stepper" aria-label="节拍器">
+              <button class="metro-step" type="button" data-metronome-step="-10" aria-label="-10 BPM">«</button>
+              <button class="metro-step" type="button" data-metronome-step="-1" aria-label="-1 BPM">‹</button>
+              <button class="metro-display" id="metronomeToggle" type="button" aria-pressed="false">
+                <span id="metronomeBpm">120</span><small>BPM</small>
+              </button>
+              <button class="metro-step" type="button" data-metronome-step="1" aria-label="+1 BPM">›</button>
+              <button class="metro-step" type="button" data-metronome-step="10" aria-label="+10 BPM">»</button>
             </div>
           </div>
 
@@ -1448,7 +1520,12 @@
     const DEFAULT_PROFILE_VOLUME = 1;
     const DEFAULT_GLOBAL_SUSTAIN_TIME = 0.8;
     const DEFAULT_POINTER_FADE_TIME = 2;
+    const DEFAULT_METRONOME_BPM = 120;
+    const MIN_METRONOME_BPM = 30;
+    const MAX_METRONOME_BPM = 300;
     const SUSTAIN_CODES = new Set(["Space", "ShiftRight"]);
+    const SOFT_PEDAL_CODE = "ShiftLeft";
+    const SOFT_PEDAL_FACTOR = 0.42;
     let cColorIndex = 0;
     const languageOptions = [
       ["zh", "中文", "cn", "🇨🇳"],
@@ -1523,6 +1600,7 @@
       [0x2C, "Space"],
       [0x2D, "Minus"], [0x2E, "Equal"], [0x2F, "BracketLeft"], [0x30, "BracketRight"],
       [0x33, "Semicolon"], [0x34, "Quote"], [0x36, "Comma"], [0x37, "Period"], [0x38, "Slash"],
+      [0xE1, "ShiftLeft"],
       [0xE5, "ShiftRight"]
     ]);
 
@@ -1565,6 +1643,7 @@
         longVibrato: false,
         sustainEnabled: true,
         sustainPedal: false,
+        softPedal: false,
         source: "browser",
         pressedCodes: new Set()
       }
@@ -1585,18 +1664,22 @@
     const instrumentOptions = [
       ["accordion", "手风琴"],
       ["piano", "钢琴"],
+      ["fortepiano", "古钢琴"],
+      ["harpsichord", "羽管键琴"],
       ["guitar", "吉他"],
+      ["guzheng", "古筝"],
+      ["harp", "竖琴"],
       ["violin", "小提琴"],
       ["cello", "大提琴"],
+      ["strings", "弦乐组"],
+      ["erhu", "二胡"],
       ["flute", "长笛"],
+      ["recorder", "竖笛"],
+      ["clarinet", "单簧管"],
+      ["oboe", "双簧管"],
       ["trumpet", "小号"],
       ["sax", "萨克斯"],
-      ["harpsichord", "古钢琴"],
-      ["quilled", "羽管键琴"],
-      ["theremin", "特雷门琴"],
-      ["harp", "竖琴"],
-      ["oboe", "双簧管"],
-      ["recorder", "竖笛"]
+      ["theremin", "特雷门琴"]
     ];
 
     const languageMeta = {
@@ -1647,7 +1730,15 @@
         vibrato: "揉弦",
         longVibrato: "长按揉弦",
         vibratoSensitivity: "揉弦灵敏度",
-        sustainTime: "踏板淡出",
+        sustainTime: "延音阻尼",
+        metronome: "节拍器",
+        metronomeStart: "启动节拍器",
+        metronomeStop: "停止节拍器",
+        metronomeOff: "节拍器已关闭",
+        metronomeDown1: "减 1 BPM",
+        metronomeUp1: "加 1 BPM",
+        metronomeDown10: "减 10 BPM",
+        metronomeUp10: "加 10 BPM",
         showStaff: "谱表",
         staff: "谱表",
         keyColor: "键盘颜色",
@@ -1684,8 +1775,11 @@
         followPedal: "跟随踏板",
         keyboardSustain: "键盘延音",
         sustainPedal: "延音踏板",
-        sustainPedalOn: "Space/右 Shift 踏板已按下",
-        sustainPedalOff: "踏板淡出 {time}s",
+        sustainPedalOn: "Space/右 Shift 阻尼延音已按下",
+        sustainPedalOff: "延音踏板已松开",
+        softPedal: "弱音踏板",
+        softPedalOn: "左 Shift 弱音踏板已按下",
+        softPedalOff: "弱音踏板已松开",
         setQ: "设为 Q",
         reset: "重置",
         addHid: "添加 HID",
@@ -1698,13 +1792,18 @@
         circleTitle: "五度圈 {index}",
         instrumentAccordion: "手风琴",
         instrumentPiano: "钢琴",
+        instrumentFortepiano: "古钢琴",
         instrumentGuitar: "吉他",
+        instrumentGuzheng: "古筝",
         instrumentViolin: "小提琴",
         instrumentCello: "大提琴",
+        instrumentStrings: "弦乐组",
+        instrumentErhu: "二胡",
         instrumentFlute: "长笛",
+        instrumentClarinet: "单簧管",
         instrumentTrumpet: "小号",
         instrumentSax: "萨克斯",
-        instrumentHarpsichord: "古钢琴",
+        instrumentHarpsichord: "羽管键琴",
         instrumentQuilled: "羽管键琴",
         instrumentTheremin: "特雷门琴",
         instrumentHarp: "竖琴",
@@ -1746,7 +1845,15 @@
         vibrato: "Vibrato",
         longVibrato: "Hold vibrato",
         vibratoSensitivity: "Vib sens.",
-        sustainTime: "Pedal fade",
+        sustainTime: "Sustain decay",
+        metronome: "Metronome",
+        metronomeStart: "Start metronome",
+        metronomeStop: "Stop metronome",
+        metronomeOff: "Metronome off",
+        metronomeDown1: "Down 1 BPM",
+        metronomeUp1: "Up 1 BPM",
+        metronomeDown10: "Down 10 BPM",
+        metronomeUp10: "Up 10 BPM",
         showStaff: "Staff",
         staff: "Staff",
         keyColor: "Key color",
@@ -1783,8 +1890,11 @@
         followPedal: "Follow pedal",
         keyboardSustain: "Key sustain",
         sustainPedal: "Sustain pedal",
-        sustainPedalOn: "Space/Right Shift pedal down",
-        sustainPedalOff: "Pedal fade {time}s",
+        sustainPedalOn: "Space/Right Shift damped sustain down",
+        sustainPedalOff: "Sustain pedal up",
+        softPedal: "Soft pedal",
+        softPedalOn: "Left Shift soft pedal down",
+        softPedalOff: "Soft pedal up",
         setQ: "Set Q",
         reset: "Reset",
         addHid: "Add HID",
@@ -1797,10 +1907,15 @@
         circleTitle: "Circle {index}",
         instrumentAccordion: "Accordion",
         instrumentPiano: "Piano",
+        instrumentFortepiano: "Fortepiano",
         instrumentGuitar: "Guitar",
+        instrumentGuzheng: "Guzheng",
         instrumentViolin: "Violin",
         instrumentCello: "Cello",
+        instrumentStrings: "String ensemble",
+        instrumentErhu: "Erhu",
         instrumentFlute: "Flute",
+        instrumentClarinet: "Clarinet",
         instrumentTrumpet: "Trumpet",
         instrumentSax: "Saxophone",
         instrumentHarpsichord: "Harpsichord",
@@ -1886,10 +2001,15 @@
         circleTitle: "Cycle {index}",
         instrumentAccordion: "Accordéon",
         instrumentPiano: "Piano",
+        instrumentFortepiano: "Pianoforte",
         instrumentGuitar: "Guitare",
+        instrumentGuzheng: "Guzheng",
         instrumentViolin: "Violon",
         instrumentCello: "Violoncelle",
+        instrumentStrings: "Cordes",
+        instrumentErhu: "Erhu",
         instrumentFlute: "Flûte",
+        instrumentClarinet: "Clarinette",
         instrumentTrumpet: "Trompette",
         instrumentSax: "Saxophone",
         instrumentHarpsichord: "Clavecin",
@@ -1975,10 +2095,15 @@
         circleTitle: "Quintenzirkel {index}",
         instrumentAccordion: "Akkordeon",
         instrumentPiano: "Klavier",
+        instrumentFortepiano: "Hammerklavier",
         instrumentGuitar: "Gitarre",
+        instrumentGuzheng: "Guzheng",
         instrumentViolin: "Violine",
         instrumentCello: "Cello",
+        instrumentStrings: "Streicher",
+        instrumentErhu: "Erhu",
         instrumentFlute: "Flöte",
+        instrumentClarinet: "Klarinette",
         instrumentTrumpet: "Trompete",
         instrumentSax: "Saxophon",
         instrumentHarpsichord: "Cembalo",
@@ -2064,10 +2189,15 @@
         circleTitle: "Círculo {index}",
         instrumentAccordion: "Acordeón",
         instrumentPiano: "Piano",
+        instrumentFortepiano: "Fortepiano",
         instrumentGuitar: "Guitarra",
+        instrumentGuzheng: "Guzheng",
         instrumentViolin: "Violín",
         instrumentCello: "Violonchelo",
+        instrumentStrings: "Cuerdas",
+        instrumentErhu: "Erhu",
         instrumentFlute: "Flauta",
+        instrumentClarinet: "Clarinete",
         instrumentTrumpet: "Trompeta",
         instrumentSax: "Saxofón",
         instrumentHarpsichord: "Clave",
@@ -2153,10 +2283,15 @@
         circleTitle: "Círculo {index}",
         instrumentAccordion: "Acordeão",
         instrumentPiano: "Piano",
+        instrumentFortepiano: "Fortepiano",
         instrumentGuitar: "Guitarra",
+        instrumentGuzheng: "Guzheng",
         instrumentViolin: "Violino",
         instrumentCello: "Violoncelo",
+        instrumentStrings: "Cordas",
+        instrumentErhu: "Erhu",
         instrumentFlute: "Flauta",
+        instrumentClarinet: "Clarinete",
         instrumentTrumpet: "Trompete",
         instrumentSax: "Saxofone",
         instrumentHarpsichord: "Cravo",
@@ -2242,10 +2377,15 @@
         circleTitle: "五度圏 {index}",
         instrumentAccordion: "アコーディオン",
         instrumentPiano: "ピアノ",
+        instrumentFortepiano: "フォルテピアノ",
         instrumentGuitar: "ギター",
+        instrumentGuzheng: "古箏",
         instrumentViolin: "バイオリン",
         instrumentCello: "チェロ",
+        instrumentStrings: "弦楽合奏",
+        instrumentErhu: "二胡",
         instrumentFlute: "フルート",
+        instrumentClarinet: "クラリネット",
         instrumentTrumpet: "トランペット",
         instrumentSax: "サックス",
         instrumentHarpsichord: "チェンバロ",
@@ -2331,10 +2471,15 @@
         circleTitle: "دائرة {index}",
         instrumentAccordion: "أكورديون",
         instrumentPiano: "بيانو",
+        instrumentFortepiano: "فورتيبيانو",
         instrumentGuitar: "غيتار",
+        instrumentGuzheng: "غوجينغ",
         instrumentViolin: "كمان",
         instrumentCello: "تشيلو",
+        instrumentStrings: "مجموعة وترية",
+        instrumentErhu: "إرهو",
         instrumentFlute: "فلوت",
+        instrumentClarinet: "كلارينيت",
         instrumentTrumpet: "بوق",
         instrumentSax: "ساكسفون",
         instrumentHarpsichord: "هاربسيكورد",
@@ -2420,10 +2565,15 @@
         circleTitle: "Круг {index}",
         instrumentAccordion: "Аккордеон",
         instrumentPiano: "Фортепиано",
+        instrumentFortepiano: "Старинное ф-но",
         instrumentGuitar: "Гитара",
+        instrumentGuzheng: "Гучжэн",
         instrumentViolin: "Скрипка",
         instrumentCello: "Виолончель",
+        instrumentStrings: "Струнные",
+        instrumentErhu: "Эрху",
         instrumentFlute: "Флейта",
+        instrumentClarinet: "Кларнет",
         instrumentTrumpet: "Труба",
         instrumentSax: "Саксофон",
         instrumentHarpsichord: "Клавесин",
@@ -2450,8 +2600,8 @@
           {
             title: "踏板与揉弦",
             items: [
-              "电脑键盘或 HID 键盘按住空格或右 Shift 时启用淡出延音踏板；松开普通按键后声音会挂起，松开踏板后按全局的踏板淡出时间消失。",
-              "鼠标/触屏的触屏延音时间只影响鼠标/触屏单音；打开跟随踏板后会取消这条独立延音，只在空格踏板按下时跟随踏板。",
+              "电脑键盘或 HID 键盘按住空格或右 Shift 时启用有阻尼的延音踏板；松开普通按键后声音会按全局延音阻尼时间自动衰减，最长可设 10 秒。左 Shift 是弱音踏板，会压低该键盘的输出。",
+              "鼠标/触屏的触屏延音时间只影响鼠标/触屏单音；打开跟随踏板后会取消这条独立延音，只在 Space/右 Shift 踏板按下时跟随踏板。",
               "揉弦区域可用鼠标左右滑动微调音高；每个输入源也可以独立开关长按自动揉弦。"
             ]
           },
@@ -2479,8 +2629,8 @@
           {
             title: "Pedal And Vibrato",
             items: [
-              "Hold Space or Right Shift on a computer or HID keyboard to enable the fade sustain pedal. Released notes are held until the pedal key is released, then fade by the global pedal time.",
-              "Mouse/touch sustain only affects the pointer voice. If Follow pedal is enabled, that independent sustain is disabled and the pointer follows the Space pedal instead.",
+              "Hold Space or Right Shift on a computer or HID keyboard for damped sustain. Released notes fade automatically by the global sustain decay time, up to 10 seconds. Left Shift is the soft pedal and lowers that keyboard output.",
+              "Mouse/touch sustain only affects the pointer voice. If Follow pedal is enabled, that independent sustain is disabled and the pointer follows the Space/Right Shift pedal instead.",
               "Drag left or right in the vibrato pad to bend pitch; each input source has its own hold-vibrato switch."
             ]
           },
@@ -2515,7 +2665,20 @@
           { type: "sine", ratio: 3, gain: 0.12, detune: -1 }
         ]
       },
+      fortepiano: {
+        level: 1.12,
+        envelope: { attack: 0.004, decay: 0.42, sustain: 0.12, release: 0.26 },
+        filter: { type: "lowpass", frequency: 3300, q: 0.55 },
+        noise: { gain: 0.012, type: "highpass", frequency: 2600 },
+        oscillators: [
+          { type: "triangle", ratio: 1, gain: 0.56, detune: 0 },
+          { type: "sine", ratio: 2, gain: 0.2, detune: 2 },
+          { type: "sawtooth", ratio: 3, gain: 0.07, detune: -3 },
+          { type: "sine", ratio: 4, gain: 0.05, detune: 0 }
+        ]
+      },
       guitar: {
+        level: 1.16,
         envelope: { attack: 0.004, decay: 0.33, sustain: 0.28, release: 0.24 },
         filter: { type: "lowpass", frequency: 2500, q: 0.7 },
         oscillators: [
@@ -2535,60 +2698,98 @@
         ]
       },
       cello: {
-        envelope: { attack: 0.12, decay: 0.18, sustain: 0.82, release: 0.42 },
-        filter: { type: "lowpass", frequency: 2100, q: 0.8 },
-        vibrato: { rate: 4.7, depth: 8 },
+        level: 1.18,
+        envelope: { attack: 0.15, decay: 0.22, sustain: 0.86, release: 0.46 },
+        filter: { type: "lowpass", frequency: 1850, q: 0.9 },
+        vibrato: { rate: 4.8, depth: 9 },
+        noise: { gain: 0.008, type: "bandpass", frequency: 760 },
         oscillators: [
-          { type: "sawtooth", ratio: 0.5, gain: 0.18, detune: 0 },
-          { type: "triangle", ratio: 1, gain: 0.52, detune: 0 },
-          { type: "sawtooth", ratio: 2, gain: 0.14, detune: -2 }
+          { type: "sawtooth", ratio: 1, gain: 0.46, detune: 0 },
+          { type: "triangle", ratio: 2, gain: 0.16, detune: -2 },
+          { type: "sine", ratio: 3, gain: 0.08, detune: 1 },
+          { type: "sawtooth", ratio: 4, gain: 0.05, detune: -1 }
+        ]
+      },
+      strings: {
+        envelope: { attack: 0.18, decay: 0.24, sustain: 0.84, release: 0.55 },
+        filter: { type: "lowpass", frequency: 3900, q: 0.7 },
+        vibrato: { rate: 5.0, depth: 6 },
+        oscillators: [
+          { type: "sawtooth", ratio: 1, gain: 0.3, detune: -9 },
+          { type: "sawtooth", ratio: 1, gain: 0.3, detune: 9 },
+          { type: "triangle", ratio: 2, gain: 0.16, detune: -3 },
+          { type: "sine", ratio: 3, gain: 0.06, detune: 4 }
+        ]
+      },
+      erhu: {
+        level: 1.18,
+        envelope: { attack: 0.075, decay: 0.15, sustain: 0.86, release: 0.3 },
+        filter: { type: "bandpass", frequency: 1450, q: 2.2 },
+        vibrato: { rate: 5.7, depth: 14 },
+        oscillators: [
+          { type: "sawtooth", ratio: 1, gain: 0.44, detune: 0 },
+          { type: "triangle", ratio: 2, gain: 0.2, detune: -2 },
+          { type: "square", ratio: 3, gain: 0.07, detune: 2 }
         ]
       },
       flute: {
-        envelope: { attack: 0.055, decay: 0.12, sustain: 0.76, release: 0.25 },
-        filter: { type: "lowpass", frequency: 6800, q: 0.5 },
-        vibrato: { rate: 5.0, depth: 5 },
-        noise: { gain: 0.016, type: "highpass", frequency: 2600 },
+        level: 1.28,
+        envelope: { attack: 0.09, decay: 0.14, sustain: 0.86, release: 0.3 },
+        filter: { type: "lowpass", frequency: 8200, q: 0.28 },
+        vibrato: { rate: 5.2, depth: 3.5 },
+        noise: { gain: 0.032, type: "highpass", frequency: 3200 },
         oscillators: [
-          { type: "sine", ratio: 1, gain: 0.72, detune: 0 },
-          { type: "triangle", ratio: 2, gain: 0.11, detune: 0 }
+          { harmonics: [1, 0.17, 0.045, 0.018, 0.008], ratio: 1, gain: 0.78, detune: 0 }
         ]
       },
       trumpet: {
-        envelope: { attack: 0.028, decay: 0.16, sustain: 0.72, release: 0.2 },
-        filter: { type: "lowpass", frequency: 5200, q: 1.2 },
+        level: 1.34,
+        envelope: { attack: 0.012, decay: 0.12, sustain: 0.82, release: 0.16 },
+        filter: { type: "lowpass", track: 12, min: 3200, max: 9000, q: 0.9 },
+        formants: [
+          { frequency: 1450, q: 1.7, gain: 0.2 },
+          { frequency: 3100, q: 1.4, gain: 0.16 }
+        ],
         oscillators: [
-          { type: "sawtooth", ratio: 1, gain: 0.52, detune: 0 },
-          { type: "square", ratio: 2, gain: 0.18, detune: -1 },
-          { type: "sawtooth", ratio: 3, gain: 0.1, detune: 1 }
+          { harmonics: [0.8, 0.72, 0.64, 0.52, 0.4, 0.3, 0.22, 0.15, 0.1], ratio: 1, gain: 0.72, detune: 0 }
         ]
       },
       sax: {
-        envelope: { attack: 0.045, decay: 0.18, sustain: 0.72, release: 0.28 },
-        filter: { type: "bandpass", frequency: 1650, q: 1.6 },
-        vibrato: { rate: 4.8, depth: 6 },
+        level: 1.42,
+        envelope: { attack: 0.045, decay: 0.17, sustain: 0.82, release: 0.34 },
+        filter: { type: "lowpass", track: 8.5, min: 2100, max: 6200, q: 0.75 },
+        formants: [
+          { track: 2.0, min: 520, max: 980, q: 1.6, gain: 0.18 },
+          { track: 4.2, min: 1050, max: 2100, q: 1.25, gain: 0.18 },
+          { track: 7.2, min: 1900, max: 3400, q: 1.0, gain: 0.11 }
+        ],
+        vibrato: { rate: 4.7, depth: 8 },
+        noise: { gain: 0.016, type: "bandpass", frequency: 1600 },
         oscillators: [
-          { type: "sawtooth", ratio: 1, gain: 0.45, detune: 0 },
-          { type: "triangle", ratio: 2, gain: 0.22, detune: -2 },
-          { type: "square", ratio: 3, gain: 0.08, detune: 1 }
+          { harmonics: [0.95, 0.58, 0.5, 0.32, 0.24, 0.18, 0.11, 0.075], ratio: 1, gain: 0.64, detune: 0 }
         ]
       },
       harpsichord: {
-        envelope: { attack: 0.002, decay: 0.23, sustain: 0.04, release: 0.16 },
-        filter: { type: "highpass", frequency: 420, q: 0.6 },
+        level: 1.12,
+        envelope: { attack: 0.001, decay: 0.3, sustain: 0.025, release: 0.1 },
+        filter: { type: "highpass", frequency: 540, q: 0.85 },
+        noise: { gain: 0.018, type: "highpass", frequency: 3400 },
         oscillators: [
-          { type: "sawtooth", ratio: 1, gain: 0.38, detune: 0 },
-          { type: "square", ratio: 2, gain: 0.32, detune: 0 },
-          { type: "triangle", ratio: 4, gain: 0.1, detune: 0 }
+          { type: "square", ratio: 1, gain: 0.3, detune: 0 },
+          { type: "sawtooth", ratio: 2, gain: 0.27, detune: 1 },
+          { type: "triangle", ratio: 3, gain: 0.12, detune: -1 },
+          { type: "sine", ratio: 5, gain: 0.06, detune: 0 }
         ]
       },
       quilled: {
-        envelope: { attack: 0.001, decay: 0.18, sustain: 0.03, release: 0.12 },
-        filter: { type: "highpass", frequency: 620, q: 0.9 },
+        level: 1.12,
+        envelope: { attack: 0.001, decay: 0.3, sustain: 0.025, release: 0.1 },
+        filter: { type: "highpass", frequency: 540, q: 0.85 },
+        noise: { gain: 0.018, type: "highpass", frequency: 3400 },
         oscillators: [
-          { type: "square", ratio: 1, gain: 0.34, detune: 0 },
-          { type: "sawtooth", ratio: 2, gain: 0.28, detune: 1 },
-          { type: "triangle", ratio: 3, gain: 0.13, detune: -1 },
+          { type: "square", ratio: 1, gain: 0.3, detune: 0 },
+          { type: "sawtooth", ratio: 2, gain: 0.27, detune: 1 },
+          { type: "triangle", ratio: 3, gain: 0.12, detune: -1 },
           { type: "sine", ratio: 5, gain: 0.06, detune: 0 }
         ]
       },
@@ -2610,25 +2811,54 @@
           { type: "sine", ratio: 3, gain: 0.1, detune: -2 }
         ]
       },
-      oboe: {
-        envelope: { attack: 0.045, decay: 0.13, sustain: 0.76, release: 0.2 },
-        filter: { type: "bandpass", frequency: 1250, q: 2.8 },
-        vibrato: { rate: 5.2, depth: 5 },
+      guzheng: {
+        level: 1.14,
+        envelope: { attack: 0.002, decay: 0.92, sustain: 0.07, release: 0.68 },
+        filter: { type: "lowpass", frequency: 5600, q: 0.45 },
+        noise: { gain: 0.014, type: "highpass", frequency: 3000 },
         oscillators: [
-          { type: "sawtooth", ratio: 1, gain: 0.46, detune: 0 },
-          { type: "square", ratio: 2, gain: 0.22, detune: 0 },
-          { type: "triangle", ratio: 3, gain: 0.1, detune: 0 }
+          { type: "triangle", ratio: 1, gain: 0.48, detune: 0 },
+          { type: "sine", ratio: 2, gain: 0.18, detune: 3 },
+          { type: "sawtooth", ratio: 3, gain: 0.1, detune: -2 },
+          { type: "sine", ratio: 5, gain: 0.04, detune: 0 }
+        ]
+      },
+      clarinet: {
+        level: 1.42,
+        envelope: { attack: 0.06, decay: 0.14, sustain: 0.84, release: 0.25 },
+        filter: { type: "lowpass", track: 6.2, min: 1600, max: 4200, q: 0.8 },
+        formants: [
+          { track: 3, min: 720, max: 1750, q: 1.8, gain: 0.16 },
+          { track: 5, min: 1200, max: 2800, q: 1.5, gain: 0.12 }
+        ],
+        vibrato: { rate: 4.2, depth: 2.5 },
+        noise: { gain: 0.005, type: "bandpass", frequency: 1100 },
+        oscillators: [
+          { harmonics: [1, 0.045, 0.58, 0.035, 0.3, 0.025, 0.16, 0.018, 0.08], ratio: 1, gain: 0.72, detune: 0 }
+        ]
+      },
+      oboe: {
+        level: 1.46,
+        envelope: { attack: 0.035, decay: 0.1, sustain: 0.84, release: 0.2 },
+        filter: { type: "bandpass", track: 3.5, min: 980, max: 2600, q: 1.8 },
+        formants: [
+          { track: 2.7, min: 850, max: 1700, q: 2.4, gain: 0.2 },
+          { track: 6.2, min: 1800, max: 3600, q: 1.9, gain: 0.18 }
+        ],
+        vibrato: { rate: 5.4, depth: 3.5 },
+        noise: { gain: 0.008, type: "bandpass", frequency: 2300 },
+        oscillators: [
+          { harmonics: [0.9, 0.74, 0.56, 0.42, 0.28, 0.2, 0.13, 0.085], ratio: 1, gain: 0.62, detune: 0 }
         ]
       },
       recorder: {
-        envelope: { attack: 0.035, decay: 0.1, sustain: 0.7, release: 0.22 },
-        filter: { type: "lowpass", frequency: 5200, q: 0.7 },
-        vibrato: { rate: 4.3, depth: 4 },
-        noise: { gain: 0.01, type: "highpass", frequency: 2200 },
+        level: 1.24,
+        envelope: { attack: 0.022, decay: 0.08, sustain: 0.78, release: 0.18 },
+        filter: { type: "lowpass", frequency: 6700, q: 0.42 },
+        vibrato: { rate: 4.0, depth: 1.6 },
+        noise: { gain: 0.028, type: "highpass", frequency: 2600 },
         oscillators: [
-          { type: "sine", ratio: 1, gain: 0.66, detune: 0 },
-          { type: "triangle", ratio: 2, gain: 0.14, detune: 0 },
-          { type: "sine", ratio: 3, gain: 0.06, detune: 0 }
+          { harmonics: [1, 0.32, 0.18, 0.075, 0.035], ratio: 1, gain: 0.7, detune: 0 }
         ]
       }
     };
@@ -2658,6 +2888,9 @@
       vibratoSensitivity: document.querySelector("#vibratoSensitivity"),
       sustainTime: document.querySelector("#sustainTime"),
       sustainTimeValue: document.querySelector("#sustainTimeValue"),
+      metronomeToggle: document.querySelector("#metronomeToggle"),
+      metronomeBpm: document.querySelector("#metronomeBpm"),
+      metronomeStepButtons: [...document.querySelectorAll("[data-metronome-step]")],
       showStaff: document.querySelector("#showStaff"),
       centerView: document.querySelector("#centerView"),
       profileRows: document.querySelector("#profileRows"),
@@ -2692,6 +2925,10 @@
     const coordToLabels = new Map();
     const hidSuppressedCodeUntil = new Map();
     const pendingBrowserStarts = new Map();
+    let metronomeBpm = DEFAULT_METRONOME_BPM;
+    let metronomeActive = false;
+    let metronomeTimerId = null;
+    let metronomeBeat = 0;
 
     function tr(key, values = {}) {
       const dictionary = translations[currentLanguage] || translations.zh;
@@ -2729,7 +2966,7 @@
     }
 
     function globalSustainTime() {
-      return clampFloat(els.sustainTime?.value, DEFAULT_GLOBAL_SUSTAIN_TIME, 0.1, 3);
+      return clampFloat(els.sustainTime?.value, DEFAULT_GLOBAL_SUSTAIN_TIME, 0.1, 10);
     }
 
     function pointerFadeTime() {
@@ -2738,6 +2975,29 @@
 
     function updateSustainTimeOutput() {
       if (els.sustainTimeValue) els.sustainTimeValue.textContent = formatSeconds(globalSustainTime());
+    }
+
+    function metronomeIntervalMs() {
+      return 60000 / metronomeBpm;
+    }
+
+    function updateMetronomeDisplay() {
+      if (els.metronomeBpm) els.metronomeBpm.textContent = String(metronomeBpm);
+      if (els.metronomeToggle) {
+        els.metronomeToggle.classList.toggle("is-active", metronomeActive);
+        els.metronomeToggle.setAttribute("aria-pressed", String(metronomeActive));
+        els.metronomeToggle.setAttribute("aria-label", tr(metronomeActive ? "metronomeStop" : "metronomeStart"));
+        els.metronomeToggle.title = tr(metronomeActive ? "metronomeStop" : "metronomeStart");
+      }
+      for (const button of els.metronomeStepButtons || []) {
+        const step = Number(button.dataset.metronomeStep);
+        const key = step < 0
+          ? (Math.abs(step) === 10 ? "metronomeDown10" : "metronomeDown1")
+          : (Math.abs(step) === 10 ? "metronomeUp10" : "metronomeUp1");
+        button.setAttribute("aria-label", tr(key));
+        button.title = tr(key);
+      }
+      document.querySelector(".metronome-stepper")?.setAttribute("aria-label", tr("metronome"));
     }
 
     function syncStaffVisibility() {
@@ -2816,6 +3076,7 @@
       setText("#centerView", "center");
       setText(".scale-choice .group-label", "scale");
       setText(".color-control .group-label", "keyColor");
+      setText(".metronome-control .group-label", "metronome");
       setText("#showStaff + span", "showStaff");
       setText("#vibratoPad span:last-child", "vibrato");
 
@@ -2836,6 +3097,7 @@
       if (els.currentNote.textContent === "--") els.noteMeta.textContent = tr("clickAnyKey");
       updateColorControl();
       updateSustainTimeOutput();
+      updateMetronomeDisplay();
       renderManual();
       syncStaffVisibility();
       syncMenuTabs();
@@ -2906,6 +3168,10 @@
       return SUSTAIN_CODES.has(code);
     }
 
+    function isSoftPedalCode(code) {
+      return code === SOFT_PEDAL_CODE;
+    }
+
     function activeProfile() {
       return mappingProfiles.find(profile => profile.id === activeProfileId) || mappingProfiles[0];
     }
@@ -2921,6 +3187,21 @@
 
     function profileVolume(profile) {
       return clampFloat(profile?.volume, DEFAULT_PROFILE_VOLUME, 0, 1);
+    }
+
+    function profileOutputGain(profile) {
+      return profileVolume(profile) * (profile?.softPedal ? SOFT_PEDAL_FACTOR : 1);
+    }
+
+    function applyProfileOutputGain(profile) {
+      if (!audioContext || !profile) return;
+      const now = audioContext.currentTime;
+      const gain = profileOutputGain(profile);
+      for (const voice of voices.values()) {
+        if (voice.profile !== profile || !voice.profileGain) continue;
+        voice.profileGain.gain.cancelScheduledValues(now);
+        voice.profileGain.gain.setTargetAtTime(gain, now, 0.025);
+      }
     }
 
     function volumeLabel(value) {
@@ -3780,9 +4061,8 @@
         .map(usage => hidUsageToCode.get(usage))
         .filter(Boolean);
 
-      if (bytes.length >= 8 && (bytes[0] & 0x20) !== 0) {
-        codes.push("ShiftRight");
-      }
+      if (bytes.length >= 8 && (bytes[0] & 0x02) !== 0) codes.push("ShiftLeft");
+      if (bytes.length >= 8 && (bytes[0] & 0x20) !== 0) codes.push("ShiftRight");
 
       if (codes.length === 0 && bytes.length > 8) {
         codes = bytes
@@ -3829,6 +4109,11 @@
         setSustainPedal(profile, true);
         return;
       }
+      if (isSoftPedalCode(code)) {
+        suppressBrowserCodeOnce(code);
+        setSoftPedal(profile, true);
+        return;
+      }
       const coord = coordForProfileCode(profile, code);
       if (!coord) return;
       suppressBrowserCodeOnce(code);
@@ -3842,6 +4127,11 @@
         setSustainPedal(profile, false);
         return;
       }
+      if (isSoftPedalCode(code)) {
+        suppressBrowserCodeOnce(code);
+        setSoftPedal(profile, false);
+        return;
+      }
       suppressBrowserCodeOnce(code);
       releaseVoicePrefixForProfile(voicePrefixForProfileCode(profile, code), profile);
     }
@@ -3851,6 +4141,7 @@
         stopVoiceByPrefix(voicePrefixForProfileCode(profile, code));
       }
       setSustainPedal(profile, false);
+      setSoftPedal(profile, false);
       releaseSustainedVoices(profile, 0.08);
       profile.pressedCodes = new Set();
     }
@@ -3935,6 +4226,7 @@
           longVibrato: profileAllowsLongVibrato(activeProfile()),
           sustainEnabled: activeProfile().sustainEnabled !== false,
           sustainPedal: false,
+          softPedal: false,
           source: "hid",
           device,
           pressedCodes: new Set()
@@ -4164,6 +4456,63 @@
       return source;
     }
 
+    function playMetronomeClick(accent = false) {
+      const context = ensureAudio();
+      const now = context.currentTime;
+      const osc = context.createOscillator();
+      const gain = context.createGain();
+
+      osc.type = "square";
+      osc.frequency.setValueAtTime(accent ? 1280 : 860, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(accent ? 0.18 : 0.12, now + 0.004);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
+      osc.connect(gain);
+      gain.connect(context.destination);
+      osc.start(now);
+      osc.stop(now + 0.07);
+    }
+
+    function runMetronomeTick() {
+      if (!metronomeActive) return;
+      playMetronomeClick(metronomeBeat % 4 === 0);
+      metronomeBeat += 1;
+      metronomeTimerId = window.setTimeout(runMetronomeTick, metronomeIntervalMs());
+    }
+
+    function startMetronome() {
+      if (metronomeActive) return;
+      try {
+        ensureAudio();
+      } catch (error) {
+        setReadout(tr("audioLabel"), tr("audioError"));
+        return;
+      }
+      metronomeActive = true;
+      metronomeBeat = 0;
+      updateMetronomeDisplay();
+      setReadout(tr("metronome"), `${metronomeBpm} BPM`);
+      runMetronomeTick();
+    }
+
+    function stopMetronome() {
+      if (!metronomeActive) return;
+      metronomeActive = false;
+      if (metronomeTimerId) window.clearTimeout(metronomeTimerId);
+      metronomeTimerId = null;
+      updateMetronomeDisplay();
+      setReadout(tr("metronome"), tr("metronomeOff"));
+    }
+
+    function adjustMetronome(delta) {
+      metronomeBpm = clampNumber(metronomeBpm + delta, DEFAULT_METRONOME_BPM, MIN_METRONOME_BPM, MAX_METRONOME_BPM);
+      updateMetronomeDisplay();
+      if (!metronomeActive) return;
+      if (metronomeTimerId) window.clearTimeout(metronomeTimerId);
+      metronomeTimerId = window.setTimeout(runMetronomeTick, metronomeIntervalMs());
+      setReadout(tr("metronome"), `${metronomeBpm} BPM`);
+    }
+
     function applyPitchToVoice(voice) {
       if (!audioContext) return;
       const now = audioContext.currentTime;
@@ -4185,6 +4534,28 @@
     function vibratoSensitivity() {
       const value = Number(els.vibratoSensitivity.value);
       return Number.isFinite(value) ? Math.max(0.1, Math.min(1, value)) : 1;
+    }
+
+    function presetFilterFrequency(filterSpec, baseHz) {
+      if (!filterSpec) return 3200;
+      const track = Number(filterSpec.track);
+      const offset = Number(filterSpec.offset) || 0;
+      const fixed = Number(filterSpec.frequency);
+      const raw = Number.isFinite(track) ? baseHz * track + offset : fixed;
+      const fallback = Number.isFinite(fixed) ? fixed : 3200;
+      const min = Number.isFinite(Number(filterSpec.min)) ? Number(filterSpec.min) : 40;
+      const max = Number.isFinite(Number(filterSpec.max)) ? Number(filterSpec.max) : 12000;
+      return Math.min(max, Math.max(min, Number.isFinite(raw) ? raw : fallback));
+    }
+
+    function periodicWaveFromHarmonics(context, harmonics) {
+      const safeHarmonics = Array.isArray(harmonics) && harmonics.length ? harmonics : [1];
+      const real = new Float32Array(safeHarmonics.length + 1);
+      const imag = new Float32Array(safeHarmonics.length + 1);
+      for (let index = 0; index < safeHarmonics.length; index += 1) {
+        imag[index + 1] = Number(safeHarmonics[index]) || 0;
+      }
+      return context.createPeriodicWave(real, imag, { disableNormalization: false });
     }
 
     function voiceKey(target, voiceId = "single") {
@@ -4215,31 +4586,57 @@
       const outputShift = Number(profile.outputShift) || 0;
       const baseHz = Number(target.dataset.hz) * Math.pow(2, outputShift / 12);
       const output = context.createGain();
+      const profileGain = context.createGain();
       const envelope = preset.envelope;
-      const peakGain = Math.max(0.0001, FIXED_OUTPUT_VOLUME * profileVolume(profile) * 0.42);
+      const presetLevel = clampFloat(preset.level, 1, 0.35, 2.2);
+      const peakGain = Math.max(0.0001, FIXED_OUTPUT_VOLUME * 0.42 * presetLevel);
 
+      profileGain.gain.setValueAtTime(profileOutputGain(profile), now);
       output.gain.setValueAtTime(0.0001, now);
       output.gain.exponentialRampToValueAtTime(peakGain, now + envelope.attack);
       output.gain.exponentialRampToValueAtTime(Math.max(0.0001, peakGain * envelope.sustain), now + envelope.attack + envelope.decay);
 
       let destination = output;
+      const destinations = [];
       if (preset.filter) {
         const filter = context.createBiquadFilter();
         filter.type = preset.filter.type;
-        filter.frequency.setValueAtTime(preset.filter.frequency, now);
+        filter.frequency.setValueAtTime(presetFilterFrequency(preset.filter, baseHz), now);
         filter.Q.setValueAtTime(preset.filter.q, now);
         filter.connect(output);
         destination = filter;
       }
+      destinations.push(destination);
 
-      output.connect(context.destination);
+      if (preset.formants) {
+        for (const formantSpec of preset.formants) {
+          const formant = context.createBiquadFilter();
+          const formantGain = context.createGain();
+          formant.type = "bandpass";
+          formant.frequency.setValueAtTime(presetFilterFrequency(formantSpec, baseHz), now);
+          formant.Q.setValueAtTime(formantSpec.q || 1.2, now);
+          formantGain.gain.setValueAtTime(formantSpec.gain || 0.1, now);
+          formant.connect(formantGain);
+          formantGain.connect(output);
+          destinations.push(formant);
+        }
+      }
+
+      output.connect(profileGain);
+      profileGain.connect(context.destination);
 
       const voice = {
         target,
         output,
+        profileGain,
         oscillators: [],
         sources: [],
         release: envelope.release,
+        startTime: now,
+        attack: envelope.attack,
+        decay: envelope.decay,
+        peakGain,
+        sustainGain: Math.max(0.0001, peakGain * envelope.sustain),
         profile,
         sustained: false,
         sustainProfile: null
@@ -4248,12 +4645,16 @@
       for (const spec of preset.oscillators) {
         const osc = context.createOscillator();
         const gain = context.createGain();
-        osc.type = spec.type;
+        if (spec.harmonics) {
+          osc.setPeriodicWave(periodicWaveFromHarmonics(context, spec.harmonics));
+        } else {
+          osc.type = spec.type;
+        }
         osc.frequency.setValueAtTime(baseHz * spec.ratio, now);
         osc.detune.setValueAtTime((spec.detune || 0) + manualBendCents, now);
         gain.gain.setValueAtTime(spec.gain, now);
         osc.connect(gain);
-        gain.connect(destination);
+        for (const targetDestination of destinations) gain.connect(targetDestination);
         osc.start(now);
         voice.oscillators.push({ osc, baseDetune: spec.detune || 0 });
         voice.sources.push(osc);
@@ -4295,14 +4696,33 @@
       }
     }
 
+    function voiceEnvelopeGainAt(voice, now) {
+      const startTime = Number.isFinite(voice.startTime) ? voice.startTime : now;
+      const elapsed = Math.max(0, now - startTime);
+      const attack = Math.max(0.001, voice.attack || 0.001);
+      const decay = Math.max(0.001, voice.decay || 0.001);
+      const peak = Math.max(0.0001, voice.peakGain || 0.0001);
+      const sustain = Math.max(0.0001, voice.sustainGain || peak);
+
+      if (elapsed < attack) {
+        return Math.max(0.0001, peak * Math.max(0.04, elapsed / attack));
+      }
+      if (elapsed < attack + decay) {
+        const t = (elapsed - attack) / decay;
+        return Math.max(0.0001, peak * Math.pow(sustain / peak, t));
+      }
+      return sustain;
+    }
+
     function stopVoice(id, releaseOverride = null) {
       const voice = voices.get(id);
       if (!voice || !audioContext) return;
 
       const now = audioContext.currentTime;
       const release = Math.max(0.03, releaseOverride ?? voice.release ?? 0.2);
+      const releaseStartGain = voiceEnvelopeGainAt(voice, now);
       voice.output.gain.cancelScheduledValues(now);
-      voice.output.gain.setValueAtTime(Math.max(voice.output.gain.value, 0.0001), now);
+      voice.output.gain.setValueAtTime(releaseStartGain, now);
       voice.output.gain.exponentialRampToValueAtTime(0.0001, now + release);
 
       for (const source of voice.sources) {
@@ -4334,6 +4754,7 @@
       voice.sustained = true;
       voice.sustainProfile = profile;
       endLongVibratoHold(id);
+      stopVoice(id, globalSustainTime());
     }
 
     function sustainVoiceByPrefix(prefix, profile) {
@@ -4373,6 +4794,14 @@
       setReadout(tr("sustainPedal"), tr("sustainPedalOff", { time: formatSeconds(releaseTime) }));
     }
 
+    function setSoftPedal(profile, active) {
+      if (!profile || profile.source === "pointer") return;
+      if (Boolean(profile.softPedal) === Boolean(active)) return;
+      profile.softPedal = Boolean(active);
+      applyProfileOutputGain(profile);
+      setReadout(tr("softPedal"), tr(profile.softPedal ? "softPedalOn" : "softPedalOff"));
+    }
+
     function releaseVoicePrefixForProfile(prefix, profile) {
       if (profile?.sustainEnabled !== false && profile?.sustainPedal) {
         sustainVoiceByPrefix(prefix, profile);
@@ -4405,7 +4834,10 @@
         pendingBrowserStarts.delete(code);
       }
       for (const id of [...voices.keys()]) stopVoice(id);
-      for (const profile of mappingProfiles) profile.sustainPedal = false;
+      for (const profile of mappingProfiles) {
+        profile.sustainPedal = false;
+        profile.softPedal = false;
+      }
       els.keyboard.querySelectorAll(".is-active").forEach(key => key.classList.remove("is-active"));
       clearLongVibrato();
     }
@@ -4575,6 +5007,21 @@
     }, { capture: true });
 
     window.addEventListener("keydown", event => {
+      if (shouldSuppressBrowserCode(event.code)) {
+        event.preventDefault();
+        return;
+      }
+      const profile = browserProfile();
+      if (isSustainCode(event.code)) {
+        event.preventDefault();
+        if (!event.repeat) setSustainPedal(profile, true);
+        return;
+      }
+      if (isSoftPedalCode(event.code)) {
+        event.preventDefault();
+        if (!event.repeat) setSoftPedal(profile, true);
+        return;
+      }
       if (isTypingTarget(event.target)) return;
       if (event.ctrlKey || event.metaKey || event.altKey) return;
 
@@ -4591,16 +5038,6 @@
         return;
       }
 
-      if (shouldSuppressBrowserCode(event.code)) {
-        event.preventDefault();
-        return;
-      }
-      const profile = browserProfile();
-      if (isSustainCode(event.code)) {
-        event.preventDefault();
-        if (!event.repeat) setSustainPedal(profile, true);
-        return;
-      }
       if (event.repeat) return;
       const coord = coordForProfileCode(profile, event.code);
       if (!coord) return;
@@ -4610,7 +5047,6 @@
     });
 
     window.addEventListener("keyup", event => {
-      if (isTypingTarget(event.target)) return;
       if (shouldSuppressBrowserCode(event.code)) {
         event.preventDefault();
         return;
@@ -4621,6 +5057,12 @@
         setSustainPedal(profile, false);
         return;
       }
+      if (isSoftPedalCode(event.code)) {
+        event.preventDefault();
+        setSoftPedal(profile, false);
+        return;
+      }
+      if (isTypingTarget(event.target)) return;
       if (coordForProfileCode(profile, event.code)) {
         event.preventDefault();
         cancelPendingBrowserCode(event.code);
@@ -4700,6 +5142,7 @@
         profile.volume = clampFloat(event.target.value, DEFAULT_PROFILE_VOLUME, 0, 1);
         event.target.value = profile.volume;
         event.target.closest(".profile-volume")?.querySelector("[data-profile-volume-output]")?.replaceChildren(volumeLabel(profile.volume));
+        applyProfileOutputGain(profile);
       } else if (field === "longVibrato") {
         profile.longVibrato = event.target.checked;
         if (!profile.longVibrato) clearLongVibratoForProfile(profile);
@@ -4734,6 +5177,7 @@
       } else if (field === "volume") {
         profile.volume = clampFloat(event.target.value, DEFAULT_PROFILE_VOLUME, 0, 1);
         event.target.closest(".profile-volume")?.querySelector("[data-profile-volume-output]")?.replaceChildren(volumeLabel(profile.volume));
+        applyProfileOutputGain(profile);
       } else if (field === "fadeSustainTime") {
         pointerProfile.fadeSustainTime = clampFloat(event.target.value, DEFAULT_POINTER_FADE_TIME, 0.1, 3);
         event.target.closest(".profile-volume")?.querySelector("[data-profile-fade-output]")?.replaceChildren(formatSeconds(pointerProfile.fadeSustainTime));
@@ -4772,6 +5216,19 @@
       releaseControlFocus(event);
       updateSustainTimeOutput();
     });
+
+    els.metronomeToggle.addEventListener("click", event => {
+      releaseControlFocus(event);
+      if (metronomeActive) stopMetronome();
+      else startMetronome();
+    });
+
+    for (const button of els.metronomeStepButtons) {
+      button.addEventListener("click", event => {
+        releaseControlFocus(event);
+        adjustMetronome(Number(button.dataset.metronomeStep) || 0);
+      });
+    }
 
     els.showStaff.addEventListener("change", event => {
       releaseControlFocus(event);
