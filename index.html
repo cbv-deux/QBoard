@@ -367,10 +367,20 @@
         minmax(54px, 0.5fr)
         minmax(92px, 0.82fr)
         minmax(68px, 0.62fr)
-        minmax(82px, 0.68fr)
-        minmax(112px, 0.9fr)
         minmax(48px, 0.45fr)
         minmax(66px, 0.58fr);
+    }
+
+    .control-grid.pedal-row {
+      grid-template-columns:
+        minmax(88px, 0.78fr)
+        minmax(88px, 0.78fr)
+        minmax(88px, 0.78fr)
+        minmax(72px, 0.58fr)
+        minmax(72px, 0.58fr)
+        minmax(112px, 0.9fr);
+      gap: 4px;
+      align-items: end;
     }
 
     .inline-pair {
@@ -505,6 +515,12 @@
 
     .metro-display.is-active small {
       color: rgba(255, 255, 255, 0.72);
+    }
+
+    .pedal-toggle.is-active {
+      border-color: #17191f;
+      background: #17191f;
+      color: #fff;
     }
 
     .color-equals {
@@ -1394,27 +1410,6 @@
             <input id="vibratoSensitivity" type="range" min="0.1" max="1" step="0.05" value="1">
           </div>
 
-          <div class="control">
-            <label for="sustainTime">延音阻尼</label>
-            <div class="profile-volume">
-              <input id="sustainTime" type="range" min="0.1" max="10" step="0.1" value="0.8">
-              <output id="sustainTimeValue">0.8s</output>
-            </div>
-          </div>
-
-          <div class="control metronome-control">
-            <span class="group-label">节拍器</span>
-            <div class="metronome-stepper" aria-label="节拍器">
-              <button class="metro-step" type="button" data-metronome-step="-10" aria-label="-10 BPM">«</button>
-              <button class="metro-step" type="button" data-metronome-step="-1" aria-label="-1 BPM">‹</button>
-              <button class="metro-display" id="metronomeToggle" type="button" aria-pressed="false">
-                <span id="metronomeBpm">120</span><small>BPM</small>
-              </button>
-              <button class="metro-step" type="button" data-metronome-step="1" aria-label="+1 BPM">›</button>
-              <button class="metro-step" type="button" data-metronome-step="10" aria-label="+10 BPM">»</button>
-            </div>
-          </div>
-
           <label class="toggle">
             <input id="showStaff" type="checkbox" checked>
             <span>谱表</span>
@@ -1427,6 +1422,48 @@
               <span class="color-equals">C=</span>
               <span class="color-swatch" id="colorSwatch" title="C 的颜色"></span>
               <button class="color-step" id="colorNext" type="button" aria-label="下一个 C 色块">›</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-grid pedal-row">
+          <div class="control">
+            <label for="sustainTime">延音阻尼</label>
+            <div class="profile-volume">
+              <input id="sustainTime" type="range" min="0.1" max="10" step="0.1" value="10">
+              <output id="sustainTimeValue">10s</output>
+            </div>
+          </div>
+
+          <div class="control">
+            <label for="pedalFadeTime">踏板淡出</label>
+            <div class="profile-volume">
+              <input id="pedalFadeTime" type="range" min="0.03" max="1" step="0.01" value="0.2">
+              <output id="pedalFadeTimeValue">0.2s</output>
+            </div>
+          </div>
+
+          <div class="control">
+            <label for="softPedalRatio">弱音比例</label>
+            <div class="profile-volume">
+              <input id="softPedalRatio" type="range" min="0.1" max="1" step="0.05" value="0.5">
+              <output id="softPedalRatioValue">50%</output>
+            </div>
+          </div>
+
+          <button class="command pedal-toggle" id="sustainPedalToggle" type="button" aria-pressed="false">延音踏板</button>
+          <button class="command pedal-toggle" id="softPedalToggle" type="button" aria-pressed="false">弱音踏板</button>
+
+          <div class="control metronome-control">
+            <span class="group-label">节拍器</span>
+            <div class="metronome-stepper" aria-label="节拍器">
+              <button class="metro-step" type="button" data-metronome-step="-10" aria-label="-10 BPM">«</button>
+              <button class="metro-step" type="button" data-metronome-step="-1" aria-label="-1 BPM">‹</button>
+              <button class="metro-display" id="metronomeToggle" type="button" aria-pressed="false">
+                <span id="metronomeBpm">120</span><small>BPM</small>
+              </button>
+              <button class="metro-step" type="button" data-metronome-step="1" aria-label="+1 BPM">›</button>
+              <button class="metro-step" type="button" data-metronome-step="10" aria-label="+10 BPM">»</button>
             </div>
           </div>
         </div>
@@ -1518,14 +1555,15 @@
     const FIFTH_INDEX = new Map(FIFTHS.map((pitchClass, index) => [pitchClass, index]));
     const FIXED_OUTPUT_VOLUME = 0.9;
     const DEFAULT_PROFILE_VOLUME = 1;
-    const DEFAULT_GLOBAL_SUSTAIN_TIME = 0.8;
+    const DEFAULT_GLOBAL_SUSTAIN_TIME = 10;
+    const DEFAULT_PEDAL_FADE_TIME = 0.2;
     const DEFAULT_POINTER_FADE_TIME = 2;
     const DEFAULT_METRONOME_BPM = 120;
     const MIN_METRONOME_BPM = 30;
     const MAX_METRONOME_BPM = 300;
     const SUSTAIN_CODES = new Set(["Space", "ShiftRight"]);
     const SOFT_PEDAL_CODE = "ShiftLeft";
-    const SOFT_PEDAL_FACTOR = 0.42;
+    const DEFAULT_SOFT_PEDAL_FACTOR = 0.5;
     let cColorIndex = 0;
     const languageOptions = [
       ["zh", "中文", "cn", "🇨🇳"],
@@ -1731,6 +1769,8 @@
         longVibrato: "长按揉弦",
         vibratoSensitivity: "揉弦灵敏度",
         sustainTime: "延音阻尼",
+        pedalFadeTime: "踏板淡出",
+        softPedalRatio: "弱音比例",
         metronome: "节拍器",
         metronomeStart: "启动节拍器",
         metronomeStop: "停止节拍器",
@@ -1776,7 +1816,7 @@
         keyboardSustain: "键盘延音",
         sustainPedal: "延音踏板",
         sustainPedalOn: "Space/右 Shift 阻尼延音已按下",
-        sustainPedalOff: "延音踏板已松开",
+        sustainPedalOff: "踏板淡出 {time}",
         softPedal: "弱音踏板",
         softPedalOn: "左 Shift 弱音踏板已按下",
         softPedalOff: "弱音踏板已松开",
@@ -1846,6 +1886,8 @@
         longVibrato: "Hold vibrato",
         vibratoSensitivity: "Vib sens.",
         sustainTime: "Sustain decay",
+        pedalFadeTime: "Pedal fade",
+        softPedalRatio: "Soft ratio",
         metronome: "Metronome",
         metronomeStart: "Start metronome",
         metronomeStop: "Stop metronome",
@@ -1891,7 +1933,7 @@
         keyboardSustain: "Key sustain",
         sustainPedal: "Sustain pedal",
         sustainPedalOn: "Space/Right Shift damped sustain down",
-        sustainPedalOff: "Sustain pedal up",
+        sustainPedalOff: "Pedal fade {time}",
         softPedal: "Soft pedal",
         softPedalOn: "Left Shift soft pedal down",
         softPedalOff: "Soft pedal up",
@@ -2657,13 +2699,25 @@
         ]
       },
       piano: {
-        envelope: { attack: 0.006, decay: 0.55, sustain: 0.18, release: 0.42 },
-        filter: { type: "lowpass", frequency: 4200, q: 0.4 },
-        oscillators: [
-          { type: "triangle", ratio: 1, gain: 0.62, detune: 0 },
-          { type: "sine", ratio: 2, gain: 0.22, detune: 1 },
-          { type: "sine", ratio: 3, gain: 0.12, detune: -1 }
-        ]
+        level: 1.22,
+        envelope: { attack: 0.0025, decay: 1.18, sustain: 0.075, release: 0.9 },
+        filter: { type: "lowpass", track: 16, min: 2400, max: 9800, q: 0.32 },
+        formants: [
+          { frequency: 170, q: 0.85, gain: 0.08 },
+          { frequency: 520, q: 0.75, gain: 0.055 },
+          { frequency: 2450, q: 0.7, gain: 0.035 }
+        ],
+        noise: { gain: 0.028, type: "highpass", frequency: 1800, attack: 0.001, decay: 0.035 },
+        partials: [
+          { ratio: 1, gain: 0.62, attack: 0.001, decay: 2.8, sustain: 0.08 },
+          { ratio: 2.006, gain: 0.32, attack: 0.001, decay: 1.9, sustain: 0.035, detune: 1 },
+          { ratio: 3.018, gain: 0.18, attack: 0.001, decay: 1.25, sustain: 0.018, detune: -1 },
+          { ratio: 4.04, gain: 0.105, attack: 0.001, decay: 0.9, sustain: 0.01, detune: 1 },
+          { ratio: 5.075, gain: 0.06, attack: 0.001, decay: 0.68, sustain: 0.006, detune: -1 },
+          { ratio: 6.12, gain: 0.034, attack: 0.001, decay: 0.48, sustain: 0.004 },
+          { ratio: 8.22, gain: 0.018, attack: 0.001, decay: 0.32, sustain: 0.002 }
+        ],
+        oscillators: []
       },
       fortepiano: {
         level: 1.12,
@@ -2888,6 +2942,12 @@
       vibratoSensitivity: document.querySelector("#vibratoSensitivity"),
       sustainTime: document.querySelector("#sustainTime"),
       sustainTimeValue: document.querySelector("#sustainTimeValue"),
+      pedalFadeTime: document.querySelector("#pedalFadeTime"),
+      pedalFadeTimeValue: document.querySelector("#pedalFadeTimeValue"),
+      softPedalRatio: document.querySelector("#softPedalRatio"),
+      softPedalRatioValue: document.querySelector("#softPedalRatioValue"),
+      sustainPedalToggle: document.querySelector("#sustainPedalToggle"),
+      softPedalToggle: document.querySelector("#softPedalToggle"),
       metronomeToggle: document.querySelector("#metronomeToggle"),
       metronomeBpm: document.querySelector("#metronomeBpm"),
       metronomeStepButtons: [...document.querySelectorAll("[data-metronome-step]")],
@@ -2969,12 +3029,53 @@
       return clampFloat(els.sustainTime?.value, DEFAULT_GLOBAL_SUSTAIN_TIME, 0.1, 10);
     }
 
+    function pedalFadeTime() {
+      return clampFloat(els.pedalFadeTime?.value, DEFAULT_PEDAL_FADE_TIME, 0.03, 1);
+    }
+
+    function softPedalFactor() {
+      return clampFloat(els.softPedalRatio?.value, DEFAULT_SOFT_PEDAL_FACTOR, 0.1, 1);
+    }
+
     function pointerFadeTime() {
       return clampFloat(pointerProfile.fadeSustainTime, DEFAULT_POINTER_FADE_TIME, 0.1, 3);
     }
 
+    function formatRatio(value) {
+      return `${Math.round(clampFloat(value, DEFAULT_SOFT_PEDAL_FACTOR, 0.1, 1) * 100)}%`;
+    }
+
     function updateSustainTimeOutput() {
       if (els.sustainTimeValue) els.sustainTimeValue.textContent = formatSeconds(globalSustainTime());
+    }
+
+    function updatePedalOptionOutputs() {
+      updateSustainTimeOutput();
+      if (els.pedalFadeTimeValue) els.pedalFadeTimeValue.textContent = formatSeconds(pedalFadeTime());
+      if (els.softPedalRatioValue) els.softPedalRatioValue.textContent = formatRatio(softPedalFactor());
+    }
+
+    function pedalControlProfile() {
+      const profile = activeProfile();
+      return profile && profile.source !== "pointer" ? profile : browserProfile();
+    }
+
+    function updatePedalSwitches() {
+      const profile = pedalControlProfile();
+      if (!profile) return;
+      if (els.sustainPedalToggle) {
+        const active = Boolean(profile.sustainPedal);
+        els.sustainPedalToggle.classList.toggle("is-active", active);
+        els.sustainPedalToggle.setAttribute("aria-pressed", String(active));
+        els.sustainPedalToggle.disabled = profile.sustainEnabled === false;
+        els.sustainPedalToggle.textContent = tr("sustainPedal");
+      }
+      if (els.softPedalToggle) {
+        const active = Boolean(profile.softPedal);
+        els.softPedalToggle.classList.toggle("is-active", active);
+        els.softPedalToggle.setAttribute("aria-pressed", String(active));
+        els.softPedalToggle.textContent = tr("softPedal");
+      }
     }
 
     function metronomeIntervalMs() {
@@ -3071,6 +3172,8 @@
       setLabel("labelMode", "outLabels");
       setLabel("vibratoSensitivity", "vibratoSensitivity");
       setLabel("sustainTime", "sustainTime");
+      setLabel("pedalFadeTime", "pedalFadeTime");
+      setLabel("softPedalRatio", "softPedalRatio");
 
       setText(".layout-row .group-label", "horizontalView");
       setText("#centerView", "center");
@@ -3096,7 +3199,8 @@
       els.keyboard.setAttribute("aria-label", tr("keyboardAria"));
       if (els.currentNote.textContent === "--") els.noteMeta.textContent = tr("clickAnyKey");
       updateColorControl();
-      updateSustainTimeOutput();
+      updatePedalOptionOutputs();
+      updatePedalSwitches();
       updateMetronomeDisplay();
       renderManual();
       syncStaffVisibility();
@@ -3172,6 +3276,22 @@
       return code === SOFT_PEDAL_CODE;
     }
 
+    function isRightShiftEvent(event) {
+      return event.code === "ShiftRight" || (event.key === "Shift" && event.location === 2);
+    }
+
+    function isLeftShiftEvent(event) {
+      return event.code === "ShiftLeft" || (event.key === "Shift" && event.location === 1);
+    }
+
+    function isSustainEvent(event) {
+      return event.code === "Space" || isRightShiftEvent(event);
+    }
+
+    function isSoftPedalEvent(event) {
+      return isLeftShiftEvent(event);
+    }
+
     function activeProfile() {
       return mappingProfiles.find(profile => profile.id === activeProfileId) || mappingProfiles[0];
     }
@@ -3190,7 +3310,7 @@
     }
 
     function profileOutputGain(profile) {
-      return profileVolume(profile) * (profile?.softPedal ? SOFT_PEDAL_FACTOR : 1);
+      return profileVolume(profile) * (profile?.softPedal ? softPedalFactor() : 1);
     }
 
     function applyProfileOutputGain(profile) {
@@ -4169,6 +4289,7 @@
       renderMappingProfileOptions();
       syncProfileControls();
       renderKeyboard({ viewAnchor, keepScroll });
+      updatePedalSwitches();
       updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
     }
 
@@ -4637,12 +4758,13 @@
         decay: envelope.decay,
         peakGain,
         sustainGain: Math.max(0.0001, peakGain * envelope.sustain),
+        releaseTimer: null,
         profile,
         sustained: false,
         sustainProfile: null
       };
 
-      for (const spec of preset.oscillators) {
+      for (const spec of preset.oscillators || []) {
         const osc = context.createOscillator();
         const gain = context.createGain();
         if (spec.harmonics) {
@@ -4660,13 +4782,47 @@
         voice.sources.push(osc);
       }
 
+      for (const spec of preset.partials || []) {
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+        const partialAttack = Math.max(0.001, spec.attack ?? envelope.attack);
+        const partialDecay = Math.max(0.001, spec.decay ?? envelope.decay);
+        const partialGain = Math.max(0.0001, spec.gain || 0.1);
+        const partialSustain = Math.max(0.0001, partialGain * (spec.sustain ?? 0.02));
+
+        osc.type = spec.type || "sine";
+        osc.frequency.setValueAtTime(baseHz * (spec.ratio || 1), now);
+        osc.detune.setValueAtTime((spec.detune || 0) + manualBendCents, now);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(partialGain, now + partialAttack);
+        gain.gain.exponentialRampToValueAtTime(partialSustain, now + partialAttack + partialDecay);
+        osc.connect(gain);
+        for (const targetDestination of destinations) gain.connect(targetDestination);
+        osc.start(now);
+        voice.oscillators.push({ osc, baseDetune: spec.detune || 0 });
+        voice.sources.push(osc);
+      }
+
       if (preset.noise) {
         const noise = createNoiseSource(context);
         const noiseGain = context.createGain();
         const noiseFilter = context.createBiquadFilter();
         noiseFilter.type = preset.noise.type;
         noiseFilter.frequency.setValueAtTime(preset.noise.frequency, now);
-        noiseGain.gain.setValueAtTime(preset.noise.gain, now);
+        if (preset.noise.decay) {
+          const noiseAttack = Math.max(0.001, preset.noise.attack || 0.001);
+          const noiseDecay = Math.max(0.001, preset.noise.decay);
+          noiseGain.gain.setValueAtTime(0.0001, now);
+          noiseGain.gain.exponentialRampToValueAtTime(preset.noise.gain, now + noiseAttack);
+          noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + noiseAttack + noiseDecay);
+          try {
+            noise.stop(now + noiseAttack + noiseDecay + 0.04);
+          } catch (error) {
+            // Noise transient may already be scheduled by release handling.
+          }
+        } else {
+          noiseGain.gain.setValueAtTime(preset.noise.gain, now);
+        }
         noise.connect(noiseFilter);
         noiseFilter.connect(noiseGain);
         noiseGain.connect(destination);
@@ -4697,6 +4853,13 @@
     }
 
     function voiceEnvelopeGainAt(voice, now) {
+      if (voice.releasing && Number.isFinite(voice.releaseStartTime) && Number.isFinite(voice.releaseEndTime)) {
+        const duration = Math.max(0.001, voice.releaseEndTime - voice.releaseStartTime);
+        const progress = Math.min(1, Math.max(0, (now - voice.releaseStartTime) / duration));
+        const startGain = Math.max(0.0001, voice.releaseStartGain || 0.0001);
+        return Math.max(0.0001, startGain * Math.pow(0.0001 / startGain, progress));
+      }
+
       const startTime = Number.isFinite(voice.startTime) ? voice.startTime : now;
       const elapsed = Math.max(0, now - startTime);
       const attack = Math.max(0.001, voice.attack || 0.001);
@@ -4714,16 +4877,40 @@
       return sustain;
     }
 
-    function stopVoice(id, releaseOverride = null) {
+    function updateKeyActiveState(target) {
+      const stillActive = [...voices.values()].some(active => active.target === target && !active.releasing);
+      if (!stillActive) target.classList.remove("is-active");
+    }
+
+    function finalizeVoice(id, voice) {
+      if (voices.get(id) !== voice) return;
+      voices.delete(id);
+      voice.sustained = false;
+      voice.sustainProfile = null;
+      voice.releasing = false;
+      voice.releaseTimer = null;
+      endLongVibratoHold(id);
+      updateKeyActiveState(voice.target);
+    }
+
+    function stopVoice(id, releaseOverride = null, options = {}) {
       const voice = voices.get(id);
       if (!voice || !audioContext) return;
 
       const now = audioContext.currentTime;
       const release = Math.max(0.03, releaseOverride ?? voice.release ?? 0.2);
       const releaseStartGain = voiceEnvelopeGainAt(voice, now);
+      if (voice.releaseTimer) {
+        window.clearTimeout(voice.releaseTimer);
+        voice.releaseTimer = null;
+      }
       voice.output.gain.cancelScheduledValues(now);
       voice.output.gain.setValueAtTime(releaseStartGain, now);
       voice.output.gain.exponentialRampToValueAtTime(0.0001, now + release);
+      voice.releasing = true;
+      voice.releaseStartTime = now;
+      voice.releaseEndTime = now + release;
+      voice.releaseStartGain = releaseStartGain;
 
       for (const source of voice.sources) {
         try {
@@ -4733,13 +4920,17 @@
         }
       }
 
-      voices.delete(id);
-      voice.sustained = false;
-      voice.sustainProfile = null;
       endLongVibratoHold(id);
 
-      const stillActive = [...voices.values()].some(active => active.target === voice.target);
-      if (!stillActive) voice.target.classList.remove("is-active");
+      if (options.keepTracked) {
+        voice.sustained = Boolean(options.sustained);
+        voice.sustainProfile = options.sustainProfile || voice.sustainProfile;
+        voice.releaseTimer = window.setTimeout(() => finalizeVoice(id, voice), release * 1000 + 80);
+        updateKeyActiveState(voice.target);
+        return;
+      }
+
+      finalizeVoice(id, voice);
     }
 
     function stopVoiceByPrefix(prefix, releaseOverride = null) {
@@ -4754,7 +4945,7 @@
       voice.sustained = true;
       voice.sustainProfile = profile;
       endLongVibratoHold(id);
-      stopVoice(id, globalSustainTime());
+      stopVoice(id, globalSustainTime(), { keepTracked: true, sustained: true, sustainProfile: profile });
     }
 
     function sustainVoiceByPrefix(prefix, profile) {
@@ -4763,7 +4954,7 @@
       }
     }
 
-    function releaseSustainedVoices(profile, releaseTime = globalSustainTime()) {
+    function releaseSustainedVoices(profile, releaseTime = pedalFadeTime()) {
       for (const [id, voice] of [...voices.entries()]) {
         if (voice.sustained && voice.sustainProfile === profile) stopVoice(id, releaseTime);
       }
@@ -4778,17 +4969,19 @@
       if (profile.sustainEnabled === false) {
         profile.sustainPedal = false;
         releaseSustainedVoices(profile, 0.08);
+        updatePedalSwitches();
         return;
       }
       if (Boolean(profile.sustainPedal) === Boolean(active)) return;
       profile.sustainPedal = Boolean(active);
+      updatePedalSwitches();
 
       if (profile.sustainPedal) {
         setReadout(tr("sustainPedal"), tr("sustainPedalOn"));
         return;
       }
 
-      const releaseTime = globalSustainTime();
+      const releaseTime = pedalFadeTime();
       releaseSustainedVoices(profile, releaseTime);
       if (!anySustainPedalActive()) releaseSustainedVoices(pointerProfile, releaseTime);
       setReadout(tr("sustainPedal"), tr("sustainPedalOff", { time: formatSeconds(releaseTime) }));
@@ -4799,6 +4992,7 @@
       if (Boolean(profile.softPedal) === Boolean(active)) return;
       profile.softPedal = Boolean(active);
       applyProfileOutputGain(profile);
+      updatePedalSwitches();
       setReadout(tr("softPedal"), tr(profile.softPedal ? "softPedalOn" : "softPedalOff"));
     }
 
@@ -4840,6 +5034,7 @@
       }
       els.keyboard.querySelectorAll(".is-active").forEach(key => key.classList.remove("is-active"));
       clearLongVibrato();
+      updatePedalSwitches();
     }
 
     function findIntervalCoord(deltaSemitones) {
@@ -5012,12 +5207,12 @@
         return;
       }
       const profile = browserProfile();
-      if (isSustainCode(event.code)) {
+      if (isSustainEvent(event)) {
         event.preventDefault();
         if (!event.repeat) setSustainPedal(profile, true);
         return;
       }
-      if (isSoftPedalCode(event.code)) {
+      if (isSoftPedalEvent(event)) {
         event.preventDefault();
         if (!event.repeat) setSoftPedal(profile, true);
         return;
@@ -5052,12 +5247,12 @@
         return;
       }
       const profile = browserProfile();
-      if (isSustainCode(event.code)) {
+      if (isSustainEvent(event)) {
         event.preventDefault();
         setSustainPedal(profile, false);
         return;
       }
-      if (isSoftPedalCode(event.code)) {
+      if (isSoftPedalEvent(event)) {
         event.preventDefault();
         setSoftPedal(profile, false);
         return;
@@ -5163,6 +5358,7 @@
       }
 
       renderMappingProfileOptions();
+      updatePedalSwitches();
       if (profile.id === activeProfileId) updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
     });
 
@@ -5211,10 +5407,38 @@
 
     els.vibratoSensitivity.addEventListener("change", releaseControlFocus);
 
-    els.sustainTime.addEventListener("input", updateSustainTimeOutput);
+    els.sustainTime.addEventListener("input", updatePedalOptionOutputs);
     els.sustainTime.addEventListener("change", event => {
       releaseControlFocus(event);
-      updateSustainTimeOutput();
+      updatePedalOptionOutputs();
+    });
+
+    els.pedalFadeTime.addEventListener("input", updatePedalOptionOutputs);
+    els.pedalFadeTime.addEventListener("change", event => {
+      releaseControlFocus(event);
+      updatePedalOptionOutputs();
+    });
+
+    els.softPedalRatio.addEventListener("input", () => {
+      updatePedalOptionOutputs();
+      for (const profile of mappingProfiles) applyProfileOutputGain(profile);
+    });
+    els.softPedalRatio.addEventListener("change", event => {
+      releaseControlFocus(event);
+      updatePedalOptionOutputs();
+      for (const profile of mappingProfiles) applyProfileOutputGain(profile);
+    });
+
+    els.sustainPedalToggle.addEventListener("click", event => {
+      releaseControlFocus(event);
+      const profile = pedalControlProfile();
+      setSustainPedal(profile, !profile.sustainPedal);
+    });
+
+    els.softPedalToggle.addEventListener("click", event => {
+      releaseControlFocus(event);
+      const profile = pedalControlProfile();
+      setSoftPedal(profile, !profile.softPedal);
     });
 
     els.metronomeToggle.addEventListener("click", event => {
