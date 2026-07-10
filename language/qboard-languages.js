@@ -3865,6 +3865,27 @@
       Object.assign(translations[language], copy);
     }
 
+    const touchVibratoLockTranslations = {
+      zh: "触屏揉弦锁：按住时，鼠标/触屏拖动不会触发滑奏或切换到别的键，只按当前键的上下位置改变揉弦；松开后恢复滑奏。",
+      en: "Touch vibrato lock: hold to stop mouse/touch drag from triggering glissando or moving to another key; movement only bends the current key by vertical position. Release to restore glide.",
+      fr: "Verrou vibrato tactile : maintenez pour empêcher le glissando ou le passage à une autre touche; le geste ne module que la touche actuelle verticalement. Relâchez pour rétablir le glissement.",
+      de: "Touch-Vibrato-Sperre: Halten verhindert Glissando oder Wechsel auf andere Tasten; die Bewegung beugt nur die aktuelle Taste vertikal. Loslassen aktiviert Gleiten wieder.",
+      es: "Bloqueo de vibrato táctil: mantén para impedir glissando o cambio de tecla; el gesto solo curva la tecla actual por posición vertical. Suelta para restaurar el deslizamiento.",
+      pt: "Trava de vibrato por toque: segure para impedir glissando ou troca de tecla; o movimento só altera a tecla atual pela posição vertical. Solte para restaurar o deslize.",
+      ja: "タッチ・ビブラートロック: 押している間、ドラッグでグリッサンドや別キー移動をせず、現在のキーの上下位置だけでビブラートします。離すと復帰します。",
+      ar: "قفل فيبراتو اللمس: اضغط مطولا لمنع الغليساندو أو الانتقال إلى مفتاح آخر؛ الحركة تغير المفتاح الحالي عموديا فقط. اتركه لاستعادة الانزلاق.",
+      ru: "Блокировка touch-вибрато: удерживайте, чтобы перетаскивание не включало глиссандо и не переходило на другую клавишу; движение только изгибает текущую клавишу по вертикали. Отпустите для возврата.",
+      it: "Blocco vibrato touch: tieni premuto per evitare glissando o passaggio ad altri tasti; il gesto piega solo il tasto corrente in verticale. Rilascia per ripristinare lo scorrimento.",
+      ms: "Kunci vibrato sentuh: tahan supaya seretan tetikus/sentuh tidak mencetus glissando atau beralih kekunci; gerakan hanya membengkokkan kekunci semasa mengikut posisi menegak. Lepas untuk pulihkan gelongsor.",
+      vi: "Khóa rung chạm: giữ để kéo chuột/chạm không kích hoạt glissando hoặc chuyển sang phím khác; chuyển động chỉ bẻ cao độ phím hiện tại theo vị trí dọc. Nhả để khôi phục lướt.",
+      tr: "Dokunmatik vibrato kilidi: basılı tutunca sürükleme glissando veya başka tuşa geçiş yapmaz; hareket yalnızca geçerli tuşu dikey konuma göre büker. Bırakınca kayma geri gelir.",
+      ko: "터치 비브라토 잠금: 누르고 있으면 드래그가 글리산도나 다른 키 이동을 만들지 않고, 현재 키의 세로 위치로만 피치를 굽힙니다. 놓으면 글라이드가 돌아옵니다."
+    };
+
+    for (const [language, touchVibratoLockHelp] of Object.entries(touchVibratoLockTranslations)) {
+      if (!translations[language]) translations[language] = {};
+      translations[language].touchVibratoLockHelp = touchVibratoLockHelp;
+    }
 
     const manualCopies = {
       zh: {

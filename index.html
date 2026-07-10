@@ -993,7 +993,7 @@
       bottom: max(12px, env(safe-area-inset-bottom));
       z-index: 32;
       display: grid;
-      grid-template-columns: minmax(142px, 1fr) auto minmax(142px, 1fr) auto;
+      grid-template-columns: auto minmax(142px, 1fr) auto minmax(142px, 1fr) auto;
       gap: 14px;
       align-items: center;
       justify-content: center;
@@ -1009,6 +1009,13 @@
 
     .bass-dock[hidden] {
       display: none;
+    }
+
+    .bass-dock.is-touch-lock-only {
+      grid-template-columns: auto;
+      width: auto;
+      padding: 8px;
+      border-radius: 999px;
     }
 
     .bass-dock-hint {
@@ -1037,25 +1044,72 @@
       min-width: 0;
     }
 
-    .bass-settings-button {
+    .bass-settings-button,
+    .bass-touch-lock-button {
       width: 28px;
       height: 28px;
       border: 1px solid rgba(48, 54, 67, 0.28);
       border-radius: 8px;
       background: #ffffff;
       color: #303643;
+      display: grid;
+      place-items: center;
       font-size: 0.9rem;
       font-weight: 900;
       line-height: 1;
+      padding: 0;
       cursor: pointer;
       box-shadow: 0 1px 5px rgba(0, 0, 0, 0.14);
     }
 
     .bass-settings-button.is-open,
-    .bass-settings-button:hover {
+    .bass-settings-button:hover,
+    .bass-touch-lock-button.is-active,
+    .bass-touch-lock-button:hover {
       border-color: #17191f;
       background: #17191f;
       color: #ffffff;
+    }
+
+    .bass-touch-lock-button {
+      touch-action: none;
+    }
+
+    .bass-lock-icon {
+      position: relative;
+      display: block;
+      width: 13px;
+      height: 11px;
+      margin-top: 5px;
+      border: 2px solid currentColor;
+      border-radius: 3px;
+      box-sizing: border-box;
+    }
+
+    .bass-lock-icon::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 100%;
+      width: 9px;
+      height: 8px;
+      border: 2px solid currentColor;
+      border-bottom: 0;
+      border-radius: 8px 8px 0 0;
+      box-sizing: border-box;
+      transform: translateX(-50%);
+    }
+
+    .bass-lock-icon::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 3px;
+      width: 3px;
+      height: 4px;
+      border-radius: 999px;
+      background: currentColor;
+      transform: translateX(-50%);
     }
 
     .bass-button-wrap {
@@ -1496,7 +1550,7 @@
 
     @media (max-width: 760px) {
       .bass-dock {
-        grid-template-columns: minmax(86px, 1fr) auto minmax(86px, 1fr) auto;
+        grid-template-columns: auto minmax(86px, 1fr) auto minmax(86px, 1fr) auto;
         gap: 8px;
         padding-inline: 12px;
       }
@@ -2952,6 +3006,7 @@
     let metronomeTimerId = null;
     let metronomeBeat = 0;
     const pointerGlissandoStates = new Map();
+    const touchVibratoLockPointers = new Set();
 
     function tr(key, values = {}) {
       const dictionary = translations[currentLanguage] || translations.zh;
@@ -5972,14 +6027,48 @@
       renderScaleStaff();
     }
 
+    function isTouchVibratoLocked() {
+      return touchVibratoLockPointers.size > 0;
+    }
+
+    function syncTouchVibratoLockButtons() {
+      const active = isTouchVibratoLocked();
+      for (const button of els.bassDock.querySelectorAll("[data-touch-vibrato-lock]")) {
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
+        button.title = tr("touchVibratoLockHelp");
+        button.setAttribute("aria-label", tr("touchVibratoLockHelp"));
+      }
+    }
+
+    function createTouchVibratoLockButton() {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "bass-touch-lock-button";
+      button.dataset.touchVibratoLock = "";
+      button.setAttribute("aria-pressed", String(isTouchVibratoLocked()));
+      button.title = tr("touchVibratoLockHelp");
+      button.setAttribute("aria-label", tr("touchVibratoLockHelp"));
+      const icon = document.createElement("span");
+      icon.className = "bass-lock-icon";
+      icon.setAttribute("aria-hidden", "true");
+      button.append(icon);
+      if (isTouchVibratoLocked()) button.classList.add("is-active");
+      return button;
+    }
+
     function renderBassDock() {
+      const fragment = document.createDocumentFragment();
+      const lockButton = createTouchVibratoLockButton();
       if (!bassProfile.enabled) {
-        els.bassDock.hidden = true;
-        els.bassDock.replaceChildren();
+        els.bassDock.classList.add("is-touch-lock-only");
+        fragment.append(lockButton);
+        els.bassDock.replaceChildren(fragment);
+        els.bassDock.hidden = false;
         return;
       }
 
-      const fragment = document.createDocumentFragment();
+      els.bassDock.classList.remove("is-touch-lock-only");
       const leftHint = document.createElement("div");
       leftHint.className = "bass-dock-hint is-left";
       leftHint.textContent = tr("bassDockSeventhHint", { key: activeBassSeventhKeyLabel() });
@@ -6073,7 +6162,7 @@
         wrap.append(button, name);
         keysWrap.append(wrap);
       }
-      fragment.append(leftHint, keysWrap, rightHint, settingsButton);
+      fragment.append(lockButton, leftHint, keysWrap, rightHint, settingsButton);
       els.bassDock.replaceChildren(fragment);
       els.bassDock.hidden = false;
       compactForeignControlLabels(els.bassDock);
@@ -7635,12 +7724,20 @@
       state.timer = null;
     }
 
+    function freezeActivePointerGlissandiForVibrato() {
+      for (const state of pointerGlissandoStates.values()) {
+        clearGlissandoTimer(state);
+        state.pendingIdentity = state.currentIdentity;
+      }
+    }
+
     function playGlissandoTarget(state, target) {
       if (pointerGlissandoStates.get(state.pointerId) !== state) return;
       const identity = keyIdentity(target);
       if (identity === state.currentIdentity) return;
       state.currentIdentity = identity;
       state.pendingIdentity = identity;
+      state.currentTarget = target;
       selectButton(target);
       releasePointerVoicePrefix(`pointer-${state.pointerId}`);
       startVoice(target, `pointer-${state.pointerId}`, 0, pointerProfile);
@@ -7684,6 +7781,7 @@
         pointerId: event.pointerId,
         currentIdentity: keyIdentity(target),
         pendingIdentity: keyIdentity(target),
+        currentTarget: target,
         lastClientY: event.clientY,
         timer: null
       });
@@ -7693,6 +7791,13 @@
       const state = pointerGlissandoStates.get(event.pointerId);
       if (!state) return;
       event.preventDefault();
+      if (isTouchVibratoLocked() && state.currentTarget) {
+        clearGlissandoTimer(state);
+        state.pendingIdentity = state.currentIdentity;
+        state.lastClientY = event.clientY;
+        updatePointerKeyBend(event, state.currentTarget);
+        return;
+      }
       const target = keyFromPointerEvent(event);
       if (!target) {
         clearGlissandoTimer(state);
@@ -8101,6 +8206,16 @@
     });
 
     els.bassDock.addEventListener("pointerdown", event => {
+      const touchLockButton = event.target.closest("[data-touch-vibrato-lock]");
+      if (touchLockButton) {
+        event.preventDefault();
+        touchVibratoLockPointers.add(event.pointerId);
+        touchLockButton.setPointerCapture?.(event.pointerId);
+        freezeActivePointerGlissandiForVibrato();
+        syncTouchVibratoLockButtons();
+        return;
+      }
+
       const seventhButton = event.target.closest("[data-bass-seventh-index]");
       if (seventhButton && bassProfile.enabled) {
         event.preventDefault();
@@ -8124,6 +8239,12 @@
     });
 
     function releaseBassPointer(event) {
+      if (touchVibratoLockPointers.delete(event.pointerId)) {
+        event.preventDefault();
+        syncTouchVibratoLockButtons();
+        return;
+      }
+
       const seventhIndex = bassProfile.activePointerSevenths.get(event.pointerId);
       if (seventhIndex !== undefined) {
         event.preventDefault();
@@ -8143,8 +8264,22 @@
 
     els.bassDock.addEventListener("pointerup", releaseBassPointer);
     els.bassDock.addEventListener("pointercancel", releaseBassPointer);
+    els.bassDock.addEventListener("lostpointercapture", event => {
+      if (!touchVibratoLockPointers.delete(event.pointerId)) return;
+      syncTouchVibratoLockButtons();
+    });
+
+    window.addEventListener("blur", () => {
+      if (!touchVibratoLockPointers.size) return;
+      touchVibratoLockPointers.clear();
+      syncTouchVibratoLockButtons();
+    });
 
     els.bassDock.addEventListener("click", event => {
+      if (event.target.closest("[data-touch-vibrato-lock]")) {
+        event.preventDefault();
+        return;
+      }
       const settingsButton = event.target.closest("[data-bass-settings]");
       if (!settingsButton) return;
       event.preventDefault();
