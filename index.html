@@ -373,11 +373,12 @@
 
     .control-grid.pedal-row {
       grid-template-columns:
-        minmax(88px, 0.78fr)
-        minmax(88px, 0.78fr)
-        minmax(88px, 0.78fr)
-        minmax(72px, 0.58fr)
-        minmax(72px, 0.58fr)
+        minmax(78px, 0.68fr)
+        minmax(78px, 0.68fr)
+        minmax(78px, 0.68fr)
+        minmax(78px, 0.68fr)
+        minmax(68px, 0.54fr)
+        minmax(68px, 0.54fr)
         minmax(112px, 0.9fr);
       gap: 4px;
       align-items: end;
@@ -1451,6 +1452,14 @@
             </div>
           </div>
 
+          <div class="control">
+            <label for="glissandoDwell">滑奏延迟</label>
+            <div class="profile-volume">
+              <input id="glissandoDwell" type="range" min="5" max="100" step="5" value="30">
+              <output id="glissandoDwellValue">30ms</output>
+            </div>
+          </div>
+
           <button class="command pedal-toggle" id="sustainPedalToggle" type="button" aria-pressed="false">延音踏板</button>
           <button class="command pedal-toggle" id="softPedalToggle" type="button" aria-pressed="false">弱音踏板</button>
 
@@ -1561,6 +1570,7 @@
     const DEFAULT_METRONOME_BPM = 120;
     const MIN_METRONOME_BPM = 30;
     const MAX_METRONOME_BPM = 300;
+    const DEFAULT_GLISSANDO_DWELL_MS = 30;
     const SUSTAIN_CODES = new Set(["Space", "ShiftRight"]);
     const SOFT_PEDAL_CODE = "ShiftLeft";
     const DEFAULT_SOFT_PEDAL_FACTOR = 0.5;
@@ -1771,6 +1781,7 @@
         sustainTime: "延音阻尼",
         pedalFadeTime: "踏板淡出",
         softPedalRatio: "弱音比例",
+        glissandoDwell: "滑奏延迟",
         metronome: "节拍器",
         metronomeStart: "启动节拍器",
         metronomeStop: "停止节拍器",
@@ -1888,6 +1899,7 @@
         sustainTime: "Sustain decay",
         pedalFadeTime: "Pedal fade",
         softPedalRatio: "Soft ratio",
+        glissandoDwell: "Glide delay",
         metronome: "Metronome",
         metronomeStart: "Start metronome",
         metronomeStop: "Stop metronome",
@@ -2635,7 +2647,7 @@
             title: "演奏",
             items: [
               "电脑键盘使用 1 到 =、Q 到 ]、A 到 '、Z 到 / 四排按巴扬规则映射；可同时按多个键演奏和弦。",
-              "鼠标/触屏是独立单音乐器，有自己的音色、音量、输出偏移、长按揉弦和淡出延音。",
+              "鼠标/触屏是独立单音乐器，有自己的音色、音量、输出偏移、长按揉弦、淡出延音和拖动滑奏。",
               "方向键会移动当前 Q 映射：上下走左上/右下一格，左右移动八度，屏幕相对位置保持稳定。"
             ]
           },
@@ -2644,7 +2656,7 @@
             items: [
               "电脑键盘或 HID 键盘按住空格或右 Shift 时启用有阻尼的延音踏板；松开普通按键后声音会按全局延音阻尼时间自动衰减，最长可设 10 秒。左 Shift 是弱音踏板，会压低该键盘的输出。",
               "鼠标/触屏的触屏延音时间只影响鼠标/触屏单音；打开跟随踏板后会取消这条独立延音，只在 Space/右 Shift 踏板按下时跟随踏板。",
-              "揉弦区域可用鼠标左右滑动微调音高；每个输入源也可以独立开关长按自动揉弦。"
+              "揉弦区域可用鼠标左右滑动微调音高；每个输入源也可以独立开关长按自动揉弦。拖动滑奏会演奏停留超过“滑奏延迟”的按键。"
             ]
           },
           {
@@ -2664,7 +2676,7 @@
             title: "Playing",
             items: [
               "The computer keyboard maps 1 to =, Q to ], A to ', and Z to / by the selected Bayan-style layout, and supports chords.",
-              "Mouse/touch is an independent monophonic instrument with its own timbre, volume, output shift, hold vibrato, and fade sustain.",
+              "Mouse/touch is an independent monophonic instrument with its own timbre, volume, output shift, hold vibrato, fade sustain, and drag glissando.",
               "Arrow keys move the current Q mapping: up/down along the left-up/right-down diagonal and left/right by octaves while keeping the screen position stable."
             ]
           },
@@ -2673,7 +2685,7 @@
             items: [
               "Hold Space or Right Shift on a computer or HID keyboard for damped sustain. Released notes fade automatically by the global sustain decay time, up to 10 seconds. Left Shift is the soft pedal and lowers that keyboard output.",
               "Mouse/touch sustain only affects the pointer voice. If Follow pedal is enabled, that independent sustain is disabled and the pointer follows the Space/Right Shift pedal instead.",
-              "Drag left or right in the vibrato pad to bend pitch; each input source has its own hold-vibrato switch."
+              "Drag left or right in the vibrato pad to bend pitch; each input source has its own hold-vibrato switch. Drag glissando plays keys hovered longer than Glide delay."
             ]
           },
           {
@@ -2946,6 +2958,8 @@
       pedalFadeTimeValue: document.querySelector("#pedalFadeTimeValue"),
       softPedalRatio: document.querySelector("#softPedalRatio"),
       softPedalRatioValue: document.querySelector("#softPedalRatioValue"),
+      glissandoDwell: document.querySelector("#glissandoDwell"),
+      glissandoDwellValue: document.querySelector("#glissandoDwellValue"),
       sustainPedalToggle: document.querySelector("#sustainPedalToggle"),
       softPedalToggle: document.querySelector("#softPedalToggle"),
       metronomeToggle: document.querySelector("#metronomeToggle"),
@@ -2989,6 +3003,7 @@
     let metronomeActive = false;
     let metronomeTimerId = null;
     let metronomeBeat = 0;
+    const pointerGlissandoStates = new Map();
 
     function tr(key, values = {}) {
       const dictionary = translations[currentLanguage] || translations.zh;
@@ -3037,12 +3052,20 @@
       return clampFloat(els.softPedalRatio?.value, DEFAULT_SOFT_PEDAL_FACTOR, 0.1, 1);
     }
 
+    function glissandoDwellMs() {
+      return clampNumber(els.glissandoDwell?.value, DEFAULT_GLISSANDO_DWELL_MS, 5, 100);
+    }
+
     function pointerFadeTime() {
       return clampFloat(pointerProfile.fadeSustainTime, DEFAULT_POINTER_FADE_TIME, 0.1, 3);
     }
 
     function formatRatio(value) {
       return `${Math.round(clampFloat(value, DEFAULT_SOFT_PEDAL_FACTOR, 0.1, 1) * 100)}%`;
+    }
+
+    function formatMs(value) {
+      return `${Math.round(Number(value) || DEFAULT_GLISSANDO_DWELL_MS)}ms`;
     }
 
     function updateSustainTimeOutput() {
@@ -3053,6 +3076,7 @@
       updateSustainTimeOutput();
       if (els.pedalFadeTimeValue) els.pedalFadeTimeValue.textContent = formatSeconds(pedalFadeTime());
       if (els.softPedalRatioValue) els.softPedalRatioValue.textContent = formatRatio(softPedalFactor());
+      if (els.glissandoDwellValue) els.glissandoDwellValue.textContent = formatMs(glissandoDwellMs());
     }
 
     function pedalControlProfile() {
@@ -3174,6 +3198,7 @@
       setLabel("sustainTime", "sustainTime");
       setLabel("pedalFadeTime", "pedalFadeTime");
       setLabel("softPedalRatio", "softPedalRatio");
+      setLabel("glissandoDwell", "glissandoDwell");
 
       setText(".layout-row .group-label", "horizontalView");
       setText("#centerView", "center");
@@ -5022,11 +5047,17 @@
       }
     }
 
+    function clearGlissandoStates() {
+      for (const state of pointerGlissandoStates.values()) clearGlissandoTimer(state);
+      pointerGlissandoStates.clear();
+    }
+
     function stopAllVoices() {
       for (const [code, pending] of pendingBrowserStarts) {
         window.clearTimeout(pending.timer);
         pendingBrowserStarts.delete(code);
       }
+      clearGlissandoStates();
       for (const id of [...voices.keys()]) stopVoice(id);
       for (const profile of mappingProfiles) {
         profile.sustainPedal = false;
@@ -5166,6 +5197,50 @@
       setManualBend(0);
     }
 
+    function keyIdentity(target) {
+      return `${target.dataset.row}:${target.dataset.col}:${target.dataset.midi}`;
+    }
+
+    function keyFromPointerEvent(event) {
+      const element = document.elementFromPoint(event.clientX, event.clientY);
+      const target = element?.closest?.(".key");
+      return target && els.keyboard.contains(target) ? target : null;
+    }
+
+    function clearGlissandoTimer(state) {
+      if (!state?.timer) return;
+      window.clearTimeout(state.timer);
+      state.timer = null;
+    }
+
+    function playGlissandoTarget(state, target) {
+      const identity = keyIdentity(target);
+      if (identity === state.currentIdentity) return;
+      state.currentIdentity = identity;
+      state.pendingIdentity = identity;
+      selectButton(target);
+      releasePointerVoicePrefix(`pointer-${state.pointerId}`);
+      startVoice(target, `pointer-${state.pointerId}`, 0, pointerProfile);
+    }
+
+    function scheduleGlissandoTarget(state, target) {
+      const identity = keyIdentity(target);
+      if (state.pendingIdentity === identity) return;
+      clearGlissandoTimer(state);
+      state.pendingIdentity = identity;
+      state.timer = window.setTimeout(() => {
+        state.timer = null;
+        playGlissandoTarget(state, target);
+      }, glissandoDwellMs());
+    }
+
+    function endGlissando(pointerId) {
+      const state = pointerGlissandoStates.get(pointerId);
+      if (state) clearGlissandoTimer(state);
+      pointerGlissandoStates.delete(pointerId);
+      releasePointerVoicePrefix(`pointer-${pointerId}`);
+    }
+
     els.keyboard.addEventListener("pointerdown", event => {
       const target = event.target.closest(".key");
       if (!target) return;
@@ -5176,14 +5251,39 @@
       target.setPointerCapture?.(event.pointerId);
       stopPointerVoices();
       startVoice(target, `pointer-${event.pointerId}`, 0, pointerProfile);
+      pointerGlissandoStates.set(event.pointerId, {
+        pointerId: event.pointerId,
+        currentIdentity: keyIdentity(target),
+        pendingIdentity: keyIdentity(target),
+        timer: null
+      });
+    });
+
+    els.keyboard.addEventListener("pointermove", event => {
+      const state = pointerGlissandoStates.get(event.pointerId);
+      if (!state) return;
+      event.preventDefault();
+      const target = keyFromPointerEvent(event);
+      if (!target) {
+        clearGlissandoTimer(state);
+        state.pendingIdentity = "";
+        return;
+      }
+      const identity = keyIdentity(target);
+      if (identity === state.currentIdentity) {
+        clearGlissandoTimer(state);
+        state.pendingIdentity = identity;
+        return;
+      }
+      scheduleGlissandoTarget(state, target);
     });
 
     els.keyboard.addEventListener("pointerup", event => {
-      releasePointerVoicePrefix(`pointer-${event.pointerId}`);
+      endGlissando(event.pointerId);
     });
 
     els.keyboard.addEventListener("pointercancel", event => {
-      releasePointerVoicePrefix(`pointer-${event.pointerId}`);
+      endGlissando(event.pointerId);
     });
 
     els.keyboard.addEventListener("click", event => {
@@ -5427,6 +5527,12 @@
       releaseControlFocus(event);
       updatePedalOptionOutputs();
       for (const profile of mappingProfiles) applyProfileOutputGain(profile);
+    });
+
+    els.glissandoDwell.addEventListener("input", updatePedalOptionOutputs);
+    els.glissandoDwell.addEventListener("change", event => {
+      releaseControlFocus(event);
+      updatePedalOptionOutputs();
     });
 
     els.sustainPedalToggle.addEventListener("click", event => {
