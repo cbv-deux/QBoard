@@ -25,6 +25,7 @@
       --key-gap: 10px;
       --row-gap: 0px;
       --indent-step: calc(var(--key-center-x) * 0.5);
+      --logo-rotation: 0deg;
       font-family:
         Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
         "Segoe UI", "Microsoft YaHei", sans-serif;
@@ -144,7 +145,7 @@
       border-radius: 50%;
       background:
         radial-gradient(circle at 50% 50%, #ffffff 0 21%, transparent 22%),
-        conic-gradient(from 8deg, #c93c3c, #cf9e22, #58a331, #00957f, #2c78c8, #8759c4, #c93c3c);
+        conic-gradient(from calc(8deg + var(--logo-rotation)), #c93c3c, #cf9e22, #58a331, #00957f, #2c78c8, #8759c4, #c93c3c);
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
       flex: 0 0 auto;
     }
@@ -273,6 +274,38 @@
 
     .flag-badge[data-flag="ru"] {
       background: linear-gradient(#ffffff 0 33.33%, #0039a6 33.33% 66.66%, #d52b1e 66.66%);
+    }
+
+    .flag-badge[data-flag="it"] {
+      background: linear-gradient(90deg, #009246 0 33.33%, #ffffff 33.33% 66.66%, #ce2b37 66.66%);
+    }
+
+    .flag-badge[data-flag="my"] {
+      background:
+        #cc0001
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 28'%3E%3Cpath d='M0 0h42v28H0z' fill='%23fff'/%3E%3Cg fill='%23cc0001'%3E%3Cpath d='M0 0h42v2H0zM0 4h42v2H0zM0 8h42v2H0zM0 12h42v2H0zM0 16h42v2H0zM0 20h42v2H0zM0 24h42v2H0z'/%3E%3C/g%3E%3Cpath d='M0 0h21v16H0z' fill='%23010066'/%3E%3Ccircle cx='8.5' cy='8' r='4.7' fill='%23ffcc00'/%3E%3Ccircle cx='10.2' cy='8' r='4.7' fill='%23010066'/%3E%3Cpath d='M15.8 4.2l.7 2.2 2.2-.7-1.4 1.9 1.9 1.4-2.3.1.1 2.3-1.5-1.8-1.8 1.5.6-2.2-2.2-.6 2-1.2-1.2-2 2.1.8z' fill='%23ffcc00'/%3E%3C/svg%3E")
+        center / 100% 100% no-repeat;
+    }
+
+    .flag-badge[data-flag="vn"] {
+      background:
+        #da251d
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 20'%3E%3Crect width='30' height='20' fill='%23da251d'/%3E%3Cpath d='M15 3.2l1.8 5.2h5.5l-4.5 3.2 1.7 5.2-4.5-3.2-4.5 3.2 1.7-5.2-4.5-3.2h5.5z' fill='%23ffdf00'/%3E%3C/svg%3E")
+        center / 100% 100% no-repeat;
+    }
+
+    .flag-badge[data-flag="tr"] {
+      background:
+        #e30a17
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 20'%3E%3Crect width='30' height='20' fill='%23e30a17'/%3E%3Ccircle cx='12' cy='10' r='5.2' fill='%23fff'/%3E%3Ccircle cx='13.5' cy='10' r='4.1' fill='%23e30a17'/%3E%3Cpath d='M19.2 6.7l.8 2.1 2.2-.1-1.7 1.4.8 2.1-1.9-1.2-1.7 1.4.5-2.2-1.9-1.2 2.2-.2z' fill='%23fff'/%3E%3C/svg%3E")
+        center / 100% 100% no-repeat;
+    }
+
+    .flag-badge[data-flag="kr"] {
+      background:
+        #ffffff
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 20'%3E%3Crect width='30' height='20' fill='%23fff'/%3E%3Cg transform='translate(15 10) rotate(-33)'%3E%3Cpath d='M0-4a4 4 0 1 1 0 8 2 2 0 1 0 0-4 2 2 0 1 1 0-4z' fill='%23cd2e3a'/%3E%3Cpath d='M0 4a4 4 0 1 1 0-8 2 2 0 1 0 0 4 2 2 0 1 1 0 4z' fill='%230047a0'/%3E%3C/g%3E%3Cg stroke='%23000' stroke-width='1.05'%3E%3Cpath d='M5.4 4.2l4.2 2.8M4.5 5.6l4.2 2.8M20.4 13l4.2 2.8M21.3 11.6l4.2 2.8M21.3 4.2l-4.2 2.8M22.2 5.6L18 8.4M8.7 11.6l-4.2 2.8M9.6 13l-4.2 2.8'/%3E%3C/g%3E%3C/svg%3E")
+        center / 100% 100% no-repeat;
     }
 
     .readout {
@@ -859,6 +892,18 @@
     .command.profile-static-name:hover {
       border-color: var(--line);
       background: var(--panel-2);
+    }
+
+    .command.is-tight-label,
+    .toggle.is-tight-label,
+    .menu-tab.is-tight-label {
+      font-size: 0.7rem;
+    }
+
+    .command.is-tiny-label,
+    .toggle.is-tiny-label,
+    .menu-tab.is-tiny-label {
+      font-size: 0.64rem;
     }
 
     .command:disabled {
@@ -2143,6 +2188,11 @@
             <option value="ja">🇯🇵 日本語</option>
             <option value="ar">🇸🇦 العربية</option>
             <option value="ru">🇷🇺 Русский</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="ms">🇲🇾 Bahasa Melayu</option>
+            <option value="vi">🇻🇳 Tiếng Việt</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="ko">🇰🇷 한국어</option>
           </select>
         </div>
         <div class="readout" aria-live="polite">
@@ -2209,7 +2259,7 @@
               <option value="c" selected>C-system</option>
               <option value="tonnetz">Tonnetz</option>
               <option value="rightWholeLeftHalf">Q-System</option>
-              <option value="rightWholeRightUpHalf">Isomorphic</option>
+              <option value="rightWholeRightUpHalf">Classic</option>
               <option value="guitar">Guitar</option>
             </select>
           </div>
@@ -2268,7 +2318,7 @@
               <select id="tonicSelect"></select>
               <select id="scaleMode">
                 <option value="major">大调</option>
-                <option value="minor">小调</option>
+                <option value="minor" selected>小调</option>
               </select>
             </div>
           </div>
@@ -2296,9 +2346,12 @@
           <div class="control">
             <label for="labelMode">调外</label>
             <select id="labelMode">
-              <option value="dual" selected>升降号</option>
+              <option value="dual">升降号</option>
               <option value="sharp">升号</option>
               <option value="flat">降号</option>
+              <option value="inDual" selected>调内升降号</option>
+              <option value="inSharp">调内升号</option>
+              <option value="inFlat">调内降号</option>
             </select>
           </div>
 
@@ -2480,7 +2533,7 @@
         octaveColStep: 6
       },
       rightWholeRightUpHalf: {
-        label: "Isomorphic",
+        label: "Classic",
         baseOffset: 0,
         rowStep: 1,
         colStep: 2,
@@ -2553,7 +2606,12 @@
       ["pt", "Português", "br", "🇧🇷"],
       ["ja", "日本語", "jp", "🇯🇵"],
       ["ar", "العربية", "sa", "🇸🇦"],
-      ["ru", "Русский", "ru", "🇷🇺"]
+      ["ru", "Русский", "ru", "🇷🇺"],
+      ["it", "Italiano", "it", "🇮🇹"],
+      ["ms", "Bahasa Melayu", "my", "🇲🇾"],
+      ["vi", "Tiếng Việt", "vn", "🇻🇳"],
+      ["tr", "Türkçe", "tr", "🇹🇷"],
+      ["ko", "한국어", "kr", "🇰🇷"]
     ];
     const supportedLanguages = new Set(languageOptions.map(([value]) => value));
     const languageOptionByValue = new Map(languageOptions.map(([value, label, flag, emoji]) => [
@@ -2849,7 +2907,12 @@
       pt: { lang: "pt", dir: "ltr" },
       ja: { lang: "ja", dir: "ltr" },
       ar: { lang: "ar", dir: "rtl" },
-      ru: { lang: "ru", dir: "ltr" }
+      ru: { lang: "ru", dir: "ltr" },
+      it: { lang: "it", dir: "ltr" },
+      ms: { lang: "ms-MY", dir: "ltr" },
+      vi: { lang: "vi-VN", dir: "ltr" },
+      tr: { lang: "tr-TR", dir: "ltr" },
+      ko: { lang: "ko-KR", dir: "ltr" }
     };
 
     const translations = {
@@ -2893,6 +2956,9 @@
         dual: "升降号",
         sharp: "升号",
         flat: "降号",
+        inDual: "调内升降号",
+        inSharp: "调内升号",
+        inFlat: "调内降号",
         vibrato: "揉弦",
         longVibrato: "长按揉弦",
         autoVibrato: "自动揉弦",
@@ -3077,6 +3143,9 @@
         dual: "Both",
         sharp: "Sharps",
         flat: "Flats",
+        inDual: "In-key both",
+        inSharp: "In-key sharps",
+        inFlat: "In-key flats",
         vibrato: "Vibrato",
         longVibrato: "Hold vibrato",
         autoVibrato: "Auto vibrato",
@@ -3136,7 +3205,7 @@
         edgeSemitonesDown: "down {n} semitones",
         shortcutSustain: "Sustain pedal",
         shortcutSoft: "Soft pedal",
-        shortcutHarmonic: "Artificial harmonics",
+        shortcutHarmonic: "Overtune",
         shortcutBassKeys: "Bass seventh key / chord mutation key",
         shortcutBassSeventh: "Bass sevenths",
         shortcutBassMutate: "Bass mutation",
@@ -3179,9 +3248,9 @@
         softPedal: "Soft pedal",
         softPedalOn: "Soft pedal down",
         softPedalOff: "Soft pedal up",
-        harmonicPedal: "Artificial harmonics",
-        harmonicPedalOn: "Artificial harmonics down",
-        harmonicPedalOff: "Artificial harmonics up",
+        harmonicPedal: "Overtune",
+        harmonicPedalOn: "Overtune down",
+        harmonicPedalOff: "Overtune up",
         setQ: "Set Q",
         reset: "Reset",
         addHid: "Add HID keyboard",
@@ -3259,11 +3328,18 @@
         dual: "Deux",
         sharp: "Dièses",
         flat: "Bémols",
+        inDual: "Dans: deux",
+        inSharp: "Dans: dièses",
+        inFlat: "Dans: bémols",
         vibrato: "Vibrato",
         longVibrato: "Vib. tenue",
         autoVibrato: "Vib. auto",
         vibratoSensitivity: "Sens. vib.",
         harmonicIntensity: "Harmoniques",
+        shortcutHarmonic: "Harmoniques",
+        harmonicPedal: "Harmoniques",
+        harmonicPedalOn: "Harm. actif",
+        harmonicPedalOff: "Harm. libre",
         staff: "Portée",
         staffTranspose: "Transposer",
         staffTransposeHelp: "Affiche la hauteur écrite pour clarinette, trompette, saxophone et basse électrique ; désactivez pour afficher la hauteur réelle.",
@@ -3374,11 +3450,18 @@
         dual: "Beide",
         sharp: "Kreuze",
         flat: "Bes",
+        inDual: "In: beide",
+        inSharp: "In: Kreuze",
+        inFlat: "In: Bes",
         vibrato: "Vibrato",
         longVibrato: "Halte-Vibrato",
         autoVibrato: "Auto-Vibrato",
         vibratoSensitivity: "Vib.-Empf.",
         harmonicIntensity: "Obertöne",
+        shortcutHarmonic: "Obertöne",
+        harmonicPedal: "Obertöne",
+        harmonicPedalOn: "Obertöne an",
+        harmonicPedalOff: "Obertöne aus",
         staff: "Noten",
         staffTranspose: "Transponieren",
         staffTransposeHelp: "Zeigt die notierte Tonhöhe für Klarinette, Trompete, Saxophon und E-Bass; ausschalten für klingende Tonhöhe.",
@@ -3489,11 +3572,18 @@
         dual: "Ambos",
         sharp: "Sostenidos",
         flat: "Bemoles",
+        inDual: "Dentro: ambos",
+        inSharp: "Dentro: sostenidos",
+        inFlat: "Dentro: bemoles",
         vibrato: "Vibrato",
         longVibrato: "Vibrato al mantener",
         autoVibrato: "Vibrato auto",
         vibratoSensitivity: "Sens. vib.",
         harmonicIntensity: "Armónicos",
+        shortcutHarmonic: "Armónicos",
+        harmonicPedal: "Armónicos",
+        harmonicPedalOn: "Arm. activo",
+        harmonicPedalOff: "Arm. libre",
         staff: "Pentagrama",
         staffTranspose: "Transponer",
         staffTransposeHelp: "Muestra la altura escrita para clarinete, trompeta, saxofón y bajo eléctrico; desactívalo para ver la altura real.",
@@ -3604,11 +3694,18 @@
         dual: "Ambos",
         sharp: "Sustenidos",
         flat: "Bemóis",
+        inDual: "Dentro: ambos",
+        inSharp: "Dentro: sustenidos",
+        inFlat: "Dentro: bemóis",
         vibrato: "Vibrato",
         longVibrato: "Vibrato ao segurar",
         autoVibrato: "Vibrato auto",
         vibratoSensitivity: "Sens. vib.",
         harmonicIntensity: "Harmônicos",
+        shortcutHarmonic: "Harmônicos",
+        harmonicPedal: "Harmônicos",
+        harmonicPedalOn: "Harm. ativo",
+        harmonicPedalOff: "Harm. livre",
         staff: "Pauta",
         staffTranspose: "Transpor",
         staffTransposeHelp: "Mostra a altura escrita para clarinete, trompete, saxofone e baixo elétrico; desative para ver a altura real.",
@@ -3719,11 +3816,18 @@
         dual: "両方",
         sharp: "シャープ",
         flat: "フラット",
+        inDual: "調内両方",
+        inSharp: "調内シャープ",
+        inFlat: "調内フラット",
         vibrato: "ビブラート",
         longVibrato: "長押しビブラート",
         autoVibrato: "自動ビブラート",
         vibratoSensitivity: "ビブラート感度",
         harmonicIntensity: "倍音強度",
+        shortcutHarmonic: "倍音",
+        harmonicPedal: "倍音",
+        harmonicPedalOn: "倍音オン",
+        harmonicPedalOff: "倍音オフ",
         staff: "譜表",
         staffTranspose: "移調",
         staffTransposeHelp: "クラリネット、トランペット、サックス、エレキベースなどの移調楽器を記譜音で表示します。オフにすると実音で表示します。",
@@ -3834,11 +3938,18 @@
         dual: "كلاهما",
         sharp: "دييز",
         flat: "بيمول",
+        inDual: "داخل: كلاهما",
+        inSharp: "داخل: دييز",
+        inFlat: "داخل: بيمول",
         vibrato: "فيبراتو",
         longVibrato: "فيبراتو عند الضغط",
         autoVibrato: "فيبراتو تلقائي",
         vibratoSensitivity: "حساسية الفيبراتو",
         harmonicIntensity: "قوة التوافقيات",
+        shortcutHarmonic: "توافقيات",
+        harmonicPedal: "توافقيات",
+        harmonicPedalOn: "توافقيات مفعلة",
+        harmonicPedalOff: "توافقيات متوقفة",
         staff: "المدرج",
         staffTranspose: "نقل",
         staffTransposeHelp: "يعرض درجة النوتة المكتوبة للآلات الناقلة مثل الكلارينيت والبوق والساكسفون والباس الكهربائي؛ أوقفه لعرض الدرجة الفعلية.",
@@ -3949,11 +4060,18 @@
         dual: "Оба",
         sharp: "Диезы",
         flat: "Бемоли",
+        inDual: "В ладу: оба",
+        inSharp: "В ладу: диезы",
+        inFlat: "В ладу: бемоли",
         vibrato: "Вибрато",
         longVibrato: "Вибрато удерж.",
         autoVibrato: "Автовибрато",
         vibratoSensitivity: "Чувств.",
         harmonicIntensity: "Гармоники",
+        shortcutHarmonic: "Гармоники",
+        harmonicPedal: "Гармоники",
+        harmonicPedalOn: "Гарм. вкл.",
+        harmonicPedalOff: "Гарм. выкл.",
         staff: "Ноты",
         staffTranspose: "Трансп.",
         staffTransposeHelp: "Показывает записанную высоту для транспонирующих инструментов, например кларнета, трубы, саксофона и электробаса; выключите для звучащей высоты.",
@@ -4086,8 +4204,8 @@
         bassStateNormal: "Normal",
         bassStateModifier: "Mutate",
         optionsMemory: "Options memory",
-        exportAllSettings: "Export options",
-        importAllSettings: "Import options",
+        exportAllSettings: "Export",
+        importAllSettings: "Import",
         settingsImported: "Options imported",
         settingsImportFailed: "Import failed: {message}",
         bassChordType_maj: "Major triad",
@@ -4201,8 +4319,8 @@
         bassStateNormal: "通常",
         bassStateModifier: "ミューテート",
         optionsMemory: "設定記憶",
-        exportAllSettings: "全設定を書き出し",
-        importAllSettings: "全設定を読み込み",
+        exportAllSettings: "書き出し",
+        importAllSettings: "読み込み",
         settingsImported: "設定を読み込みました",
         settingsImportFailed: "読み込み失敗: {message}"
       },
@@ -4220,8 +4338,8 @@
         bassStateNormal: "عادي",
         bassStateModifier: "Mutate",
         optionsMemory: "ذاكرة الخيارات",
-        exportAllSettings: "تصدير كل الخيارات",
-        importAllSettings: "استيراد كل الخيارات",
+        exportAllSettings: "تصدير",
+        importAllSettings: "استيراد",
         settingsImported: "تم استيراد الخيارات",
         settingsImportFailed: "فشل الاستيراد: {message}"
       },
@@ -4239,8 +4357,8 @@
         bassStateNormal: "Обычный",
         bassStateModifier: "Мутация",
         optionsMemory: "Память опций",
-        exportAllSettings: "Экспорт всех опций",
-        importAllSettings: "Импорт всех опций",
+        exportAllSettings: "Экспорт",
+        importAllSettings: "Импорт",
         settingsImported: "Опции импортированы",
         settingsImportFailed: "Ошибка импорта: {message}"
       }
@@ -4573,6 +4691,2062 @@
       Object.assign(translations[language], copy);
     }
 
+    const completeUiTranslations = {
+      en: {
+        vibrato: "Vibrato",
+        longVibrato: "Hold vibrato",
+        autoVibrato: "Auto vibrato",
+        vibratoSensitivity: "Vib. sens.",
+        metronome: "Metronome",
+        metronomeStart: "Start metronome",
+        metronomeStop: "Stop metronome",
+        metronomeOff: "Metronome off",
+        metronomeDown1: "Down 1 BPM",
+        metronomeUp1: "Up 1 BPM",
+        metronomeDown10: "Down 10 BPM",
+        metronomeUp10: "Up 10 BPM",
+        shortcutList: "Shortcuts",
+        shortcutArrows: "Move Q / octaves",
+        shortcutVertical: "Left-up / right-down",
+        shortcutHorizontal: "Lower / higher octave",
+        shortcutPageDiagonals: "Right-up / left-down",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "lower fourth",
+        intervalHighFourth: "higher fourth",
+        intervalLowFifth: "lower fifth",
+        intervalHighFifth: "higher fifth",
+        shortcutEdgePedals: "Left/right five columns down/up octave",
+        shortcutEdgePedalsSummary: "Left/right five columns {left}/{right} octave",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "lowers left five columns",
+        edgeRightUp: "raises right five columns",
+        edgeLeftAction: "shifts left five columns left, {shift}",
+        edgeRightAction: "shifts right five columns right, {shift}",
+        edgeOctaveUp: "up an octave",
+        edgeOctaveDown: "down an octave",
+        edgeOctaveUpShort: "up",
+        edgeOctaveDownShort: "down",
+        edgeSemitonesUpShort: "up {n} semitones",
+        edgeSemitonesDownShort: "down {n} semitones",
+        edgeSemitonesUp: "up {n} semitones",
+        edgeSemitonesDown: "down {n} semitones",
+        shortcutSustain: "Sustain pedal",
+        shortcutSoft: "Soft pedal",
+        shortcutHarmonic: "Overtune",
+        shortcutBassKeys: "Bass seventh key / chord mutation key",
+        shortcutBassSeventh: "Bass sevenths",
+        shortcutBassMutate: "Bass mutation",
+        pedalStatusTitle: "Pedal status (check Shift capture)",
+        sustainPedal: "Sustain pedal",
+        sustainPedalOn: "Sustain down",
+        sustainPedalOff: "Key sustain fade {time}",
+        softPedal: "Soft pedal",
+        softPedalOn: "Soft down",
+        softPedalOff: "Soft up",
+        harmonicPedal: "Overtune",
+        harmonicPedalOn: "Overtune down",
+        harmonicPedalOff: "Overtune up"
+      },
+      fr: {
+        vibrato: "Vibrato",
+        longVibrato: "Vib. tenue",
+        autoVibrato: "Vib. auto",
+        vibratoSensitivity: "Sens. vib.",
+        metronome: "Metronome",
+        metronomeStart: "Lancer le metronome",
+        metronomeStop: "Arreter le metronome",
+        metronomeOff: "Metronome arrete",
+        metronomeDown1: "-1 BPM",
+        metronomeUp1: "+1 BPM",
+        metronomeDown10: "-10 BPM",
+        metronomeUp10: "+10 BPM",
+        shortcutList: "Raccourcis",
+        shortcutArrows: "Deplacer Q / octaves",
+        shortcutVertical: "Haut-gauche / bas-droite",
+        shortcutHorizontal: "Octave grave / aigue",
+        shortcutPageDiagonals: "Haut-droite / bas-gauche",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "quarte grave",
+        intervalHighFourth: "quarte aigue",
+        intervalLowFifth: "quinte grave",
+        intervalHighFifth: "quinte aigue",
+        shortcutEdgePedals: "Cinq colonnes gauche/droite: octave bas/haut",
+        shortcutEdgePedalsSummary: "Cinq colonnes gauche/droite {left}/{right}",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "baisse les cinq colonnes de gauche",
+        edgeRightUp: "monte les cinq colonnes de droite",
+        edgeLeftAction: "decale les cinq colonnes de gauche, {shift}",
+        edgeRightAction: "decale les cinq colonnes de droite, {shift}",
+        edgeOctaveUp: "monte d'une octave",
+        edgeOctaveDown: "baisse d'une octave",
+        edgeOctaveUpShort: "haut",
+        edgeOctaveDownShort: "bas",
+        edgeSemitonesUpShort: "+{n} demi-tons",
+        edgeSemitonesDownShort: "-{n} demi-tons",
+        edgeSemitonesUp: "monte de {n} demi-tons",
+        edgeSemitonesDown: "baisse de {n} demi-tons",
+        shortcutSustain: "Pedale sustain",
+        shortcutSoft: "Pedale douce",
+        shortcutHarmonic: "Harmoniques",
+        shortcutBassKeys: "Basse: septieme / mutation",
+        shortcutBassSeventh: "Septiemes basse",
+        shortcutBassMutate: "Mutation basse",
+        pedalStatusTitle: "Pedales (verifier Shift)",
+        sustainPedal: "Sustain",
+        sustainPedalOn: "Sustain actif",
+        sustainPedalOff: "Fondu {time}",
+        softPedal: "Douce",
+        softPedalOn: "Douce active",
+        softPedalOff: "Douce libre",
+        harmonicPedal: "Harmoniques",
+        harmonicPedalOn: "Harm. actif",
+        harmonicPedalOff: "Harm. libre",
+        bassChordType_maj: "Triade majeure",
+        bassChordType_min: "Triade mineure",
+        bassChordType_dim: "Triade diminuee",
+        bassChordType_aug: "Triade augmentee",
+        bassChordType_maj7: "Septieme majeure",
+        bassChordType_7: "Septieme dominante",
+        bassChordType_m7: "Septieme mineure",
+        bassChordType_m7b5: "Demi-diminuee",
+        bassChordType_dim7: "Septieme diminuee",
+        bassChordType_mMaj7: "Mineure-majeure",
+        bassChordType_augMaj7: "Augmentee majeure",
+        bassChordType_7b5: "Dominante b5",
+        bassChordType_maj9: "Neuvieme majeure",
+        bassChordType_9: "Neuvieme dominante",
+        bassChordType_m9: "Neuvieme mineure",
+        bassChordType_7b9: "Dominante b9",
+        bassChordType_7s9: "Dominante #9",
+        bassChordType_mMaj9: "Mineure-majeure 9",
+        bassChordType_m7b5add9: "Demi-diminuee 9",
+        bassChordType_9s5: "Dominante 9 #5"
+      },
+      de: {
+        vibrato: "Vibrato",
+        longVibrato: "Halte-Vibrato",
+        autoVibrato: "Auto-Vibrato",
+        vibratoSensitivity: "Vib.-Empf.",
+        metronome: "Metronom",
+        metronomeStart: "Metronom starten",
+        metronomeStop: "Metronom stoppen",
+        metronomeOff: "Metronom aus",
+        metronomeDown1: "-1 BPM",
+        metronomeUp1: "+1 BPM",
+        metronomeDown10: "-10 BPM",
+        metronomeUp10: "+10 BPM",
+        shortcutList: "Kurzbefehle",
+        shortcutArrows: "Q / Oktaven bewegen",
+        shortcutVertical: "Links-oben / rechts-unten",
+        shortcutHorizontal: "Tiefere / hohere Oktave",
+        shortcutPageDiagonals: "Rechts-oben / links-unten",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "tiefe Quarte",
+        intervalHighFourth: "hohe Quarte",
+        intervalLowFifth: "tiefe Quinte",
+        intervalHighFifth: "hohe Quinte",
+        shortcutEdgePedals: "Linke/rechte funf Spalten Oktave runter/hoch",
+        shortcutEdgePedalsSummary: "Linke/rechte funf Spalten {left}/{right}",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "senkt die linken funf Spalten",
+        edgeRightUp: "hebt die rechten funf Spalten",
+        edgeLeftAction: "verschiebt links funf Spalten, {shift}",
+        edgeRightAction: "verschiebt rechts funf Spalten, {shift}",
+        edgeOctaveUp: "eine Oktave hoch",
+        edgeOctaveDown: "eine Oktave runter",
+        edgeOctaveUpShort: "hoch",
+        edgeOctaveDownShort: "runter",
+        edgeSemitonesUpShort: "+{n} Halbtone",
+        edgeSemitonesDownShort: "-{n} Halbtone",
+        edgeSemitonesUp: "{n} Halbtone hoch",
+        edgeSemitonesDown: "{n} Halbtone runter",
+        shortcutSustain: "Sustainpedal",
+        shortcutSoft: "Softpedal",
+        shortcutHarmonic: "Obertone",
+        shortcutBassKeys: "Bass-Septime / Mutation",
+        shortcutBassSeventh: "Bass-Septimen",
+        shortcutBassMutate: "Bass-Mutation",
+        pedalStatusTitle: "Pedale (Shift prufen)",
+        sustainPedal: "Sustain",
+        sustainPedalOn: "Sustain an",
+        sustainPedalOff: "Fade {time}",
+        softPedal: "Soft",
+        softPedalOn: "Soft an",
+        softPedalOff: "Soft aus",
+        harmonicPedal: "Obertone",
+        harmonicPedalOn: "Obertone an",
+        harmonicPedalOff: "Obertone aus",
+        bassChordType_maj: "Dur-Dreiklang",
+        bassChordType_min: "Moll-Dreiklang",
+        bassChordType_dim: "Verminderter Dreiklang",
+        bassChordType_aug: "Ubermassiger Dreiklang",
+        bassChordType_maj7: "Grosser Septakkord",
+        bassChordType_7: "Dominantseptakkord",
+        bassChordType_m7: "Mollseptakkord",
+        bassChordType_m7b5: "Halbvermindert",
+        bassChordType_dim7: "Verminderter Septakkord",
+        bassChordType_mMaj7: "Moll-grosse Septime",
+        bassChordType_augMaj7: "Ubermassig-grosse Septime",
+        bassChordType_7b5: "Dominante b5",
+        bassChordType_maj9: "Grosser Nonakkord",
+        bassChordType_9: "Dominantnonakkord",
+        bassChordType_m9: "Mollnonakkord",
+        bassChordType_7b9: "Dominante b9",
+        bassChordType_7s9: "Dominante #9",
+        bassChordType_mMaj9: "Moll-grosse None",
+        bassChordType_m7b5add9: "Halbverminderte None",
+        bassChordType_9s5: "Dominante 9 #5"
+      },
+      es: {
+        vibrato: "Vibrato",
+        longVibrato: "Vibrato al mantener",
+        autoVibrato: "Vibrato auto",
+        vibratoSensitivity: "Sens. vib.",
+        metronome: "Metronomo",
+        metronomeStart: "Iniciar metronomo",
+        metronomeStop: "Parar metronomo",
+        metronomeOff: "Metronomo apagado",
+        metronomeDown1: "-1 BPM",
+        metronomeUp1: "+1 BPM",
+        metronomeDown10: "-10 BPM",
+        metronomeUp10: "+10 BPM",
+        shortcutList: "Atajos",
+        shortcutArrows: "Mover Q / octavas",
+        shortcutVertical: "Izq-arriba / der-abajo",
+        shortcutHorizontal: "Octava baja / alta",
+        shortcutPageDiagonals: "Der-arriba / izq-abajo",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "cuarta baja",
+        intervalHighFourth: "cuarta alta",
+        intervalLowFifth: "quinta baja",
+        intervalHighFifth: "quinta alta",
+        shortcutEdgePedals: "Cinco columnas izq/der octava baja/alta",
+        shortcutEdgePedalsSummary: "Cinco columnas izq/der {left}/{right}",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "baja cinco columnas izquierdas",
+        edgeRightUp: "sube cinco columnas derechas",
+        edgeLeftAction: "desplaza cinco columnas izq., {shift}",
+        edgeRightAction: "desplaza cinco columnas der., {shift}",
+        edgeOctaveUp: "sube una octava",
+        edgeOctaveDown: "baja una octava",
+        edgeOctaveUpShort: "sube",
+        edgeOctaveDownShort: "baja",
+        edgeSemitonesUpShort: "+{n} semitonos",
+        edgeSemitonesDownShort: "-{n} semitonos",
+        edgeSemitonesUp: "sube {n} semitonos",
+        edgeSemitonesDown: "baja {n} semitonos",
+        shortcutSustain: "Pedal sustain",
+        shortcutSoft: "Pedal suave",
+        shortcutHarmonic: "Armonicos",
+        shortcutBassKeys: "Bajo: septima / mutacion",
+        shortcutBassSeventh: "Septimas de bajo",
+        shortcutBassMutate: "Mutacion de bajo",
+        pedalStatusTitle: "Pedales (revisa Shift)",
+        sustainPedal: "Sustain",
+        sustainPedalOn: "Sustain activo",
+        sustainPedalOff: "Fundido {time}",
+        softPedal: "Suave",
+        softPedalOn: "Suave activo",
+        softPedalOff: "Suave libre",
+        harmonicPedal: "Armonicos",
+        harmonicPedalOn: "Armon. activo",
+        harmonicPedalOff: "Armon. libre",
+        bassChordType_maj: "Triada mayor",
+        bassChordType_min: "Triada menor",
+        bassChordType_dim: "Triada disminuida",
+        bassChordType_aug: "Triada aumentada",
+        bassChordType_maj7: "Septima mayor",
+        bassChordType_7: "Septima dominante",
+        bassChordType_m7: "Septima menor",
+        bassChordType_m7b5: "Semidisminuida",
+        bassChordType_dim7: "Septima disminuida",
+        bassChordType_mMaj7: "Menor-mayor",
+        bassChordType_augMaj7: "Aumentada mayor",
+        bassChordType_7b5: "Dominante b5",
+        bassChordType_maj9: "Novena mayor",
+        bassChordType_9: "Novena dominante",
+        bassChordType_m9: "Novena menor",
+        bassChordType_7b9: "Dominante b9",
+        bassChordType_7s9: "Dominante #9",
+        bassChordType_mMaj9: "Menor-mayor 9",
+        bassChordType_m7b5add9: "Semidisminuida 9",
+        bassChordType_9s5: "Dominante 9 #5"
+      },
+      pt: {
+        vibrato: "Vibrato",
+        longVibrato: "Vibrato ao segurar",
+        autoVibrato: "Vibrato auto",
+        vibratoSensitivity: "Sens. vib.",
+        metronome: "Metronomo",
+        metronomeStart: "Iniciar metronomo",
+        metronomeStop: "Parar metronomo",
+        metronomeOff: "Metronomo desligado",
+        metronomeDown1: "-1 BPM",
+        metronomeUp1: "+1 BPM",
+        metronomeDown10: "-10 BPM",
+        metronomeUp10: "+10 BPM",
+        shortcutList: "Atalhos",
+        shortcutArrows: "Mover Q / oitavas",
+        shortcutVertical: "Esq-cima / dir-baixo",
+        shortcutHorizontal: "Oitava baixa / alta",
+        shortcutPageDiagonals: "Dir-cima / esq-baixo",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "quarta baixa",
+        intervalHighFourth: "quarta alta",
+        intervalLowFifth: "quinta baixa",
+        intervalHighFifth: "quinta alta",
+        shortcutEdgePedals: "Cinco colunas esq/dir oitava baixa/alta",
+        shortcutEdgePedalsSummary: "Cinco colunas esq/dir {left}/{right}",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "baixa cinco colunas esquerdas",
+        edgeRightUp: "sobe cinco colunas direitas",
+        edgeLeftAction: "move cinco colunas esq., {shift}",
+        edgeRightAction: "move cinco colunas dir., {shift}",
+        edgeOctaveUp: "sobe uma oitava",
+        edgeOctaveDown: "baixa uma oitava",
+        edgeOctaveUpShort: "sobe",
+        edgeOctaveDownShort: "baixa",
+        edgeSemitonesUpShort: "+{n} semitons",
+        edgeSemitonesDownShort: "-{n} semitons",
+        edgeSemitonesUp: "sobe {n} semitons",
+        edgeSemitonesDown: "baixa {n} semitons",
+        shortcutSustain: "Pedal sustain",
+        shortcutSoft: "Pedal suave",
+        shortcutHarmonic: "Harmonicos",
+        shortcutBassKeys: "Baixo: setima / mutacao",
+        shortcutBassSeventh: "Setimas do baixo",
+        shortcutBassMutate: "Mutacao do baixo",
+        pedalStatusTitle: "Pedais (verifique Shift)",
+        sustainPedal: "Sustain",
+        sustainPedalOn: "Sustain ativo",
+        sustainPedalOff: "Fade {time}",
+        softPedal: "Suave",
+        softPedalOn: "Suave ativo",
+        softPedalOff: "Suave livre",
+        harmonicPedal: "Harmonicos",
+        harmonicPedalOn: "Harm. ativo",
+        harmonicPedalOff: "Harm. livre",
+        bassChordType_maj: "Triade maior",
+        bassChordType_min: "Triade menor",
+        bassChordType_dim: "Triade diminuta",
+        bassChordType_aug: "Triade aumentada",
+        bassChordType_maj7: "Setima maior",
+        bassChordType_7: "Setima dominante",
+        bassChordType_m7: "Setima menor",
+        bassChordType_m7b5: "Meio-diminuta",
+        bassChordType_dim7: "Setima diminuta",
+        bassChordType_mMaj7: "Menor-maior",
+        bassChordType_augMaj7: "Aumentada maior",
+        bassChordType_7b5: "Dominante b5",
+        bassChordType_maj9: "Nona maior",
+        bassChordType_9: "Nona dominante",
+        bassChordType_m9: "Nona menor",
+        bassChordType_7b9: "Dominante b9",
+        bassChordType_7s9: "Dominante #9",
+        bassChordType_mMaj9: "Menor-maior 9",
+        bassChordType_m7b5add9: "Meio-diminuta 9",
+        bassChordType_9s5: "Dominante 9 #5"
+      },
+      ja: {
+        vibrato: "ビブラート",
+        longVibrato: "長押しビブラート",
+        autoVibrato: "自動ビブラート",
+        vibratoSensitivity: "ビブラート感度",
+        metronome: "メトロノーム",
+        metronomeStart: "メトロノーム開始",
+        metronomeStop: "メトロノーム停止",
+        metronomeOff: "メトロノーム停止中",
+        metronomeDown1: "-1 BPM",
+        metronomeUp1: "+1 BPM",
+        metronomeDown10: "-10 BPM",
+        metronomeUp10: "+10 BPM",
+        shortcutList: "ショートカット",
+        shortcutArrows: "Q / オクターブ移動",
+        shortcutVertical: "左上 / 右下",
+        shortcutHorizontal: "低 / 高オクターブ",
+        shortcutPageDiagonals: "右上 / 左下",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "低い4度",
+        intervalHighFourth: "高い4度",
+        intervalLowFifth: "低い5度",
+        intervalHighFifth: "高い5度",
+        shortcutEdgePedals: "左右5列を下/上オクターブ",
+        shortcutEdgePedalsSummary: "左右5列 {left}/{right}",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "左5列を下げる",
+        edgeRightUp: "右5列を上げる",
+        edgeLeftAction: "左5列を移動、{shift}",
+        edgeRightAction: "右5列を移動、{shift}",
+        edgeOctaveUp: "1オクターブ上",
+        edgeOctaveDown: "1オクターブ下",
+        edgeOctaveUpShort: "上",
+        edgeOctaveDownShort: "下",
+        edgeSemitonesUpShort: "+{n}半音",
+        edgeSemitonesDownShort: "-{n}半音",
+        edgeSemitonesUp: "{n}半音上",
+        edgeSemitonesDown: "{n}半音下",
+        shortcutSustain: "サステイン",
+        shortcutSoft: "弱音ペダル",
+        shortcutHarmonic: "倍音",
+        shortcutBassKeys: "ベース7th / 変異",
+        shortcutBassSeventh: "ベース7th",
+        shortcutBassMutate: "ベース変異",
+        pedalStatusTitle: "ペダル状態（Shift確認）",
+        sustainPedal: "サステイン",
+        sustainPedalOn: "サステインON",
+        sustainPedalOff: "フェード {time}",
+        softPedal: "弱音",
+        softPedalOn: "弱音ON",
+        softPedalOff: "弱音OFF",
+        harmonicPedal: "倍音",
+        harmonicPedalOn: "倍音ON",
+        harmonicPedalOff: "倍音OFF",
+        bassChordType_maj: "長三和音",
+        bassChordType_min: "短三和音",
+        bassChordType_dim: "減三和音",
+        bassChordType_aug: "増三和音",
+        bassChordType_maj7: "長七",
+        bassChordType_7: "属七",
+        bassChordType_m7: "短七",
+        bassChordType_m7b5: "半減七",
+        bassChordType_dim7: "減七",
+        bassChordType_mMaj7: "短長七",
+        bassChordType_augMaj7: "増長七",
+        bassChordType_7b5: "属七♭五",
+        bassChordType_maj9: "長九",
+        bassChordType_9: "属九",
+        bassChordType_m9: "短九",
+        bassChordType_7b9: "属七♭九",
+        bassChordType_7s9: "属七#九",
+        bassChordType_mMaj9: "短長九",
+        bassChordType_m7b5add9: "半減九",
+        bassChordType_9s5: "属九#五"
+      },
+      ar: {
+        vibrato: "فيبراتو",
+        longVibrato: "فيبراتو مطول",
+        autoVibrato: "فيبراتو تلقائي",
+        vibratoSensitivity: "حساسية الفيبراتو",
+        metronome: "مترونوم",
+        metronomeStart: "تشغيل المترونوم",
+        metronomeStop: "إيقاف المترونوم",
+        metronomeOff: "المترونوم متوقف",
+        metronomeDown1: "-1 BPM",
+        metronomeUp1: "+1 BPM",
+        metronomeDown10: "-10 BPM",
+        metronomeUp10: "+10 BPM",
+        shortcutList: "اختصارات",
+        shortcutArrows: "تحريك Q / أوكتافات",
+        shortcutVertical: "يسار-أعلى / يمين-أسفل",
+        shortcutHorizontal: "أوكتاف أخفض / أعلى",
+        shortcutPageDiagonals: "يمين-أعلى / يسار-أسفل",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "رابعة أخفض",
+        intervalHighFourth: "رابعة أعلى",
+        intervalLowFifth: "خامسة أخفض",
+        intervalHighFifth: "خامسة أعلى",
+        shortcutEdgePedals: "خمسة أعمدة يسار/يمين أوكتاف أخفض/أعلى",
+        shortcutEdgePedalsSummary: "خمسة أعمدة يسار/يمين {left}/{right}",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "يخفض خمسة أعمدة يسار",
+        edgeRightUp: "يرفع خمسة أعمدة يمين",
+        edgeLeftAction: "ينقل خمسة أعمدة يسار، {shift}",
+        edgeRightAction: "ينقل خمسة أعمدة يمين، {shift}",
+        edgeOctaveUp: "أوكتاف أعلى",
+        edgeOctaveDown: "أوكتاف أخفض",
+        edgeOctaveUpShort: "أعلى",
+        edgeOctaveDownShort: "أخفض",
+        edgeSemitonesUpShort: "+{n} نصف",
+        edgeSemitonesDownShort: "-{n} نصف",
+        edgeSemitonesUp: "أعلى {n} أنصاف",
+        edgeSemitonesDown: "أخفض {n} أنصاف",
+        shortcutSustain: "دواسة sustain",
+        shortcutSoft: "دواسة خفض",
+        shortcutHarmonic: "توافقيات",
+        shortcutBassKeys: "باس: سابع / تحويل",
+        shortcutBassSeventh: "سابع الباس",
+        shortcutBassMutate: "تحويل الباس",
+        pedalStatusTitle: "حالة الدواسات (افحص Shift)",
+        sustainPedal: "Sustain",
+        sustainPedalOn: "Sustain مفعل",
+        sustainPedalOff: "تلاشي {time}",
+        softPedal: "خفض",
+        softPedalOn: "خفض مفعل",
+        softPedalOff: "خفض متوقف",
+        harmonicPedal: "توافقيات",
+        harmonicPedalOn: "توافقيات مفعلة",
+        harmonicPedalOff: "توافقيات متوقفة",
+        bassChordType_maj: "ثلاثي كبير",
+        bassChordType_min: "ثلاثي صغير",
+        bassChordType_dim: "ثلاثي ناقص",
+        bassChordType_aug: "ثلاثي زائد",
+        bassChordType_maj7: "سابع كبير",
+        bassChordType_7: "سابع مسيطر",
+        bassChordType_m7: "سابع صغير",
+        bassChordType_m7b5: "نصف ناقص",
+        bassChordType_dim7: "سابع ناقص",
+        bassChordType_mMaj7: "صغير-كبير",
+        bassChordType_augMaj7: "زائد كبير",
+        bassChordType_7b5: "مسيطر b5",
+        bassChordType_maj9: "تاسع كبير",
+        bassChordType_9: "تاسع مسيطر",
+        bassChordType_m9: "تاسع صغير",
+        bassChordType_7b9: "مسيطر b9",
+        bassChordType_7s9: "مسيطر #9",
+        bassChordType_mMaj9: "صغير-كبير 9",
+        bassChordType_m7b5add9: "نصف ناقص 9",
+        bassChordType_9s5: "مسيطر 9 #5"
+      },
+      ru: {
+        vibrato: "Вибрато",
+        longVibrato: "Вибрато удерж.",
+        autoVibrato: "Автовибрато",
+        vibratoSensitivity: "Чувств. вибр.",
+        metronome: "Метроном",
+        metronomeStart: "Запустить метроном",
+        metronomeStop: "Остановить метроном",
+        metronomeOff: "Метроном выключен",
+        metronomeDown1: "-1 BPM",
+        metronomeUp1: "+1 BPM",
+        metronomeDown10: "-10 BPM",
+        metronomeUp10: "+10 BPM",
+        shortcutList: "Горячие клавиши",
+        shortcutArrows: "Сдвиг Q / октавы",
+        shortcutVertical: "Влево-вверх / вправо-вниз",
+        shortcutHorizontal: "Ниже / выше октавой",
+        shortcutPageDiagonals: "Вправо-вверх / влево-вниз",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "нижняя кварта",
+        intervalHighFourth: "верхняя кварта",
+        intervalLowFifth: "нижняя квинта",
+        intervalHighFifth: "верхняя квинта",
+        shortcutEdgePedals: "Левые/правые 5 колонок на октаву вниз/вверх",
+        shortcutEdgePedalsSummary: "Левые/правые 5 колонок {left}/{right}",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "опускает пять левых колонок",
+        edgeRightUp: "поднимает пять правых колонок",
+        edgeLeftAction: "сдвигает пять левых колонок, {shift}",
+        edgeRightAction: "сдвигает пять правых колонок, {shift}",
+        edgeOctaveUp: "на октаву вверх",
+        edgeOctaveDown: "на октаву вниз",
+        edgeOctaveUpShort: "вверх",
+        edgeOctaveDownShort: "вниз",
+        edgeSemitonesUpShort: "+{n} п/т",
+        edgeSemitonesDownShort: "-{n} п/т",
+        edgeSemitonesUp: "на {n} полутонов вверх",
+        edgeSemitonesDown: "на {n} полутонов вниз",
+        shortcutSustain: "Педаль sustain",
+        shortcutSoft: "Тихая педаль",
+        shortcutHarmonic: "Гармоники",
+        shortcutBassKeys: "Бас: септима / мутация",
+        shortcutBassSeventh: "Бас-септимы",
+        shortcutBassMutate: "Бас-мутация",
+        pedalStatusTitle: "Педали (проверьте Shift)",
+        sustainPedal: "Sustain",
+        sustainPedalOn: "Sustain включен",
+        sustainPedalOff: "Затухание {time}",
+        softPedal: "Тихая",
+        softPedalOn: "Тихая включена",
+        softPedalOff: "Тихая выключена",
+        harmonicPedal: "Гармоники",
+        harmonicPedalOn: "Гармоники вкл.",
+        harmonicPedalOff: "Гармоники выкл.",
+        bassChordType_maj: "Мажорное трезвучие",
+        bassChordType_min: "Минорное трезвучие",
+        bassChordType_dim: "Уменьшенное трезвучие",
+        bassChordType_aug: "Увеличенное трезвучие",
+        bassChordType_maj7: "Большой септаккорд",
+        bassChordType_7: "Доминантсептаккорд",
+        bassChordType_m7: "Минорный септаккорд",
+        bassChordType_m7b5: "Полууменьшенный",
+        bassChordType_dim7: "Уменьшенный септаккорд",
+        bassChordType_mMaj7: "Минор-мажорный",
+        bassChordType_augMaj7: "Увеличенный большой",
+        bassChordType_7b5: "Доминанта b5",
+        bassChordType_maj9: "Большой нонаккорд",
+        bassChordType_9: "Доминантнонаккорд",
+        bassChordType_m9: "Минорный нонаккорд",
+        bassChordType_7b9: "Доминанта b9",
+        bassChordType_7s9: "Доминанта #9",
+        bassChordType_mMaj9: "Минор-мажор 9",
+        bassChordType_m7b5add9: "Полууменьшенный 9",
+        bassChordType_9s5: "Доминанта 9 #5"
+      }
+    };
+
+    for (const [language, copy] of Object.entries(completeUiTranslations)) {
+      if (!translations[language]) translations[language] = {};
+      Object.assign(translations[language], copy);
+    }
+
+    const finalUiTranslations = {
+      fr: {
+        settings: "Paramètres",
+        manualSettings: "Manuel",
+        sustainTime: "Décroiss. sustain",
+        pedalTime: "Temps pédale",
+        softPedalRatio: "Ratio doux",
+        glissandoDwell: "Délai glisse",
+        harmonicIntensity: "Harmoniques",
+        pointerFade: "Sustain tactile",
+        bassFade: "Fondu basse",
+        keyboardFade: "Sustain clavier",
+        keyboardSustain: "Pédale sustain",
+        followPedal: "Suivre pédale"
+      },
+      de: {
+        settings: "Einstellungen",
+        manualSettings: "Handbuch",
+        sustainTime: "Sustain-Abklingzeit",
+        pedalTime: "Pedalzeit",
+        softPedalRatio: "Soft-Anteil",
+        glissandoDwell: "Gleitverzug",
+        harmonicIntensity: "Obertöne",
+        pointerFade: "Touch-Sustain",
+        bassFade: "Bass-Fade",
+        keyboardFade: "Tasten-Sustain",
+        keyboardSustain: "Sustain-Pedal",
+        followPedal: "Pedal folgen"
+      },
+      es: {
+        settings: "Ajustes",
+        manualSettings: "Manual",
+        sustainTime: "Decaim. sustain",
+        pedalTime: "Tiempo pedal",
+        softPedalRatio: "Ratio suave",
+        glissandoDwell: "Retardo gliss.",
+        harmonicIntensity: "Armónicos",
+        pointerFade: "Sustain táctil",
+        bassFade: "Fundido bajo",
+        keyboardFade: "Sustain teclado",
+        keyboardSustain: "Pedal sustain",
+        followPedal: "Seguir pedal"
+      },
+      pt: {
+        settings: "Ajustes",
+        manualSettings: "Manual",
+        sustainTime: "Decay sustain",
+        pedalTime: "Tempo pedal",
+        softPedalRatio: "Ratio suave",
+        glissandoDwell: "Atraso gliss.",
+        harmonicIntensity: "Harmônicos",
+        pointerFade: "Sustain toque",
+        bassFade: "Fade baixo",
+        keyboardFade: "Sustain teclado",
+        keyboardSustain: "Pedal sustain",
+        followPedal: "Seguir pedal"
+      },
+      ja: {
+        settings: "設定",
+        manualSettings: "説明書",
+        sustainTime: "延音減衰",
+        pedalTime: "ペダル時間",
+        softPedalRatio: "弱音比率",
+        glissandoDwell: "滑奏遅延",
+        harmonicIntensity: "倍音強度",
+        pointerFade: "タッチ延音",
+        bassFade: "ベース減衰",
+        keyboardFade: "鍵盤延音",
+        keyboardSustain: "サステイン",
+        followPedal: "ペダル追従"
+      },
+      ar: {
+        settings: "الإعدادات",
+        manualSettings: "الدليل",
+        sustainTime: "تلاشي السستين",
+        pedalTime: "زمن الدواسة",
+        softPedalRatio: "نسبة الخفض",
+        glissandoDwell: "تأخير الانزلاق",
+        harmonicIntensity: "قوة التوافقيات",
+        pointerFade: "سستين اللمس",
+        bassFade: "تلاشي الباس",
+        keyboardFade: "سستين اللوحة",
+        keyboardSustain: "دواسة السستين",
+        followPedal: "اتبع الدواسة"
+      },
+      ru: {
+        settings: "Настройки",
+        manualSettings: "Руководство",
+        sustainTime: "Затухание sustain",
+        pedalTime: "Время педали",
+        softPedalRatio: "Доля soft",
+        glissandoDwell: "Задержка gliss.",
+        harmonicIntensity: "Гармоники",
+        pointerFade: "Touch sustain",
+        bassFade: "Fade баса",
+        keyboardFade: "Sustain клавиш",
+        keyboardSustain: "Sustain-педаль",
+        followPedal: "Следовать педали"
+      }
+    };
+
+    for (const [language, copy] of Object.entries(finalUiTranslations)) {
+      if (!translations[language]) translations[language] = {};
+      Object.assign(translations[language], copy);
+    }
+
+    const additionalLanguageTranslations = {
+      it: {
+        appTitle: "Q-board",
+        settings: "Impostazioni",
+        globalSettings: "Generale",
+        keyboardSettings: "Tastiere",
+        manualSettings: "Manuale",
+        menuTabs: "Schede opzioni",
+        collapseOptions: "Comprimi",
+        showOptions: "Espandi",
+        language: "Lingua",
+        layout: "Sistema",
+        shape: "Forma",
+        hex: "Esagono",
+        round: "Tondo",
+        lowCol: "Basso",
+        highCol: "Alto",
+        upperRows: "Sopra",
+        lowerRows: "Sotto",
+        horizontalView: "Vista",
+        center: "Centra",
+        viewReset: "Ripristina",
+        scale: "Scala",
+        major: "maggiore",
+        minor: "minore",
+        assist: "Aiuto",
+        scaleInTone: "Colore in scala",
+        scaleOutTone: "Colore fuori",
+        inDark: "In scuro",
+        outDark: "Fuori scuro",
+        allDark: "Tutto scuro",
+        allLight: "Tutto chiaro",
+        toneDeep: "profondo",
+        toneNormal: "normale",
+        toneGray: "grigio",
+        toneLight: "chiaro",
+        assistPair: "In {inside} / Fuori {outside}",
+        outLabels: "Nomi fuori",
+        dual: "Entrambi",
+        sharp: "Diesis",
+        flat: "Bemolli",
+        inDual: "In scala entrambi",
+        inSharp: "In scala diesis",
+        inFlat: "In scala bemolli",
+        vibrato: "Vibrato",
+        longVibrato: "Vibrato tenuto",
+        autoVibrato: "Vibrato auto",
+        vibratoSensitivity: "Sens. vibrato",
+        sustainTime: "Decad. sustain",
+        pedalTime: "Tempo pedale",
+        softPedalRatio: "Rapporto sordina",
+        glissandoDwell: "Ritardo gliss.",
+        harmonicIntensity: "Armonici",
+        pedalStatusTitle: "Stato pedali (controlla Shift)",
+        metronome: "Metronomo",
+        metronomeStart: "Avvia metronomo",
+        metronomeStop: "Ferma metronomo",
+        metronomeOff: "Metronomo spento",
+        metronomeDown1: "-1 BPM",
+        metronomeUp1: "+1 BPM",
+        metronomeDown10: "-10 BPM",
+        metronomeUp10: "+10 BPM",
+        showStaff: "Pentagramma",
+        staff: "Pentagramma",
+        staffTranspose: "Trasponi",
+        staffTransposeHelp: "Mostra l'altezza scritta per strumenti traspositori come clarinetto, corno, tromba, sax, basso elettrico e contrabbasso; disattiva per l'altezza reale.",
+        staffWrittenAs: "(scritto in {scale})",
+        keyColor: "Colore tasti",
+        prevC: "Colore C precedente",
+        nextC: "Colore C successivo",
+        cColorTitle: "Colore C {index}/12",
+        staffScale: "Zoom pentagramma",
+        zoomOut: "Riduci zoom",
+        zoomIn: "Aumenta zoom",
+        staffAria: "Pentagramma della scala per le mappature Q correnti",
+        keyboardAria: "Tastiera a bottoni Q-board",
+        shortcutList: "Scorciatoie",
+        shortcutArrows: "Sposta Q / ottave",
+        shortcutVertical: "Sinistra-su / destra-giu",
+        shortcutHorizontal: "Ottava bassa / alta",
+        shortcutPageDiagonals: "Destra-su / sinistra-giu",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "quarta bassa",
+        intervalHighFourth: "quarta alta",
+        intervalLowFifth: "quinta bassa",
+        intervalHighFifth: "quinta alta",
+        shortcutEdgePedals: "Cinque colonne sinistra/destra ottava giu/su",
+        shortcutEdgePedalsSummary: "Cinque colonne sinistra/destra {left}/{right} ottava",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "abbassa le cinque colonne sinistre",
+        edgeRightUp: "alza le cinque colonne destre",
+        edgeLeftAction: "sposta a sinistra cinque colonne, {shift}",
+        edgeRightAction: "sposta a destra cinque colonne, {shift}",
+        edgeOctaveUp: "su di un'ottava",
+        edgeOctaveDown: "giu di un'ottava",
+        edgeOctaveUpShort: "su",
+        edgeOctaveDownShort: "giu",
+        edgeSemitonesUpShort: "+{n} semitoni",
+        edgeSemitonesDownShort: "-{n} semitoni",
+        edgeSemitonesUp: "su di {n} semitoni",
+        edgeSemitonesDown: "giu di {n} semitoni",
+        shortcutSustain: "Pedale sustain",
+        shortcutSoft: "Pedale sordina",
+        shortcutHarmonic: "Armonici",
+        shortcutBassKeys: "Basso: settima / mutazione accordo",
+        shortcutBassSeventh: "Settime basso",
+        shortcutBassMutate: "Mutazione basso",
+        clickAnyKey: "Fai clic su un tasto",
+        audioLabel: "Audio",
+        audioError: "Il browser non puo inizializzare l'audio ora.",
+        mainKeyboard: "Tastiera principale",
+        mainShort: "Principale",
+        touchComputer: "Tocco/computer",
+        computerKeyboard: "Tastiera computer",
+        mouseTouch: "Mouse/tocco",
+        mouseShort: "Tocco",
+        monoSource: "Mono",
+        bassPart: "Parte basso",
+        bassShort: "Basso",
+        bassEnable: "Basso",
+        bassBase: "Nota base",
+        bassMirror: "Inverti",
+        bassMirrorHelp: "Inverte i pedali Shift sinistro/destro. B-system li inverte per impostazione predefinita; C-system no.",
+        bassOutHarmony: "Accordi fuori",
+        bassFade: "Fade basso",
+        sourceHid: "HID",
+        hidUnsupported: "Questo browser non supporta WebHID; usa un browser Chromium con WebHID.",
+        hidNoDevice: "Nessun dispositivo HID selezionato; le normali tastiere possono essere nascoste dalla sicurezza del browser.",
+        hidAddBlocked: "Aggiunta HID fallita: accesso non concesso o dispositivo protetto.",
+        hidAddFailed: "Aggiunta HID fallita: {message}",
+        hidKeyboardName: "Tastiera HID {index}",
+        mainCannotDelete: "La tastiera principale e predefinita e non puo essere eliminata.",
+        hidDisconnected: "{name} disconnessa",
+        instrument: "Voce",
+        outputShift: "Spostamento uscita",
+        volume: "Volume",
+        pointerFade: "Sustain tocco",
+        followPedal: "Segui pedale",
+        keyboardFade: "Sustain tasti",
+        keyboardSustain: "Pedale sustain",
+        sustainPedal: "Pedale sustain",
+        sustainPedalOn: "Sustain premuto",
+        sustainPedalOff: "Fade sustain {time}",
+        softPedal: "Pedale sordina",
+        softPedalOn: "Sordina premuta",
+        softPedalOff: "Sordina rilasciata",
+        harmonicPedal: "Armonici",
+        harmonicPedalOn: "Armonici premuti",
+        harmonicPedalOff: "Armonici rilasciati",
+        setQ: "Imposta Q",
+        reset: "Ripristina",
+        addHid: "Aggiungi tastiera HID",
+        delete: "Elimina",
+        noScaleEntries: "Nessuna nota visibile per {scale}",
+        row: "Riga {n}",
+        upperRow: "Sopra {n}",
+        lowerRow: "Sotto {n}",
+        outputPrefix: "Uscita",
+        circleTitle: "Cerchio {index}",
+        instrumentAccordion: "Fisarmonica",
+        instrumentPiano: "Pianoforte",
+        instrumentFortepiano: "Fortepiano",
+        instrumentGuitar: "Chitarra",
+        instrumentClassicalGuitar: "Chitarra classica",
+        instrumentOverdriveGuitar: "Chitarra overdrive",
+        instrumentDistortionGuitar: "Chitarra distorta",
+        instrumentWahGuitar: "Chitarra wah",
+        instrumentElectricBass: "Basso elettrico",
+        instrumentSynthWave: "Synth wave",
+        instrumentGuzheng: "Guzheng",
+        instrumentViolin: "Violino",
+        instrumentCello: "Violoncello",
+        instrumentDoubleBass: "Contrabbasso",
+        instrumentStrings: "Archi",
+        instrumentErhu: "Erhu",
+        instrumentFlute: "Flauto",
+        instrumentClarinet: "Clarinetto",
+        instrumentTrumpet: "Tromba",
+        instrumentSax: "Sassofono",
+        instrumentHarpsichord: "Clavicembalo",
+        instrumentQuilled: "Tastiera a plettro",
+        instrumentTheremin: "Theremin",
+        instrumentHarp: "Arpa",
+        instrumentOboe: "Oboe",
+        instrumentBassoon: "Fagotto",
+        instrumentFrenchHorn: "Corno",
+        instrumentRecorder: "Flauto dolce",
+        bassConfigTitle: "Dettagli basso",
+        bassConfigClose: "Chiudi dettagli basso",
+        bassConfigReset: "Ripristina predefiniti",
+        bassConfigResetDone: "Dettagli basso ripristinati",
+        bassDockSeventhHint: "{key} accordi di settima",
+        bassDockModifierHint: "~/· muta gli accordi suonati",
+        bassDockSeventhHelp: "Tasto settime basso: il tasto dipende dal tipo di ingresso basso. Con F1-F12 usa Esc; con numeri usa Q. Tienilo premuto per interpretare il basso come accordi di settima/nona; l'armonia in scala puo fondersi in settime o usare settime mutate, mentre quella fuori scala entra nello stato mutato.",
+        bassDockModifierHelp: "Tasto mutazione accordo: usa ~. Tienilo premuto per applicare la settima mutata o armonia mutata configurata; gli accordi fuori scala alternano stato normale e mutato. I tipi esatti si modificano nei dettagli basso.",
+        bassSettingsTitle: "Dettagli basso",
+        bassHarmonyMajor: "Armonia maggiore",
+        bassHarmonyMinor: "Armonia minore",
+        bassStateDiatonicSeventhModifier: "Settima mutata",
+        bassStateNormal: "Normale",
+        bassStateModifier: "Mutate",
+        optionsMemory: "Memoria opzioni",
+        exportAllSettings: "Esporta",
+        importAllSettings: "Importa",
+        settingsImported: "Opzioni importate",
+        settingsImportFailed: "Importazione fallita: {message}",
+        bassChordType_maj: "Triade maggiore",
+        bassChordType_min: "Triade minore",
+        bassChordType_dim: "Triade diminuita",
+        bassChordType_aug: "Triade aumentata",
+        bassChordType_maj7: "Settima maggiore",
+        bassChordType_7: "Settima dominante",
+        bassChordType_m7: "Settima minore",
+        bassChordType_m7b5: "Semidiminuita",
+        bassChordType_dim7: "Settima diminuita",
+        bassChordType_mMaj7: "Minore-maggiore",
+        bassChordType_augMaj7: "Aumentata maggiore",
+        bassChordType_7b5: "Dominante b5",
+        bassChordType_maj9: "Nona maggiore",
+        bassChordType_9: "Nona dominante",
+        bassChordType_m9: "Nona minore",
+        bassChordType_7b9: "Dominante b9",
+        bassChordType_7s9: "Dominante #9",
+        bassChordType_mMaj9: "Minore-maggiore 9",
+        bassChordType_m7b5add9: "Semidiminuita 9",
+        bassChordType_9s5: "Dominante 9 #5",
+        helpChoose: "Scegli {label}",
+        helpAdjust: "Regola {label}",
+        helpToggle: "Attiva/disattiva {label}",
+        helpCommand: "{label}",
+        helpOpen: "Apri {label}",
+        resetAllSettings: "Ripristina tutte le opzioni",
+        settingsResetDone: "Memoria opzioni ripristinata",
+        bassKeyModeSwitch: "Cambia tipo ingresso basso",
+        bassChordSelectHelp: "Attuale: {formula}; apri per {name}",
+        bassBaseHelp: "La nota base e la nota piu bassa nell'ottava usata dagli accordi di basso",
+        vibratoSensitivityHelp: "Sensibilita vibrato: a sinistra il movimento verso l'alto alza l'intonazione, a destra la abbassa; 0c e il minimo.",
+        pedalTimeHelp: "Tempo pedale: quanto gradualmente sordina e armonici artificiali agiscono sui suoni gia attivi.",
+        sustainTimeHelp: "Decadenza sustain: massimo decadimento naturale dopo il rilascio con pedale sustain tenuto, fino a 20 s.",
+        softPedalRatioHelp: "Rapporto sordina: volume mantenuto quando il pedale sordina e premuto.",
+        glissandoDwellHelp: "Ritardo glissando: quanto il puntatore/tocco deve restare su un tasto prima di suonarlo in glissando.",
+        harmonicIntensityHelp: "Mix armonici: valori piu alti aumentano gli armonici superiori mantenendo stabile il volume.",
+        keyboardFadeHelp: "Sustain tasti: fade normale al rilascio; anche il rilascio del pedale lo usa; gli armonici aggiungono meta decadimento sustain.",
+        followPedalHelp: "Segui pedale: mouse/tocco segue sustain, sordina e armonici artificiali della tastiera principale.",
+        appTagline: "Dal sistema di tasti della fisarmonica bayan, il tuo miglior strumento per computer. By cbv_deux",
+        pointerFadeHelp: "Sustain tocco: fade naturale dopo il rilascio di mouse/tocco; con Segui pedale usa i pedali e il sustain tasti della tastiera principale.",
+        bassPopupHelp: "Dettagli basso: configura settime mutate diatoniche e armonia fuori scala normale/mutata, con anteprime accordi per la tonica corrente.",
+        mouseTouchHelp: "Mouse/tocco: voce monofonica con glissando, vibrato manuale quando il vibrato auto e spento, e possibile seguito dei pedali principali.",
+        bassPartHelp: "Parte basso: armonia automatica in scala piu armonia fuori scala personalizzata; supporta armonia mutata, settime e none.",
+        mainKeyboardHelp: "Tastiera principale: supporta piu tasti, pedali sustain/sordina/armonici artificiali e pedali temporanei di ottava sinistra/destra.",
+        hidKeyboardHelp: "Tastiera HID: ingresso esterno multi-tasto con pedali, spostamenti d'ottava e impostazioni voce indipendenti."
+      },
+      ms: {
+        appTitle: "Q-board",
+        settings: "Tetapan",
+        globalSettings: "Umum",
+        keyboardSettings: "Papan kekunci",
+        manualSettings: "Manual",
+        menuTabs: "Tab pilihan",
+        collapseOptions: "Lipat",
+        showOptions: "Kembang",
+        language: "Bahasa",
+        layout: "Sistem",
+        shape: "Bentuk",
+        hex: "Heks",
+        round: "Bulat",
+        lowCol: "Rendah",
+        highCol: "Tinggi",
+        upperRows: "Atas",
+        lowerRows: "Bawah",
+        horizontalView: "Paparan",
+        center: "Tengah",
+        viewReset: "Tetap semula",
+        scale: "Skala",
+        major: "major",
+        minor: "minor",
+        assist: "Bantuan",
+        scaleInTone: "Warna dalam",
+        scaleOutTone: "Warna luar",
+        inDark: "Dalam gelap",
+        outDark: "Luar gelap",
+        allDark: "Semua gelap",
+        allLight: "Semua cerah",
+        toneDeep: "dalam",
+        toneNormal: "biasa",
+        toneGray: "kelabu",
+        toneLight: "cerah",
+        assistPair: "Dalam {inside} / Luar {outside}",
+        outLabels: "Nama luar",
+        dual: "Kedua-dua",
+        sharp: "Sharp",
+        flat: "Flat",
+        inDual: "Dalam skala kedua",
+        inSharp: "Dalam skala sharp",
+        inFlat: "Dalam skala flat",
+        vibrato: "Vibrato",
+        longVibrato: "Vibrato tahan",
+        autoVibrato: "Vibrato auto",
+        vibratoSensitivity: "Sens. vibrato",
+        sustainTime: "Susut sustain",
+        pedalTime: "Masa pedal",
+        softPedalRatio: "Nisbah lembut",
+        glissandoDwell: "Lewat gliss.",
+        harmonicIntensity: "Harmonik",
+        pedalStatusTitle: "Status pedal (semak tangkapan Shift)",
+        metronome: "Metronom",
+        metronomeStart: "Mula metronom",
+        metronomeStop: "Henti metronom",
+        metronomeOff: "Metronom mati",
+        metronomeDown1: "-1 BPM",
+        metronomeUp1: "+1 BPM",
+        metronomeDown10: "-10 BPM",
+        metronomeUp10: "+10 BPM",
+        showStaff: "Staf",
+        staff: "Staf",
+        staffTranspose: "Transpos",
+        staffTransposeHelp: "Tunjuk pic bertulis untuk alat transpos seperti klarinet, hon, trompet, saksofon, bes elektrik dan kontrabes; matikan untuk pic sebenar.",
+        staffWrittenAs: "(ditulis sebagai {scale})",
+        keyColor: "Warna kekunci",
+        prevC: "Warna C sebelumnya",
+        nextC: "Warna C seterusnya",
+        cColorTitle: "Warna C {index}/12",
+        staffScale: "Zum staf",
+        zoomOut: "Zum keluar",
+        zoomIn: "Zum masuk",
+        staffAria: "Staf skala untuk pemetaan Q semasa",
+        keyboardAria: "Papan kekunci butang Q-board",
+        shortcutList: "Pintasan",
+        shortcutArrows: "Alih Q / oktaf",
+        shortcutVertical: "Kiri-atas / kanan-bawah",
+        shortcutHorizontal: "Oktaf rendah / tinggi",
+        shortcutPageDiagonals: "Kanan-atas / kiri-bawah",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "kuart rendah",
+        intervalHighFourth: "kuart tinggi",
+        intervalLowFifth: "kuint rendah",
+        intervalHighFifth: "kuint tinggi",
+        shortcutEdgePedals: "Lima lajur kiri/kanan turun/naik oktaf",
+        shortcutEdgePedalsSummary: "Lima lajur kiri/kanan {left}/{right} oktaf",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "turunkan lima lajur kiri",
+        edgeRightUp: "naikkan lima lajur kanan",
+        edgeLeftAction: "alih lima lajur kiri ke kiri, {shift}",
+        edgeRightAction: "alih lima lajur kanan ke kanan, {shift}",
+        edgeOctaveUp: "naik satu oktaf",
+        edgeOctaveDown: "turun satu oktaf",
+        edgeOctaveUpShort: "naik",
+        edgeOctaveDownShort: "turun",
+        edgeSemitonesUpShort: "naik {n} semiton",
+        edgeSemitonesDownShort: "turun {n} semiton",
+        edgeSemitonesUp: "naik {n} semiton",
+        edgeSemitonesDown: "turun {n} semiton",
+        shortcutSustain: "Pedal sustain",
+        shortcutSoft: "Pedal lembut",
+        shortcutHarmonic: "Harmonik",
+        shortcutBassKeys: "Kekunci bes tujuh / mutasi kord",
+        shortcutBassSeventh: "Bes tujuh",
+        shortcutBassMutate: "Mutasi bes",
+        clickAnyKey: "Klik mana-mana kekunci",
+        audioLabel: "Audio",
+        audioError: "Pelayar ini tidak dapat memulakan audio sekarang.",
+        mainKeyboard: "Papan kekunci utama",
+        mainShort: "Utama",
+        touchComputer: "Sentuh/komputer",
+        computerKeyboard: "Papan kekunci komputer",
+        mouseTouch: "Tetikus/sentuh",
+        mouseShort: "Sentuh",
+        monoSource: "Mono",
+        bassPart: "Bahagian bes",
+        bassShort: "Bes",
+        bassEnable: "Bes",
+        bassBase: "Nota asas",
+        bassMirror: "Cermin",
+        bassMirrorHelp: "Cerminkan pedal Shift kiri/kanan. B-system mencerminkan secara lalai; C-system tidak.",
+        bassOutHarmony: "Kord luar",
+        bassFade: "Pudar bes",
+        sourceHid: "HID",
+        hidUnsupported: "Pelayar ini tidak menyokong WebHID; gunakan pelayar Chromium dengan WebHID.",
+        hidNoDevice: "Tiada peranti HID dipilih; papan kekunci biasa mungkin disembunyikan oleh keselamatan pelayar.",
+        hidAddBlocked: "Tambah HID gagal: akses tidak diberi atau peranti dilindungi.",
+        hidAddFailed: "Tambah HID gagal: {message}",
+        hidKeyboardName: "Papan kekunci HID {index}",
+        mainCannotDelete: "Papan kekunci utama ialah lalai dan tidak boleh dipadam.",
+        hidDisconnected: "{name} terputus",
+        instrument: "Suara",
+        outputShift: "Anjakan output",
+        volume: "Volum",
+        pointerFade: "Sustain sentuh",
+        followPedal: "Ikut pedal",
+        keyboardFade: "Sustain kekunci",
+        keyboardSustain: "Pedal sustain",
+        sustainPedal: "Pedal sustain",
+        sustainPedalOn: "Sustain ditekan",
+        sustainPedalOff: "Pudar sustain {time}",
+        softPedal: "Pedal lembut",
+        softPedalOn: "Lembut ditekan",
+        softPedalOff: "Lembut dilepas",
+        harmonicPedal: "Harmonik",
+        harmonicPedalOn: "Harmonik ditekan",
+        harmonicPedalOff: "Harmonik dilepas",
+        setQ: "Tetapkan Q",
+        reset: "Set semula",
+        addHid: "Tambah papan kekunci HID",
+        delete: "Padam",
+        noScaleEntries: "Tiada nota kelihatan untuk {scale}",
+        row: "Baris {n}",
+        upperRow: "Atas {n}",
+        lowerRow: "Bawah {n}",
+        outputPrefix: "Output",
+        circleTitle: "Bulatan {index}",
+        instrumentAccordion: "Akordion",
+        instrumentPiano: "Piano",
+        instrumentFortepiano: "Fortepiano",
+        instrumentGuitar: "Gitar",
+        instrumentClassicalGuitar: "Gitar klasik",
+        instrumentOverdriveGuitar: "Gitar elektrik overdrive",
+        instrumentDistortionGuitar: "Gitar elektrik distorsi",
+        instrumentWahGuitar: "Gitar wah",
+        instrumentElectricBass: "Bes elektrik",
+        instrumentSynthWave: "Gelombang sint",
+        instrumentGuzheng: "Guzheng",
+        instrumentViolin: "Violin",
+        instrumentCello: "Selo",
+        instrumentDoubleBass: "Kontrabes",
+        instrumentStrings: "Ensembel tali",
+        instrumentErhu: "Erhu",
+        instrumentFlute: "Flut",
+        instrumentClarinet: "Klarinet",
+        instrumentTrumpet: "Trompet",
+        instrumentSax: "Saksofon",
+        instrumentHarpsichord: "Harpsikord",
+        instrumentQuilled: "Papan kekunci petik",
+        instrumentTheremin: "Theremin",
+        instrumentHarp: "Harpa",
+        instrumentOboe: "Oboe",
+        instrumentBassoon: "Fagot",
+        instrumentFrenchHorn: "Hon Perancis",
+        instrumentRecorder: "Rekoder",
+        bassConfigTitle: "Butiran bes",
+        bassConfigClose: "Tutup butiran bes",
+        bassConfigReset: "Pulih lalai",
+        bassConfigResetDone: "Butiran bes dipulihkan",
+        bassDockSeventhHint: "{key} kord tujuh",
+        bassDockModifierHint: "~/· memutasi kord dimainkan",
+        bassDockSeventhHelp: "Kekunci tujuh bes: kekunci bergantung pada jenis input bes. Bes F1-F12 menggunakan Esc; bes nombor menggunakan Q. Tahan untuk mentafsir input bes sebagai kord tujuh/sembilan; harmoni dalam skala boleh bergabung menjadi tujuh atau guna tujuh mutasi, manakala harmoni luar masuk keadaan mutasi.",
+        bassDockModifierHelp: "Kekunci mutasi kord: gunakan ~. Tahan untuk guna tujuh mutasi atau harmoni mutasi yang ditetapkan; kord luar bertukar antara normal dan mutasi. Jenis kord tepat boleh diedit dalam Butiran bes.",
+        bassSettingsTitle: "Butiran bes",
+        bassHarmonyMajor: "Harmoni major",
+        bassHarmonyMinor: "Harmoni minor",
+        bassStateDiatonicSeventhModifier: "Kord tujuh mutasi",
+        bassStateNormal: "Normal",
+        bassStateModifier: "Mutate",
+        optionsMemory: "Memori pilihan",
+        exportAllSettings: "Eksport",
+        importAllSettings: "Import",
+        settingsImported: "Pilihan diimport",
+        settingsImportFailed: "Import gagal: {message}",
+        bassChordType_maj: "Triad major",
+        bassChordType_min: "Triad minor",
+        bassChordType_dim: "Triad diminished",
+        bassChordType_aug: "Triad augmented",
+        bassChordType_maj7: "Tujuh major",
+        bassChordType_7: "Tujuh dominan",
+        bassChordType_m7: "Tujuh minor",
+        bassChordType_m7b5: "Separuh diminished",
+        bassChordType_dim7: "Tujuh diminished",
+        bassChordType_mMaj7: "Minor-major",
+        bassChordType_augMaj7: "Augmented major",
+        bassChordType_7b5: "Dominan b5",
+        bassChordType_maj9: "Sembilan major",
+        bassChordType_9: "Sembilan dominan",
+        bassChordType_m9: "Sembilan minor",
+        bassChordType_7b9: "Dominan b9",
+        bassChordType_7s9: "Dominan #9",
+        bassChordType_mMaj9: "Minor-major 9",
+        bassChordType_m7b5add9: "Separuh diminished 9",
+        bassChordType_9s5: "Dominan 9 #5",
+        helpChoose: "Pilih {label}",
+        helpAdjust: "Laraskan {label}",
+        helpToggle: "Togol {label}",
+        helpCommand: "{label}",
+        helpOpen: "Buka {label}",
+        resetAllSettings: "Tetapkan semula semua pilihan",
+        settingsResetDone: "Memori pilihan diset semula",
+        bassKeyModeSwitch: "Tukar jenis input bes",
+        bassChordSelectHelp: "Semasa: {formula}; buka untuk {name}",
+        bassBaseHelp: "Nota asas ialah nota terendah dalam oktaf untuk kord bes",
+        vibratoSensitivityHelp: "Kepekaan vibrato: kiri bermakna gerakan ke atas menaikkan pic, kanan bermakna gerakan ke bawah menaikkan pic; 0c paling kurang peka.",
+        pedalTimeHelp: "Masa pedal: seberapa beransur pedal lembut dan harmonik buatan mempengaruhi nota yang sedang berbunyi.",
+        sustainTimeHelp: "Susut sustain: tempoh susut semula jadi maksimum selepas lepas kekunci semasa pedal sustain ditahan, hingga 20s.",
+        softPedalRatioHelp: "Nisbah lembut: volum yang dikekalkan semasa pedal lembut ditekan.",
+        glissandoDwellHelp: "Lewat glissando: berapa lama tetikus/sentuh perlu tinggal pada kekunci sebelum glissando memainkannya.",
+        harmonicIntensityHelp: "Campuran harmonik: nilai lebih tinggi menambah harmonik atas sambil mengekalkan kelantangan.",
+        keyboardFadeHelp: "Sustain kekunci: pudar biasa selepas lepas kekunci; lepas pedal sustain juga menggunakannya; harmonik menambah separuh susut sustain.",
+        followPedalHelp: "Ikut pedal: tetikus/sentuh mengikut pedal sustain, lembut dan harmonik buatan papan kekunci utama.",
+        appTagline: "Daripada sistem kekunci akordion bayan, alat komputer terbaik anda. By cbv_deux",
+        pointerFadeHelp: "Sustain sentuh: pudar semula jadi selepas lepas tetikus/sentuh; apabila Ikut pedal hidup, ia guna pedal dan sustain kekunci papan kekunci utama.",
+        bassPopupHelp: "Butiran bes: tetapkan kord tujuh mutasi diatonik dan harmoni luar normal/mutasi, dengan pratonton kord untuk tonik semasa.",
+        mouseTouchHelp: "Tetikus/sentuh: suara monofonik dengan glissando seret, vibrato manual apabila vibrato auto dimatikan, dan pilihan ikut pedal utama.",
+        bassPartHelp: "Bahagian bes: harmoni automatik dalam skala serta harmoni luar tersuai; menyokong harmoni mutasi, kord tujuh dan kord sembilan.",
+        mainKeyboardHelp: "Papan kekunci utama: menyokong permainan berbilang kekunci, pedal sustain/lembut/harmonik buatan dan pedal oktaf sementara kiri/kanan.",
+        hidKeyboardHelp: "Papan kekunci HID: input luar berbilang kekunci dengan pedal, anjakan oktaf dan tetapan suara bebas."
+      }
+    };
+
+    for (const [language, copy] of Object.entries(additionalLanguageTranslations)) {
+      if (!translations[language]) translations[language] = {};
+      Object.assign(translations[language], copy);
+    }
+
+    const supplementalLanguageTranslations = {
+      fr: {
+        showStaff: "Portée",
+        bassMirror: "Miroir",
+        bassMirrorHelp: "Inverse les pédales Shift gauche/droite. Le B-system l'inverse par défaut; le C-system non.",
+        instrumentClassicalGuitar: "Guitare classique",
+        instrumentOverdriveGuitar: "Guitare électrique overdrive",
+        instrumentDistortionGuitar: "Guitare électrique distorsion",
+        instrumentWahGuitar: "Guitare wah",
+        instrumentElectricBass: "Basse électrique",
+        instrumentSynthWave: "Synth wave",
+        bassDockSeventhHelp: "Touche de septième de basse: la touche dépend du type d'entrée de basse. Le mode F1-F12 utilise Esc; le mode numérique utilise Q. Maintenez-la pour lire la basse comme accords de septième/neuvième; l'harmonie dans la gamme peut fusionner en septièmes ou utiliser des septièmes mutées, tandis que l'harmonie hors gamme passe en état muté.",
+        bassDockModifierHelp: "Touche de mutation d'accord: utilisez ~. Maintenez-la pour appliquer la septième mutée ou l'harmonie mutée configurée; les accords hors gamme basculent entre état normal et Mutate. Les types exacts se règlent dans les détails de basse."
+      },
+      de: {
+        showStaff: "Noten",
+        bassMirror: "Spiegeln",
+        bassMirrorHelp: "Spiegelt die linken/rechten Shift-Pedale. B-system spiegelt standardmäßig; C-system nicht.",
+        instrumentClassicalGuitar: "Klassische Gitarre",
+        instrumentOverdriveGuitar: "Overdrive-E-Gitarre",
+        instrumentDistortionGuitar: "Distortion-E-Gitarre",
+        instrumentWahGuitar: "Wah-Gitarre",
+        instrumentElectricBass: "E-Bass",
+        instrumentSynthWave: "Synth-Wave",
+        bassDockSeventhHelp: "Bass-Septakkordtaste: die Taste hängt vom Bass-Eingabetyp ab. F1-F12-Bass nutzt Esc; Zahlenbass nutzt Q. Gedrückt halten, um Bass als Sept-/Nonakkorde zu lesen; Tonart-Harmonie kann zu Septakkorden verschmelzen oder mutierte Septakkorde nutzen, Außentöne gehen in den Mutate-Zustand.",
+        bassDockModifierHelp: "Akkord-Mutate-Taste: verwenden Sie ~. Gedrückt halten, um die konfigurierte mutierte Septime oder Harmonie anzuwenden; Außenton-Akkorde wechseln zwischen normal und Mutate. Die genauen Akkordtypen stehen in den Bassdetails."
+      },
+      es: {
+        showStaff: "Pentagrama",
+        bassMirror: "Invertir",
+        bassMirrorHelp: "Invierte los pedales Shift izquierdo/derecho. B-system invierte por defecto; C-system no.",
+        instrumentClassicalGuitar: "Guitarra clásica",
+        instrumentOverdriveGuitar: "Guitarra eléctrica overdrive",
+        instrumentDistortionGuitar: "Guitarra eléctrica distorsión",
+        instrumentWahGuitar: "Guitarra wah",
+        instrumentElectricBass: "Bajo eléctrico",
+        instrumentSynthWave: "Onda synth",
+        bassDockSeventhHelp: "Tecla de séptima de bajo: la tecla depende del tipo de entrada de bajo. El bajo F1-F12 usa Esc; el bajo numérico usa Q. Manténgala para interpretar el bajo como acordes de séptima/novena; la armonía diatónica puede fusionarse en séptimas o usar séptimas mutadas, mientras la armonía externa entra en estado Mutate.",
+        bassDockModifierHelp: "Tecla de mutación de acorde: use ~. Manténgala para aplicar la séptima mutada o armonía mutada configurada; los acordes externos alternan entre normal y Mutate. Los tipos exactos se editan en detalles de bajo."
+      },
+      pt: {
+        showStaff: "Pauta",
+        bassMirror: "Espelhar",
+        bassMirrorHelp: "Espelha os pedais Shift esquerdo/direito. B-system espelha por padrão; C-system não.",
+        instrumentClassicalGuitar: "Guitarra clássica",
+        instrumentOverdriveGuitar: "Guitarra elétrica overdrive",
+        instrumentDistortionGuitar: "Guitarra elétrica distorção",
+        instrumentWahGuitar: "Guitarra wah",
+        instrumentElectricBass: "Baixo elétrico",
+        instrumentSynthWave: "Synth wave",
+        bassDockSeventhHelp: "Tecla de sétima do baixo: a tecla depende do tipo de entrada do baixo. Baixo F1-F12 usa Esc; baixo numérico usa Q. Segure para ler o baixo como acordes de sétima/nona; harmonia diatônica pode fundir em sétimas ou usar sétimas mutadas, enquanto harmonia externa entra no estado Mutate.",
+        bassDockModifierHelp: "Tecla de mutação de acorde: use ~. Segure para aplicar a sétima mutada ou harmonia mutada configurada; acordes externos alternam entre normal e Mutate. Os tipos exatos ficam em detalhes do baixo."
+      },
+      ja: {
+        showStaff: "譜表",
+        bassMirror: "反転",
+        bassMirrorHelp: "左右 Shift ペダルを反転します。B-system は既定で反転、C-system は反転しません。",
+        instrumentClassicalGuitar: "クラシックギター",
+        instrumentOverdriveGuitar: "オーバードライブギター",
+        instrumentDistortionGuitar: "ディストーションギター",
+        instrumentWahGuitar: "ワウギター",
+        instrumentElectricBass: "エレキベース",
+        instrumentSynthWave: "シンセウェーブ",
+        bassDockSeventhHelp: "ベース七和音キー: キーはベース入力方式で決まります。F1-F12 ベースは Esc、数字ベースは Q です。押している間、ベース入力を七/九和音として扱います。調内和声は七和音へ結合または変異七和音を使い、調外和声は Mutate 状態になります。",
+        bassDockModifierHelp: "和音 Mutate キー: ~ を使います。押している間、設定した変異七和音または変異和声を適用します。調外和音は通常状態と Mutate 状態を切り替えます。具体的な和音タイプはベース詳細で編集できます。"
+      },
+      ar: {
+        showStaff: "المدرج",
+        bassMirror: "عكس",
+        bassMirrorHelp: "يعكس دواستي Shift اليسرى/اليمنى. نظام B يعكس افتراضيا؛ نظام C لا يعكس.",
+        instrumentClassicalGuitar: "غيتار كلاسيكي",
+        instrumentOverdriveGuitar: "غيتار كهربائي أوفردرايف",
+        instrumentDistortionGuitar: "غيتار كهربائي ديستورشن",
+        instrumentWahGuitar: "غيتار واه",
+        instrumentElectricBass: "باس كهربائي",
+        instrumentSynthWave: "موجة سنث",
+        bassDockSeventhHelp: "مفتاح سابعة الباس: يعتمد المفتاح على نوع إدخال الباس. إدخال F1-F12 يستخدم Esc؛ والإدخال الرقمي يستخدم Q. اضغط مطولا لقراءة الباس كأوتار سابعة/تاسعة؛ الهارموني داخل المقام قد يندمج في سابعات أو يستخدم سابعات Mutate، أما الخارج فيدخل حالة Mutate.",
+        bassDockModifierHelp: "مفتاح Mutate للوتر: استخدم ~. اضغط مطولا لتطبيق السابعة أو الهارموني Mutate المضبوط؛ الأوتار خارج المقام تتبدل بين Normal وMutate. الأنواع الدقيقة تعدل في تفاصيل الباس."
+      },
+      ru: {
+        showStaff: "Ноты",
+        bassMirror: "Зеркально",
+        bassMirrorHelp: "Меняет местами левые/правые Shift-педали. B-system зеркалит по умолчанию; C-system нет.",
+        instrumentClassicalGuitar: "Классическая гитара",
+        instrumentOverdriveGuitar: "Электрогитара overdrive",
+        instrumentDistortionGuitar: "Электрогитара distortion",
+        instrumentWahGuitar: "Wah-гитара",
+        instrumentElectricBass: "Электробас",
+        instrumentSynthWave: "Synth wave",
+        bassDockSeventhHelp: "Клавиша септаккордов баса: клавиша зависит от типа ввода баса. Ввод F1-F12 использует Esc; цифровой ввод использует Q. Удерживайте, чтобы читать бас как септ-/нонаккорды; диатоническая гармония может сливаться в септаккорды или использовать мутированные септаккорды, а внеладовая переходит в состояние Mutate.",
+        bassDockModifierHelp: "Клавиша Mutate аккорда: используйте ~. Удерживайте, чтобы применить настроенную мутированную септиму или гармонию; внеладовые аккорды переключаются между Normal и Mutate. Точные типы редактируются в деталях баса."
+      },
+      vi: {
+        appTitle: "Q-board",
+        settings: "Cài đặt",
+        globalSettings: "Chung",
+        keyboardSettings: "Bàn phím",
+        manualSettings: "Hướng dẫn",
+        menuTabs: "Thẻ tùy chọn",
+        collapseOptions: "Thu gọn",
+        showOptions: "Mở rộng",
+        language: "Ngôn ngữ",
+        layout: "Hệ",
+        shape: "Hình",
+        hex: "Lục giác",
+        round: "Tròn",
+        lowCol: "Thấp",
+        highCol: "Cao",
+        upperRows: "Trên",
+        lowerRows: "Dưới",
+        horizontalView: "Khung nhìn",
+        center: "Căn giữa",
+        viewReset: "Đặt lại",
+        scale: "Âm giai",
+        major: "trưởng",
+        minor: "thứ",
+        assist: "Hỗ trợ",
+        scaleInTone: "Màu trong giọng",
+        scaleOutTone: "Màu ngoài giọng",
+        inDark: "Trong tối",
+        outDark: "Ngoài tối",
+        allDark: "Tất cả tối",
+        allLight: "Tất cả sáng",
+        toneDeep: "đậm",
+        toneNormal: "thường",
+        toneGray: "xám",
+        toneLight: "sáng",
+        assistPair: "Trong {inside} / Ngoài {outside}",
+        outLabels: "Tên ngoài",
+        dual: "Cả hai",
+        sharp: "Dấu thăng",
+        flat: "Dấu giáng",
+        inDual: "Trong giọng cả hai",
+        inSharp: "Trong giọng thăng",
+        inFlat: "Trong giọng giáng",
+        vibrato: "Rung âm",
+        longVibrato: "Rung khi giữ",
+        autoVibrato: "Rung tự động",
+        vibratoSensitivity: "Độ nhạy rung",
+        sustainTime: "Tắt dần sustain",
+        pedalTime: "Thời gian pedal",
+        softPedalRatio: "Tỉ lệ pedal nhẹ",
+        glissandoDwell: "Trễ glissando",
+        harmonicIntensity: "Bồi âm",
+        pedalStatusTitle: "Trạng thái pedal (kiểm tra Shift)",
+        metronome: "Máy nhịp",
+        metronomeStart: "Bật máy nhịp",
+        metronomeStop: "Tắt máy nhịp",
+        metronomeOff: "Máy nhịp tắt",
+        metronomeDown1: "Giảm 1 BPM",
+        metronomeUp1: "Tăng 1 BPM",
+        metronomeDown10: "Giảm 10 BPM",
+        metronomeUp10: "Tăng 10 BPM",
+        showStaff: "Khuông nhạc",
+        staff: "Khuông nhạc",
+        staffTranspose: "Chuyển giọng",
+        staffTransposeHelp: "Hiển thị cao độ ghi cho nhạc cụ chuyển giọng như clarinet, horn, trumpet, saxophone, bass điện và double bass; tắt để xem cao độ thực.",
+        staffWrittenAs: "(ghi như {scale})",
+        keyColor: "Màu phím",
+        prevC: "Màu C trước",
+        nextC: "Màu C sau",
+        cColorTitle: "Màu C {index}/12",
+        staffScale: "Thu phóng khuông",
+        zoomOut: "Thu nhỏ",
+        zoomIn: "Phóng to",
+        staffAria: "Khuông nhạc âm giai cho ánh xạ Q hiện tại",
+        keyboardAria: "Bàn phím nút Q-board",
+        shortcutList: "Phím tắt",
+        shortcutArrows: "Di chuyển Q / quãng tám",
+        shortcutVertical: "Trái-lên / phải-xuống",
+        shortcutHorizontal: "Quãng tám thấp / cao",
+        shortcutPageDiagonals: "Phải-lên / trái-xuống",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "quãng bốn thấp",
+        intervalHighFourth: "quãng bốn cao",
+        intervalLowFifth: "quãng năm thấp",
+        intervalHighFifth: "quãng năm cao",
+        shortcutEdgePedals: "Năm cột trái/phải hạ/nâng quãng tám",
+        shortcutEdgePedalsSummary: "Năm cột trái/phải {left}/{right} quãng tám",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "hạ năm cột trái",
+        edgeRightUp: "nâng năm cột phải",
+        edgeLeftAction: "dịch năm cột trái sang trái, {shift}",
+        edgeRightAction: "dịch năm cột phải sang phải, {shift}",
+        edgeOctaveUp: "lên một quãng tám",
+        edgeOctaveDown: "xuống một quãng tám",
+        edgeOctaveUpShort: "lên",
+        edgeOctaveDownShort: "xuống",
+        edgeSemitonesUpShort: "lên {n} bán cung",
+        edgeSemitonesDownShort: "xuống {n} bán cung",
+        edgeSemitonesUp: "lên {n} bán cung",
+        edgeSemitonesDown: "xuống {n} bán cung",
+        shortcutSustain: "Pedal ngân",
+        shortcutSoft: "Pedal nhẹ",
+        shortcutHarmonic: "Bồi âm",
+        shortcutBassKeys: "Phím bảy bass / Mutate hợp âm",
+        shortcutBassSeventh: "Bass bảy",
+        shortcutBassMutate: "Mutate bass",
+        clickAnyKey: "Bấm phím bất kỳ",
+        audioLabel: "Âm thanh",
+        audioError: "Trình duyệt này hiện không thể khởi tạo âm thanh.",
+        mainKeyboard: "Bàn phím chính",
+        mainShort: "Chính",
+        touchComputer: "Chạm/máy tính",
+        computerKeyboard: "Bàn phím máy tính",
+        mouseTouch: "Chuột/chạm",
+        mouseShort: "Chạm",
+        monoSource: "Đơn âm",
+        bassPart: "Phần bass",
+        bassShort: "Bass",
+        bassEnable: "Bass",
+        bassBase: "Nốt gốc",
+        bassMirror: "Đảo",
+        bassMirrorHelp: "Đảo pedal Shift trái/phải. B-system đảo mặc định; C-system thì không.",
+        bassOutHarmony: "Hợp âm ngoài",
+        bassFade: "Bass tắt dần",
+        sourceHid: "HID",
+        hidUnsupported: "Trình duyệt này không hỗ trợ WebHID; hãy dùng Chromium có WebHID.",
+        hidNoDevice: "Chưa chọn thiết bị HID; bàn phím thường có thể bị bảo mật trình duyệt ẩn đi.",
+        hidAddBlocked: "Thêm HID thất bại: trình duyệt không cấp quyền hoặc thiết bị được bảo vệ.",
+        hidAddFailed: "Thêm HID thất bại: {message}",
+        hidKeyboardName: "Bàn phím HID {index}",
+        mainCannotDelete: "Bàn phím chính là mặc định và không thể xóa.",
+        hidDisconnected: "{name} đã ngắt kết nối",
+        instrument: "Âm sắc",
+        outputShift: "Dịch cao độ",
+        volume: "Âm lượng",
+        pointerFade: "Sustain chạm",
+        followPedal: "Theo pedal",
+        keyboardFade: "Sustain phím",
+        keyboardSustain: "Pedal ngân",
+        sustainPedal: "Pedal ngân",
+        sustainPedalOn: "Pedal ngân đang nhấn",
+        sustainPedalOff: "Tắt dần sustain {time}",
+        softPedal: "Pedal nhẹ",
+        softPedalOn: "Pedal nhẹ đang nhấn",
+        softPedalOff: "Pedal nhẹ đã nhả",
+        harmonicPedal: "Bồi âm",
+        harmonicPedalOn: "Bồi âm đang nhấn",
+        harmonicPedalOff: "Bồi âm đã nhả",
+        setQ: "Đặt Q",
+        reset: "Đặt lại",
+        addHid: "Thêm bàn phím HID",
+        delete: "Xóa",
+        noScaleEntries: "Không có nốt hiển thị cho {scale}",
+        row: "Hàng {n}",
+        upperRow: "Trên {n}",
+        lowerRow: "Dưới {n}",
+        outputPrefix: "Đầu ra",
+        circleTitle: "Vòng {index}",
+        instrumentAccordion: "Accordion",
+        instrumentPiano: "Piano",
+        instrumentFortepiano: "Fortepiano",
+        instrumentGuitar: "Guitar",
+        instrumentClassicalGuitar: "Guitar cổ điển",
+        instrumentOverdriveGuitar: "Guitar overdrive",
+        instrumentDistortionGuitar: "Guitar distortion",
+        instrumentWahGuitar: "Guitar wah",
+        instrumentElectricBass: "Bass điện",
+        instrumentSynthWave: "Synth wave",
+        instrumentGuzheng: "Cổ tranh",
+        instrumentViolin: "Violin",
+        instrumentCello: "Cello",
+        instrumentDoubleBass: "Đại hồ cầm",
+        instrumentStrings: "Dàn dây",
+        instrumentErhu: "Nhị hồ",
+        instrumentFlute: "Sáo flute",
+        instrumentClarinet: "Clarinet",
+        instrumentTrumpet: "Trumpet",
+        instrumentSax: "Saxophone",
+        instrumentHarpsichord: "Harpsichord",
+        instrumentQuilled: "Đàn phím gảy",
+        instrumentTheremin: "Theremin",
+        instrumentHarp: "Harp",
+        instrumentOboe: "Oboe",
+        instrumentBassoon: "Bassoon",
+        instrumentFrenchHorn: "Kèn horn",
+        instrumentRecorder: "Recorder",
+        bassConfigTitle: "Chi tiết bass",
+        bassConfigClose: "Đóng chi tiết bass",
+        bassConfigReset: "Khôi phục mặc định",
+        bassConfigResetDone: "Chi tiết bass đã khôi phục",
+        bassDockSeventhHint: "{key} hợp âm bảy",
+        bassDockModifierHint: "~/· Mutate hợp âm đang chơi",
+        bassDockSeventhHelp: "Phím bảy bass: phím cụ thể phụ thuộc kiểu nhập bass. Bass F1-F12 dùng Esc; bass số dùng Q. Giữ để nhận bass là hợp âm bảy/chín; hòa âm trong giọng có thể gộp thành bảy hoặc dùng bảy Mutate, còn hòa âm ngoài giọng vào trạng thái Mutate.",
+        bassDockModifierHelp: "Phím Mutate hợp âm: dùng ~. Giữ để áp dụng bảy Mutate hoặc hòa âm Mutate đã cấu hình; hợp âm ngoài giọng đổi giữa thường và Mutate. Có thể sửa loại hợp âm trong Chi tiết bass.",
+        bassSettingsTitle: "Chi tiết bass",
+        bassHarmonyMajor: "Hòa âm trưởng",
+        bassHarmonyMinor: "Hòa âm thứ",
+        bassStateDiatonicSeventhModifier: "Hợp âm bảy Mutate",
+        bassStateNormal: "Thường",
+        bassStateModifier: "Mutate",
+        optionsMemory: "Bộ nhớ tùy chọn",
+        exportAllSettings: "Xuất",
+        importAllSettings: "Nhập",
+        settingsImported: "Đã nhập tùy chọn",
+        settingsImportFailed: "Nhập thất bại: {message}",
+        bassChordType_maj: "Tam âm trưởng",
+        bassChordType_min: "Tam âm thứ",
+        bassChordType_dim: "Tam âm giảm",
+        bassChordType_aug: "Tam âm tăng",
+        bassChordType_maj7: "Bảy trưởng",
+        bassChordType_7: "Bảy át",
+        bassChordType_m7: "Bảy thứ",
+        bassChordType_m7b5: "Bán giảm bảy",
+        bassChordType_dim7: "Bảy giảm",
+        bassChordType_mMaj7: "Thứ-trưởng bảy",
+        bassChordType_augMaj7: "Tăng trưởng bảy",
+        bassChordType_7b5: "Át bảy giáng năm",
+        bassChordType_maj9: "Chín trưởng",
+        bassChordType_9: "Chín át",
+        bassChordType_m9: "Chín thứ",
+        bassChordType_7b9: "Át bảy giáng chín",
+        bassChordType_7s9: "Át bảy thăng chín",
+        bassChordType_mMaj9: "Thứ-trưởng chín",
+        bassChordType_m7b5add9: "Bán giảm chín",
+        bassChordType_9s5: "Át chín thăng năm",
+        helpChoose: "Chọn {label}",
+        helpAdjust: "Điều chỉnh {label}",
+        helpToggle: "Bật/tắt {label}",
+        helpCommand: "{label}",
+        helpOpen: "Mở {label}",
+        resetAllSettings: "Đặt lại mọi tùy chọn",
+        settingsResetDone: "Bộ nhớ tùy chọn đã đặt lại",
+        bassKeyModeSwitch: "Đổi kiểu nhập bass",
+        bassChordSelectHelp: "Hiện tại: {formula}; mở để chọn {name}",
+        bassBaseHelp: "Nốt gốc là nốt thấp nhất trong quãng tám dùng cho hợp âm bass",
+        vibratoSensitivityHelp: "Độ nhạy rung: bên trái nghĩa là kéo lên làm cao độ tăng, bên phải nghĩa là kéo xuống làm cao độ tăng; 0c là ít nhạy nhất.",
+        pedalTimeHelp: "Thời gian pedal: độ chuyển dần của pedal nhẹ và bồi âm nhân tạo lên nốt đang vang.",
+        sustainTimeHelp: "Tắt dần sustain: thời gian tắt tự nhiên tối đa sau khi nhả phím khi giữ pedal ngân, tối đa 20s.",
+        softPedalRatioHelp: "Tỉ lệ pedal nhẹ: tỉ lệ âm lượng còn lại khi pedal nhẹ được nhấn.",
+        glissandoDwellHelp: "Trễ glissando: chuột/chạm phải dừng trên phím bao lâu trước khi glissando phát âm.",
+        harmonicIntensityHelp: "Pha bồi âm: giá trị cao tăng bồi âm cao trong khi giữ độ lớn ổn định.",
+        keyboardFadeHelp: "Sustain phím: tắt dần khi nhả phím; nhả pedal sustain cũng dùng giá trị này; bồi âm cộng thêm nửa thời gian sustain.",
+        followPedalHelp: "Theo pedal: chuột/chạm theo pedal ngân, pedal nhẹ và bồi âm nhân tạo của bàn phím chính.",
+        appTagline: "Từ hệ phím accordion bayan, nhạc cụ máy tính tốt nhất của bạn. By cbv_deux",
+        pointerFadeHelp: "Sustain chạm: tắt dần tự nhiên sau khi nhả chuột/chạm; khi Theo pedal bật, nó dùng pedal và sustain phím của bàn phím chính.",
+        bassPopupHelp: "Chi tiết bass: cấu hình bảy Mutate trong giọng và hòa âm ngoài giọng thường/Mutate, kèm xem trước hợp âm theo chủ âm hiện tại.",
+        mouseTouchHelp: "Chuột/chạm: giọng đơn âm có glissando kéo, rung tay khi tắt rung tự động, và tùy chọn theo pedal bàn phím chính.",
+        bassPartHelp: "Phần bass: hòa âm tự động trong giọng cộng hòa âm ngoài giọng tùy chỉnh; hỗ trợ Mutate, hợp âm bảy và chín.",
+        mainKeyboardHelp: "Bàn phím chính: hỗ trợ chơi nhiều phím, pedal ngân/nhẹ/bồi âm nhân tạo và pedal quãng tám tạm thời trái/phải.",
+        hidKeyboardHelp: "Bàn phím HID: đầu vào ngoài nhiều phím với pedal, dịch quãng tám và thiết lập âm sắc độc lập."
+      },
+      tr: {
+        appTitle: "Q-board",
+        settings: "Ayarlar",
+        globalSettings: "Genel",
+        keyboardSettings: "Klavyeler",
+        manualSettings: "Kılavuz",
+        menuTabs: "Seçenek sekmeleri",
+        collapseOptions: "Daralt",
+        showOptions: "Genişlet",
+        language: "Dil",
+        layout: "Sistem",
+        shape: "Şekil",
+        hex: "Altıgen",
+        round: "Yuvarlak",
+        lowCol: "Pes",
+        highCol: "Tiz",
+        upperRows: "Üst",
+        lowerRows: "Alt",
+        horizontalView: "Görünüm",
+        center: "Ortala",
+        viewReset: "Sıfırla",
+        scale: "Gam",
+        major: "majör",
+        minor: "minör",
+        assist: "Yardım",
+        scaleInTone: "Gam içi renk",
+        scaleOutTone: "Gam dışı renk",
+        inDark: "İçi koyu",
+        outDark: "Dışı koyu",
+        allDark: "Hepsi koyu",
+        allLight: "Hepsi açık",
+        toneDeep: "koyu",
+        toneNormal: "normal",
+        toneGray: "gri",
+        toneLight: "açık",
+        assistPair: "İç {inside} / Dış {outside}",
+        outLabels: "Dış adlar",
+        dual: "İkisi",
+        sharp: "Diyezler",
+        flat: "Bemoller",
+        inDual: "Gam içi ikisi",
+        inSharp: "Gam içi diyez",
+        inFlat: "Gam içi bemol",
+        vibrato: "Vibrato",
+        longVibrato: "Basılı vibrato",
+        autoVibrato: "Oto vibrato",
+        vibratoSensitivity: "Vibrato hass.",
+        sustainTime: "Sustain sönümü",
+        pedalTime: "Pedal süresi",
+        softPedalRatio: "Soft oranı",
+        glissandoDwell: "Gliss. gecikmesi",
+        harmonicIntensity: "Harmonikler",
+        pedalStatusTitle: "Pedal durumu (Shift yakalamayı kontrol edin)",
+        metronome: "Metronom",
+        metronomeStart: "Metronomu başlat",
+        metronomeStop: "Metronomu durdur",
+        metronomeOff: "Metronom kapalı",
+        metronomeDown1: "1 BPM azalt",
+        metronomeUp1: "1 BPM artır",
+        metronomeDown10: "10 BPM azalt",
+        metronomeUp10: "10 BPM artır",
+        showStaff: "Dizek",
+        staff: "Dizek",
+        staffTranspose: "Transpoze",
+        staffTransposeHelp: "Klarnet, korno, trompet, saksafon, elektrik bas ve kontrbas gibi transpoze çalgılar için yazılı sesi gösterir; gerçek ses için kapatın.",
+        staffWrittenAs: "({scale} olarak yazılır)",
+        keyColor: "Tuş rengi",
+        prevC: "Önceki C rengi",
+        nextC: "Sonraki C rengi",
+        cColorTitle: "C rengi {index}/12",
+        staffScale: "Dizek yakınlaştırma",
+        zoomOut: "Uzaklaştır",
+        zoomIn: "Yakınlaştır",
+        staffAria: "Geçerli Q eşlemeleri için gam dizeği",
+        keyboardAria: "Q-board düğmeli klavye",
+        shortcutList: "Kısayollar",
+        shortcutArrows: "Q / oktav taşı",
+        shortcutVertical: "Sol-yukarı / sağ-aşağı",
+        shortcutHorizontal: "Pes / tiz oktav",
+        shortcutPageDiagonals: "Sağ-yukarı / sol-aşağı",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "pes dörtlü",
+        intervalHighFourth: "tiz dörtlü",
+        intervalLowFifth: "pes beşli",
+        intervalHighFifth: "tiz beşli",
+        shortcutEdgePedals: "Sol/sağ beş sütun oktav in/çık",
+        shortcutEdgePedalsSummary: "Sol/sağ beş sütun {left}/{right} oktav",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "sol beş sütunu indirir",
+        edgeRightUp: "sağ beş sütunu yükseltir",
+        edgeLeftAction: "sol beş sütunu sola kaydırır, {shift}",
+        edgeRightAction: "sağ beş sütunu sağa kaydırır, {shift}",
+        edgeOctaveUp: "bir oktav yukarı",
+        edgeOctaveDown: "bir oktav aşağı",
+        edgeOctaveUpShort: "yukarı",
+        edgeOctaveDownShort: "aşağı",
+        edgeSemitonesUpShort: "{n} yarım ses yukarı",
+        edgeSemitonesDownShort: "{n} yarım ses aşağı",
+        edgeSemitonesUp: "{n} yarım ses yukarı",
+        edgeSemitonesDown: "{n} yarım ses aşağı",
+        shortcutSustain: "Sustain pedalı",
+        shortcutSoft: "Soft pedal",
+        shortcutHarmonic: "Harmonikler",
+        shortcutBassKeys: "Bas yedili tuşu / akor Mutate tuşu",
+        shortcutBassSeventh: "Bas yedilileri",
+        shortcutBassMutate: "Bas Mutate",
+        clickAnyKey: "Herhangi bir tuşa tıklayın",
+        audioLabel: "Ses",
+        audioError: "Bu tarayıcı şu anda sesi başlatamıyor.",
+        mainKeyboard: "Ana klavye",
+        mainShort: "Ana",
+        touchComputer: "Dokunma/bilgisayar",
+        computerKeyboard: "Bilgisayar klavyesi",
+        mouseTouch: "Fare/dokunma",
+        mouseShort: "Dokunma",
+        monoSource: "Mono",
+        bassPart: "Bas bölümü",
+        bassShort: "Bas",
+        bassEnable: "Bas",
+        bassBase: "Bas nota",
+        bassMirror: "Ayna",
+        bassMirrorHelp: "Sol/sağ Shift pedallarını aynalar. B-system varsayılan olarak aynalar; C-system aynalamaz.",
+        bassOutHarmony: "Dış akorlar",
+        bassFade: "Bas fade",
+        sourceHid: "HID",
+        hidUnsupported: "Bu tarayıcı WebHID desteklemiyor; WebHID destekli Chromium kullanın.",
+        hidNoDevice: "HID aygıtı seçilmedi; normal ofis klavyeleri tarayıcı güvenliği tarafından gizlenebilir.",
+        hidAddBlocked: "HID ekleme başarısız: tarayıcı erişim vermedi veya aygıt korumalı.",
+        hidAddFailed: "HID ekleme başarısız: {message}",
+        hidKeyboardName: "HID klavye {index}",
+        mainCannotDelete: "Ana klavye varsayılandır ve silinemez.",
+        hidDisconnected: "{name} bağlantısı kesildi",
+        instrument: "Ses",
+        outputShift: "Çıkış kayması",
+        volume: "Ses düzeyi",
+        pointerFade: "Dokunma sustain",
+        followPedal: "Pedalı izle",
+        keyboardFade: "Tuş sustain",
+        keyboardSustain: "Sustain pedalı",
+        sustainPedal: "Sustain pedalı",
+        sustainPedalOn: "Sustain basılı",
+        sustainPedalOff: "Tuş sustain fade {time}",
+        softPedal: "Soft pedal",
+        softPedalOn: "Soft basılı",
+        softPedalOff: "Soft bırakıldı",
+        harmonicPedal: "Harmonikler",
+        harmonicPedalOn: "Harmonik basılı",
+        harmonicPedalOff: "Harmonik bırakıldı",
+        setQ: "Q ayarla",
+        reset: "Sıfırla",
+        addHid: "HID klavye ekle",
+        delete: "Sil",
+        noScaleEntries: "{scale} için görünür nota yok",
+        row: "Satır {n}",
+        upperRow: "Üst {n}",
+        lowerRow: "Alt {n}",
+        outputPrefix: "Çıkış",
+        circleTitle: "Daire {index}",
+        instrumentAccordion: "Akordeon",
+        instrumentPiano: "Piyano",
+        instrumentFortepiano: "Fortepiano",
+        instrumentGuitar: "Gitar",
+        instrumentClassicalGuitar: "Klasik gitar",
+        instrumentOverdriveGuitar: "Overdrive gitar",
+        instrumentDistortionGuitar: "Distortion gitar",
+        instrumentWahGuitar: "Wah gitar",
+        instrumentElectricBass: "Elektro bas",
+        instrumentSynthWave: "Synth wave",
+        instrumentGuzheng: "Guzheng",
+        instrumentViolin: "Keman",
+        instrumentCello: "Çello",
+        instrumentDoubleBass: "Kontrbas",
+        instrumentStrings: "Yaylılar",
+        instrumentErhu: "Erhu",
+        instrumentFlute: "Flüt",
+        instrumentClarinet: "Klarnet",
+        instrumentTrumpet: "Trompet",
+        instrumentSax: "Saksafon",
+        instrumentHarpsichord: "Klavsen",
+        instrumentQuilled: "Mızraplı klavye",
+        instrumentTheremin: "Theremin",
+        instrumentHarp: "Arp",
+        instrumentOboe: "Obua",
+        instrumentBassoon: "Fagot",
+        instrumentFrenchHorn: "Korno",
+        instrumentRecorder: "Blok flüt",
+        bassConfigTitle: "Bas ayrıntıları",
+        bassConfigClose: "Bas ayrıntılarını kapat",
+        bassConfigReset: "Varsayılanları geri yükle",
+        bassConfigResetDone: "Bas ayrıntıları varsayılana döndü",
+        bassDockSeventhHint: "{key} yedili akorlar",
+        bassDockModifierHint: "~/· çalınan akoru Mutate eder",
+        bassDockSeventhHelp: "Bas yedili tuşu: tuş bas giriş türüne bağlıdır. F1-F12 bas Esc kullanır; sayı bas Q kullanır. Bas girişini yedili/dokuzlu akor olarak yorumlamak için basılı tutun; gam içi armoni yedililere birleşebilir veya Mutate yedililer kullanabilir, gam dışı armoni Mutate durumuna girer.",
+        bassDockModifierHelp: "Akor Mutate tuşu: ~ kullanın. Gam içi akorlar için ayarlı Mutate yediliyi veya Mutate armoniyi uygular; gam dışı akorlar normal ve Mutate durumları arasında değişir. Tam akor türleri Bas ayrıntılarında düzenlenebilir.",
+        bassSettingsTitle: "Bas ayrıntıları",
+        bassHarmonyMajor: "Majör armoni",
+        bassHarmonyMinor: "Minör armoni",
+        bassStateDiatonicSeventhModifier: "Mutate yedili akor",
+        bassStateNormal: "Normal",
+        bassStateModifier: "Mutate",
+        optionsMemory: "Seçenek belleği",
+        exportAllSettings: "Dışa aktar",
+        importAllSettings: "İçe aktar",
+        settingsImported: "Seçenekler içe aktarıldı",
+        settingsImportFailed: "İçe aktarma başarısız: {message}",
+        bassChordType_maj: "Majör üçlü",
+        bassChordType_min: "Minör üçlü",
+        bassChordType_dim: "Eksiltilmiş üçlü",
+        bassChordType_aug: "Artırılmış üçlü",
+        bassChordType_maj7: "Majör yedili",
+        bassChordType_7: "Dominant yedili",
+        bassChordType_m7: "Minör yedili",
+        bassChordType_m7b5: "Yarı eksiltilmiş",
+        bassChordType_dim7: "Eksiltilmiş yedili",
+        bassChordType_mMaj7: "Minör-majör",
+        bassChordType_augMaj7: "Artırılmış majör",
+        bassChordType_7b5: "Dominant b5",
+        bassChordType_maj9: "Majör dokuzlu",
+        bassChordType_9: "Dominant dokuzlu",
+        bassChordType_m9: "Minör dokuzlu",
+        bassChordType_7b9: "Dominant b9",
+        bassChordType_7s9: "Dominant #9",
+        bassChordType_mMaj9: "Minör-majör 9",
+        bassChordType_m7b5add9: "Yarı eksiltilmiş 9",
+        bassChordType_9s5: "Dominant 9 #5",
+        helpChoose: "{label} seç",
+        helpAdjust: "{label} ayarla",
+        helpToggle: "{label} aç/kapat",
+        helpCommand: "{label}",
+        helpOpen: "{label} aç",
+        resetAllSettings: "Tüm seçenekleri sıfırla",
+        settingsResetDone: "Seçenek belleği sıfırlandı",
+        bassKeyModeSwitch: "Bas giriş türünü değiştir",
+        bassChordSelectHelp: "Geçerli: {formula}; {name} için aç",
+        bassBaseHelp: "Bas nota, bas akorlarının oktavındaki en düşük notadır",
+        vibratoSensitivityHelp: "Vibrato hassasiyeti: sol tarafta yukarı hareket perdeyi yükseltir, sağ tarafta aşağı hareket yükseltir; 0c en az hassastır.",
+        pedalTimeHelp: "Pedal süresi: soft ve yapay harmonik pedallarının çalmakta olan seslere ne kadar kademeli etki edeceği.",
+        sustainTimeHelp: "Sustain sönümü: sustain pedalı basılıyken tuş bırakıldıktan sonraki en uzun doğal sönüm, en çok 20s.",
+        softPedalRatioHelp: "Soft oranı: soft pedal basılıyken korunan ses düzeyi.",
+        glissandoDwellHelp: "Glissando gecikmesi: sürükleme glissandosunda imleç/dokunma bir tuşta ne kadar beklerse çalınır.",
+        harmonicIntensityHelp: "Harmonik karışımı: yüksek değerler üst harmonikleri artırır, genel ses yüksekliği korunur.",
+        keyboardFadeHelp: "Tuş sustain: normal tuş bırakma fade'i; sustain pedal bırakma da bunu kullanır; harmonik tuş bırakma buna sustain sönümünün yarısını ekler.",
+        followPedalHelp: "Pedalı izle: fare/dokunma ana klavyenin sustain, soft ve yapay harmonik pedallarını izler.",
+        appTagline: "Bayan akordeon tuş sisteminden, en iyi bilgisayar enstrümanınız. By cbv_deux",
+        pointerFadeHelp: "Dokunma sustain: fare/dokunma bırakıldıktan sonraki doğal fade; Pedalı izle açıkken ana klavye pedalları ve tuş sustain kullanılır.",
+        bassPopupHelp: "Bas ayrıntıları: geçerli tonik için akor önizlemeleriyle gam içi Mutate yedilileri ve gam dışı normal/Mutate armoniyi ayarlayın.",
+        mouseTouchHelp: "Fare/dokunma: sürükleme glissando, oto vibrato kapalıyken elle vibrato ve isteğe bağlı ana pedal takibi olan monofonik ses.",
+        bassPartHelp: "Bas bölümü: otomatik gam içi armoni ve özel gam dışı armoni; Mutate armoni, yedili ve dokuzlu akorları destekler.",
+        mainKeyboardHelp: "Ana klavye: çok tuşlu çalma, sustain/soft/yapay harmonik pedalları ve sol/sağ geçici oktav pedalları destekler.",
+        hidKeyboardHelp: "HID klavye: pedallar, oktav kaydırmaları ve bağımsız ses ayarlarıyla harici çok tuşlu giriş."
+      },
+      ko: {
+        appTitle: "Q-board",
+        settings: "설정",
+        globalSettings: "전체",
+        keyboardSettings: "키보드",
+        manualSettings: "설명서",
+        menuTabs: "옵션 탭",
+        collapseOptions: "접기",
+        showOptions: "펼치기",
+        language: "언어",
+        layout: "시스템",
+        shape: "모양",
+        hex: "육각",
+        round: "원형",
+        lowCol: "낮음",
+        highCol: "높음",
+        upperRows: "위",
+        lowerRows: "아래",
+        horizontalView: "보기",
+        center: "가운데",
+        viewReset: "초기화",
+        scale: "음계",
+        major: "장조",
+        minor: "단조",
+        assist: "보조",
+        scaleInTone: "조내 색",
+        scaleOutTone: "조외 색",
+        inDark: "조내 어둡게",
+        outDark: "조외 어둡게",
+        allDark: "모두 어둡게",
+        allLight: "모두 밝게",
+        toneDeep: "진하게",
+        toneNormal: "보통",
+        toneGray: "회색",
+        toneLight: "밝게",
+        assistPair: "조내 {inside} / 조외 {outside}",
+        outLabels: "조외 이름",
+        dual: "둘 다",
+        sharp: "샵",
+        flat: "플랫",
+        inDual: "조내 둘 다",
+        inSharp: "조내 샵",
+        inFlat: "조내 플랫",
+        vibrato: "비브라토",
+        longVibrato: "길게 눌러 비브라토",
+        autoVibrato: "자동 비브라토",
+        vibratoSensitivity: "비브라토 감도",
+        sustainTime: "서스테인 감쇠",
+        pedalTime: "페달 시간",
+        softPedalRatio: "소프트 비율",
+        glissandoDwell: "글리산도 지연",
+        harmonicIntensity: "배음 강도",
+        pedalStatusTitle: "페달 상태 (Shift 캡처 확인)",
+        metronome: "메트로놈",
+        metronomeStart: "메트로놈 시작",
+        metronomeStop: "메트로놈 정지",
+        metronomeOff: "메트로놈 꺼짐",
+        metronomeDown1: "1 BPM 내림",
+        metronomeUp1: "1 BPM 올림",
+        metronomeDown10: "10 BPM 내림",
+        metronomeUp10: "10 BPM 올림",
+        showStaff: "보표",
+        staff: "보표",
+        staffTranspose: "이조",
+        staffTransposeHelp: "클라리넷, 호른, 트럼펫, 색소폰, 전기 베이스, 더블베이스 같은 이조 악기는 기보음을 표시합니다. 끄면 실제음을 표시합니다.",
+        staffWrittenAs: "({scale}로 기보)",
+        keyColor: "키 색",
+        prevC: "이전 C 색",
+        nextC: "다음 C 색",
+        cColorTitle: "C 색 {index}/12",
+        staffScale: "보표 확대",
+        zoomOut: "축소",
+        zoomIn: "확대",
+        staffAria: "현재 Q 매핑의 음계 보표",
+        keyboardAria: "Q-board 버튼 키보드",
+        shortcutList: "단축키",
+        shortcutArrows: "Q / 옥타브 이동",
+        shortcutVertical: "왼쪽 위 / 오른쪽 아래",
+        shortcutHorizontal: "낮은 / 높은 옥타브",
+        shortcutPageDiagonals: "오른쪽 위 / 왼쪽 아래",
+        shortcutIntervalPair: "{left} / {right}",
+        intervalLowFourth: "낮은 4도",
+        intervalHighFourth: "높은 4도",
+        intervalLowFifth: "낮은 5도",
+        intervalHighFifth: "높은 5도",
+        shortcutEdgePedals: "좌/우 다섯 열 옥타브 내림/올림",
+        shortcutEdgePedalsSummary: "좌/우 다섯 열 {left}/{right} 옥타브",
+        shortcutEdgePedalsDynamic: "{tab} {tabAction}; {backslash} {backslashAction}",
+        edgeLeftDown: "왼쪽 다섯 열을 낮춤",
+        edgeRightUp: "오른쪽 다섯 열을 높임",
+        edgeLeftAction: "왼쪽 다섯 열을 왼쪽으로 이동, {shift}",
+        edgeRightAction: "오른쪽 다섯 열을 오른쪽으로 이동, {shift}",
+        edgeOctaveUp: "한 옥타브 위",
+        edgeOctaveDown: "한 옥타브 아래",
+        edgeOctaveUpShort: "위",
+        edgeOctaveDownShort: "아래",
+        edgeSemitonesUpShort: "{n}반음 위",
+        edgeSemitonesDownShort: "{n}반음 아래",
+        edgeSemitonesUp: "{n}반음 위",
+        edgeSemitonesDown: "{n}반음 아래",
+        shortcutSustain: "서스테인 페달",
+        shortcutSoft: "소프트 페달",
+        shortcutHarmonic: "배음",
+        shortcutBassKeys: "베이스 7화음 키 / 화음 Mutate 키",
+        shortcutBassSeventh: "베이스 7화음",
+        shortcutBassMutate: "베이스 Mutate",
+        clickAnyKey: "아무 키나 클릭",
+        audioLabel: "오디오",
+        audioError: "이 브라우저는 지금 오디오를 초기화할 수 없습니다.",
+        mainKeyboard: "주 키보드",
+        mainShort: "주키보드",
+        touchComputer: "터치/컴퓨터",
+        computerKeyboard: "컴퓨터 키보드",
+        mouseTouch: "마우스/터치",
+        mouseShort: "터치",
+        monoSource: "단음",
+        bassPart: "베이스 파트",
+        bassShort: "베이스",
+        bassEnable: "베이스",
+        bassBase: "기준음",
+        bassMirror: "반전",
+        bassMirrorHelp: "좌/우 Shift 페달을 반전합니다. B-system은 기본 반전, C-system은 반전하지 않습니다.",
+        bassOutHarmony: "조외 화음",
+        bassFade: "베이스 페이드",
+        sourceHid: "HID",
+        hidUnsupported: "이 브라우저는 WebHID를 지원하지 않습니다. WebHID가 있는 Chromium 브라우저를 사용하세요.",
+        hidNoDevice: "HID 장치가 선택되지 않았습니다. 일반 사무용 키보드는 브라우저 보안으로 숨겨질 수 있습니다.",
+        hidAddBlocked: "HID 추가 실패: 브라우저가 접근을 허용하지 않았거나 장치가 보호되어 있습니다.",
+        hidAddFailed: "HID 추가 실패: {message}",
+        hidKeyboardName: "HID 키보드 {index}",
+        mainCannotDelete: "주 키보드는 기본 키보드이므로 삭제할 수 없습니다.",
+        hidDisconnected: "{name} 연결 끊김",
+        instrument: "음색",
+        outputShift: "출력 이동",
+        volume: "음량",
+        pointerFade: "터치 서스테인",
+        followPedal: "페달 따르기",
+        keyboardFade: "키 서스테인",
+        keyboardSustain: "서스테인 페달",
+        sustainPedal: "서스테인 페달",
+        sustainPedalOn: "서스테인 누름",
+        sustainPedalOff: "키 서스테인 페이드 {time}",
+        softPedal: "소프트 페달",
+        softPedalOn: "소프트 누름",
+        softPedalOff: "소프트 놓음",
+        harmonicPedal: "배음",
+        harmonicPedalOn: "배음 누름",
+        harmonicPedalOff: "배음 놓음",
+        setQ: "Q 설정",
+        reset: "초기화",
+        addHid: "HID 키보드 추가",
+        delete: "삭제",
+        noScaleEntries: "{scale}에 표시할 음이 없습니다",
+        row: "행 {n}",
+        upperRow: "위 {n}",
+        lowerRow: "아래 {n}",
+        outputPrefix: "출력",
+        circleTitle: "원 {index}",
+        instrumentAccordion: "아코디언",
+        instrumentPiano: "피아노",
+        instrumentFortepiano: "포르테피아노",
+        instrumentGuitar: "기타",
+        instrumentClassicalGuitar: "클래식 기타",
+        instrumentOverdriveGuitar: "오버드라이브 기타",
+        instrumentDistortionGuitar: "디스토션 기타",
+        instrumentWahGuitar: "와 기타",
+        instrumentElectricBass: "전기 베이스",
+        instrumentSynthWave: "신스 웨이브",
+        instrumentGuzheng: "구정",
+        instrumentViolin: "바이올린",
+        instrumentCello: "첼로",
+        instrumentDoubleBass: "더블베이스",
+        instrumentStrings: "현악 합주",
+        instrumentErhu: "얼후",
+        instrumentFlute: "플루트",
+        instrumentClarinet: "클라리넷",
+        instrumentTrumpet: "트럼펫",
+        instrumentSax: "색소폰",
+        instrumentHarpsichord: "하프시코드",
+        instrumentQuilled: "발현 건반",
+        instrumentTheremin: "테레민",
+        instrumentHarp: "하프",
+        instrumentOboe: "오보에",
+        instrumentBassoon: "바순",
+        instrumentFrenchHorn: "호른",
+        instrumentRecorder: "리코더",
+        bassConfigTitle: "베이스 상세 설정",
+        bassConfigClose: "베이스 상세 닫기",
+        bassConfigReset: "기본값 복원",
+        bassConfigResetDone: "베이스 상세 설정을 복원했습니다",
+        bassDockSeventhHint: "{key} 7화음",
+        bassDockModifierHint: "~/· 연주 화음 Mutate",
+        bassDockSeventhHelp: "베이스 7화음 키: 키는 베이스 입력 형식에 따라 달라집니다. F1-F12 베이스는 Esc, 숫자 베이스는 Q를 씁니다. 누르고 있으면 베이스 입력을 7/9화음으로 해석합니다. 조내 화음은 7화음으로 합쳐지거나 Mutate 7화음을 쓰고, 조외 화음은 Mutate 상태로 들어갑니다.",
+        bassDockModifierHelp: "화음 Mutate 키: ~를 사용합니다. 누르고 있으면 설정된 Mutate 7화음 또는 Mutate 화음을 적용합니다. 조외 화음은 일반/Mutate 상태 사이를 전환합니다. 정확한 화음 종류는 베이스 상세에서 편집할 수 있습니다.",
+        bassSettingsTitle: "베이스 상세",
+        bassHarmonyMajor: "장조 화성",
+        bassHarmonyMinor: "단조 화성",
+        bassStateDiatonicSeventhModifier: "Mutate 7화음",
+        bassStateNormal: "일반",
+        bassStateModifier: "Mutate",
+        optionsMemory: "옵션 기억",
+        exportAllSettings: "내보내기",
+        importAllSettings: "가져오기",
+        settingsImported: "옵션을 가져왔습니다",
+        settingsImportFailed: "가져오기 실패: {message}",
+        bassChordType_maj: "장3화음",
+        bassChordType_min: "단3화음",
+        bassChordType_dim: "감3화음",
+        bassChordType_aug: "증3화음",
+        bassChordType_maj7: "장7화음",
+        bassChordType_7: "도미넌트7",
+        bassChordType_m7: "단7화음",
+        bassChordType_m7b5: "반감7화음",
+        bassChordType_dim7: "감7화음",
+        bassChordType_mMaj7: "단장7화음",
+        bassChordType_augMaj7: "증장7화음",
+        bassChordType_7b5: "도미넌트7 b5",
+        bassChordType_maj9: "장9화음",
+        bassChordType_9: "도미넌트9",
+        bassChordType_m9: "단9화음",
+        bassChordType_7b9: "도미넌트7 b9",
+        bassChordType_7s9: "도미넌트7 #9",
+        bassChordType_mMaj9: "단장9화음",
+        bassChordType_m7b5add9: "반감9화음",
+        bassChordType_9s5: "도미넌트9 #5",
+        helpChoose: "{label} 선택",
+        helpAdjust: "{label} 조정",
+        helpToggle: "{label} 전환",
+        helpCommand: "{label}",
+        helpOpen: "{label} 열기",
+        resetAllSettings: "모든 옵션 초기화",
+        settingsResetDone: "옵션 기억을 초기화했습니다",
+        bassKeyModeSwitch: "베이스 입력 형식 전환",
+        bassChordSelectHelp: "현재: {formula}; {name} 선택 열기",
+        bassBaseHelp: "기준음은 베이스 화음이 놓이는 옥타브 안의 가장 낮은 음입니다",
+        vibratoSensitivityHelp: "비브라토 감도: 왼쪽은 위로 움직이면 음이 올라가고, 오른쪽은 아래로 움직이면 음이 올라갑니다. 0c가 가장 둔감합니다.",
+        pedalTimeHelp: "페달 시간: 소프트 페달과 인공 배음 페달이 이미 울리는 음에 점진적으로 적용되는 시간입니다.",
+        sustainTimeHelp: "서스테인 감쇠: 서스테인 페달을 누른 상태에서 키를 놓은 뒤의 최대 자연 감쇠 시간, 최대 20초입니다.",
+        softPedalRatioHelp: "소프트 비율: 소프트 페달을 눌렀을 때 남는 출력 음량 비율입니다.",
+        glissandoDwellHelp: "글리산도 지연: 드래그 글리산도에서 마우스/터치가 키 위에 머물러야 새 음이 나는 시간입니다.",
+        harmonicIntensityHelp: "배음 강도: 값이 높을수록 높은 배음 비율이 커지고 전체 음량은 최대한 일정하게 유지됩니다.",
+        keyboardFadeHelp: "키 서스테인: 일반 키 업 페이드입니다. 서스테인 페달 해제도 이것을 쓰고, 배음 키 업은 서스테인 감쇠 절반을 더합니다.",
+        followPedalHelp: "페달 따르기: 마우스/터치가 주 키보드의 서스테인, 소프트, 인공 배음 페달을 따릅니다.",
+        appTagline: "바얀 아코디언 키 시스템에서 온, 당신의 최고의 컴퓨터 악기. By cbv_deux",
+        pointerFadeHelp: "터치 서스테인: 마우스/터치 해제 뒤 자연 페이드입니다. 페달 따르기가 켜지면 주 키보드의 페달과 키 서스테인을 사용합니다.",
+        bassPopupHelp: "베이스 상세: 현재 주음에 맞춘 화음 미리보기와 함께 조내 Mutate 7화음 및 조외 일반/Mutate 화음을 설정합니다.",
+        mouseTouchHelp: "마우스/터치: 드래그 글리산도, 자동 비브라토가 꺼졌을 때의 수동 비브라토, 선택적 주 키보드 페달 따르기를 가진 단음 음색입니다.",
+        bassPartHelp: "베이스 파트: 자동 조내 화성과 사용자 조외 화성입니다. Mutate 화성, 7화음, 9화음을 지원합니다.",
+        mainKeyboardHelp: "주 키보드: 다중 키 연주, 서스테인/소프트/인공 배음 페달, 좌우 임시 옥타브 페달을 지원합니다.",
+        hidKeyboardHelp: "HID 키보드: 페달, 옥타브 이동, 독립 음색 설정을 가진 외부 다중 키 입력입니다."
+      }
+    };
+
+    for (const [language, copy] of Object.entries(supplementalLanguageTranslations)) {
+      if (!translations[language]) translations[language] = {};
+      Object.assign(translations[language], copy);
+    }
+
     const manualCopies = {
       zh: {
         intro: "Q-board 是一个可扩展的同构键盘：屏幕按键、电脑键盘和外接 HID 键盘可以各自选择音色、音量、输出偏移；鼠标/触屏使用自动揉弦，其他输入源使用长按揉弦。",
@@ -4588,7 +6762,7 @@
           {
             title: "踏板与揉弦",
             items: [
-              "电脑键盘或 HID 键盘按住空格时启用有阻尼的延音踏板；松开普通按键后声音会按全局延音阻尼时间自动衰减，最长可设 10 秒。左 Shift 是弱音踏板，会压低该键盘的输出；右 Shift 是人工泛音，会增强上方分音。",
+              "电脑键盘或 HID 键盘按住空格时启用有阻尼的延音踏板；松开普通按键后声音会按全局延音阻尼时间自动衰减，最长可设 20 秒。左 Shift 是弱音踏板，会压低该键盘的输出；右 Shift 是人工泛音，会增强上方分音。",
               "Tab 会把左侧五列临时左移四格并降低八度；反斜杠会把右侧五列临时右移四格并升高八度。鼠标/触屏的触屏延音时间只影响鼠标/触屏单音；打开跟随踏板后会取消这条独立延音，只在 Space 踏板按下时跟随踏板。",
               "揉弦区域可用鼠标左右滑动微调音高；鼠标/触屏可独立开关自动揉弦，其他输入源可独立开关长按揉弦。鼠标/触屏关掉自动揉弦后，在屏幕按键内上下移动会按揉弦灵敏度直接弯音。拖动滑奏会演奏停留超过“滑奏延迟”的按键。"
             ]
@@ -4609,7 +6783,8 @@
               "排键系统、按键形状、扩展行列和音阶辅助在设置页中调整。",
               "同一设置页中可为主键盘和每个 HID 键盘分别设为 Q、重置 Q、选择音色、调音量、输出偏移和键盘延音。",
               "鼠标/触屏选项行末尾可把所有设置导出为 qboard.ini，也可导入 qboard.ini 恢复选项；网页会自动把设置写入本地记忆和 cookie。",
-              "谱表显示当前实体键盘的 Q 映射，可用右侧按钮缩放。"
+              "谱表显示当前实体键盘的 Q 映射，可用右侧按钮缩放。",
+              "写在最后：为什么是C#小调？让我们一起演奏月光奏鸣曲吧！"
             ]
           }
         ]
@@ -4628,7 +6803,7 @@
           {
             title: "Pedal And Vibrato",
             items: [
-              "Hold Space on a computer or HID keyboard for damped sustain. Released notes fade automatically by the global sustain decay time, up to 10 seconds. Left Shift is the soft pedal and lowers that keyboard output; Right Shift enables artificial harmonics and boosts upper partials.",
+              "Hold Space on a computer or HID keyboard for damped sustain. Released notes fade automatically by the global sustain decay time, up to 20 seconds. Left Shift is the soft pedal and lowers that keyboard output; Right Shift enables artificial harmonics and boosts upper partials.",
               "Tab temporarily shifts the left five columns four steps left and one octave down; Backslash shifts the right five columns four steps right and one octave up. Mouse/touch sustain only affects the pointer voice. If Follow pedal is enabled, that independent sustain is disabled and the pointer follows the Space pedal instead.",
               "Drag left or right in the vibrato pad to bend pitch. Mouse/touch has its own auto-vibrato switch, while other input sources keep their hold-vibrato switches. When mouse/touch auto vibrato is off, moving up or down inside a screen key bends pitch by vibrato sensitivity. Drag glissando plays keys hovered longer than Glide delay."
             ]
@@ -4649,12 +6824,484 @@
               "Layout system, key shape, extension rows/columns, and scale assistance live on the Settings page.",
               "The same Settings page lets the main keyboard and each HID keyboard set Q, reset Q, choose instrument, volume, output shift, and key sustain.",
               "The end of the mouse/touch row can export all settings to qboard.ini or import qboard.ini; the page also autosaves settings to local memory and cookies.",
-              "The staff shows the current physical-keyboard Q mappings and can be zoomed with the staff buttons."
+              "The staff shows the current physical-keyboard Q mappings and can be zoomed with the staff buttons.",
+              "At the end: why C# minor? Let us play the Moonlight Sonata together!"
             ]
           }
         ]
       }
     };
+
+    Object.assign(manualCopies, {
+      fr: {
+        intro: "Q-board est un clavier isomorphe extensible. Le pointeur, le clavier ordinateur et les claviers HID peuvent chacun avoir leur timbre, volume et decalage de sortie; souris/tactile utilise le vibrato automatique, les autres sources utilisent le vibrato tenu.",
+        sections: [
+          {
+            title: "Jeu",
+            items: [
+              "Le clavier ordinateur mappe 1 a =, Q a ], A a ', et Z a / selon le systeme bayan choisi, et accepte les accords.",
+              "Souris/tactile est une voix mono independante avec timbre, volume, decalage, vibrato automatique, sustain tactile et glissando par glisser.",
+              "Les fleches deplacent le mapping Q: haut/bas sur la diagonale haut-gauche/bas-droite, gauche/droite par octaves, en gardant la position visuelle stable."
+            ]
+          },
+          {
+            title: "Pedales Et Vibrato",
+            items: [
+              "Maintenez Espace pour le sustain amorti. Les notes relachees s'eteignent selon le decay de sustain global, jusqu'a 20 secondes. Shift gauche est la pedale douce; Shift droit active les harmoniques artificielles.",
+              "Tab et Backslash deplacent temporairement les cinq colonnes de gauche/droite selon le systeme de clavier. Le sustain tactile ne concerne que la voix souris/tactile; Suivre pedale la fait suivre les pedales du clavier principal.",
+              "Le pad de vibrato courbe la hauteur par glissement. Souris/tactile a son Auto vibrato; les autres sources gardent le vibrato tenu. Le glissando joue les touches survolees plus longtemps que le delai."
+            ]
+          },
+          {
+            title: "Basse",
+            items: [
+              "Activez la basse dans Parametres. Le bouton sous le nom de basse alterne entre les entrees 1-= et F1-F12.",
+              "Les accords de basse se jouent avec 1 a = ou F1 a F12. Q ou Esc active les septiemes selon le type d'entree, et ~/· active la mutation d'accord.",
+              "Le bouton ⚙ ouvre les reglages de basse: septiemes mutees en tonalite, harmonies hors tonalite normales/mutees, noms et couleurs avec apercu.",
+              "Hors tonalite etend la basse a 12 degres. Note de base fixe le plus grave de l'octave de basse; Fondu basse regle la relache."
+            ]
+          },
+          {
+            title: "Disposition Et Portee",
+            items: [
+              "Le systeme, la forme des touches, les rangees/colonnes ajoutees, la tonalite, les etiquettes hors tonalite, le metronome et les couleurs sont dans Parametres.",
+              "Chaque clavier peut regler Q, timbre, volume, decalage de sortie, sustain clavier et pedales.",
+              "Les boutons Export/Import enregistrent ou relisent qboard.ini; les options sont aussi conservees localement et en cookie.",
+              "La portee affiche les mappings Q et peut transposer l'ecriture pour les instruments transpositeurs.",
+              "A la fin: pourquoi do# mineur? Jouons ensemble la Sonate au clair de lune!"
+            ]
+          }
+        ]
+      },
+      de: {
+        intro: "Q-board ist eine erweiterbare isomorphe Tastatur. Bildschirmzeiger, Computertastatur und HID-Tastaturen koennen jeweils eigenes Instrument, Lautstaerke und Ausgabeversatz haben; Maus/Touch nutzt Auto-Vibrato, andere Quellen nutzen gehaltenes Vibrato.",
+        sections: [
+          {
+            title: "Spiel",
+            items: [
+              "Die Computertastatur belegt 1 bis =, Q bis ], A bis ' und Z bis / nach dem gewaehlten Bayan-System und erlaubt Akkorde.",
+              "Maus/Touch ist eine eigene monophone Stimme mit Timbre, Lautstaerke, Versatz, Auto-Vibrato, Touch-Sustain und Zieh-Glissando.",
+              "Pfeiltasten verschieben das Q-Mapping: hoch/runter auf der Diagonale links-oben/rechts-unten, links/rechts in Oktaven, bei stabiler Bildschirmposition."
+            ]
+          },
+          {
+            title: "Pedale Und Vibrato",
+            items: [
+              "Leertaste haelt das gedaempfte Sustain. Losgelassene Noten klingen nach globalem Sustain-Decay aus, bis 20 Sekunden. Linke Shift ist Soft-Pedal; rechte Shift aktiviert kuenstliche Harmoniken.",
+              "Tab und Backslash verschieben voruebergehend die linken/rechten fuenf Spalten gemaess Tastatursystem. Touch-Sustain gilt nur fuer Maus/Touch; Pedal folgen koppelt es an die Haupttastaturpedale.",
+              "Das Vibrato-Feld beugt die Tonhoehe per Ziehen. Maus/Touch hat Auto-Vibrato; andere Quellen behalten gehaltenes Vibrato. Glissando spielt Tasten, die laenger als die Verzogerung beruehrt werden."
+            ]
+          },
+          {
+            title: "Bass",
+            items: [
+              "Aktivieren Sie den Bass in Einstellungen. Der Knopf unter dem Bassnamen wechselt zwischen 1-= und F1-F12.",
+              "Bassakkorde werden mit 1 bis = oder F1 bis F12 gespielt. Q oder Esc schaltet Septakkorde je nach Eingabetyp, und ~/· schaltet Akkord-Mutation.",
+              "Der ⚙-Knopf oeffnet Bassdetails: mutierte Septakkorde in der Tonart, normale/mutierte Aussenton-Harmonien, Namen, Farben und Vorschau.",
+              "Aussenton erweitert den Bass auf 12 Stufen. Grundnote setzt die tiefste Note der Bassoktave; Bass-Fade regelt das Loslassen."
+            ]
+          },
+          {
+            title: "Layout Und Noten",
+            items: [
+              "System, Tastenform, Zusatzreihen/-spalten, Tonart, Aussenton-Schreibweise, Metronom und Farben liegen in Einstellungen.",
+              "Jede Tastatur kann Q, Instrument, Lautstaerke, Ausgabeversatz, Tastensustain und Pedale getrennt setzen.",
+              "Export/Import schreibt oder liest qboard.ini; die Seite speichert Optionen auch lokal und in Cookies.",
+              "Die Notenzeile zeigt die Q-Mappings und kann fuer transponierende Instrumente die geschriebene Hoehe anzeigen.",
+              "Zum Schluss: warum cis-Moll? Spielen wir zusammen die Mondscheinsonate!"
+            ]
+          }
+        ]
+      },
+      es: {
+        intro: "Q-board es un teclado isomorfo extensible. El puntero, el teclado del ordenador y los teclados HID pueden tener instrumento, volumen y desplazamiento propios; raton/tactil usa vibrato automatico, las otras fuentes usan vibrato mantenido.",
+        sections: [
+          {
+            title: "Interpretacion",
+            items: [
+              "El teclado del ordenador asigna 1 a =, Q a ], A a ' y Z a / segun el sistema bayan elegido, y permite acordes.",
+              "Raton/tactil es una voz monofonica independiente con timbre, volumen, desplazamiento, vibrato automatico, sustain tactil y glissando al arrastrar.",
+              "Las flechas mueven el mapa Q: arriba/abajo por la diagonal izquierda-arriba/derecha-abajo y izquierda/derecha por octavas, manteniendo estable la posicion visual."
+            ]
+          },
+          {
+            title: "Pedales Y Vibrato",
+            items: [
+              "Mantenga Espacio para sustain amortiguado. Las notas soltadas decaen con el sustain global, hasta 20 segundos. Shift izquierdo es pedal suave; Shift derecho activa armonicos artificiales.",
+              "Tab y Backslash desplazan temporalmente las cinco columnas izquierda/derecha segun el sistema. El sustain tactil solo afecta la voz raton/tactil; Seguir pedal la acopla a los pedales del teclado principal.",
+              "El panel de vibrato dobla la altura al deslizar. Raton/tactil tiene Auto vibrato; las demas fuentes mantienen vibrato por pulsacion. El glissando toca teclas al permanecer mas que el retardo."
+            ]
+          },
+          {
+            title: "Bajo",
+            items: [
+              "Active el bajo en Ajustes. El boton bajo el nombre del bajo alterna entre entrada 1-= y F1-F12.",
+              "Los acordes de bajo se disparan con 1 a = o F1 a F12. Q o Esc activa septimas segun el tipo de entrada, y ~/· activa la mutacion de acorde.",
+              "El boton ⚙ abre ajustes de bajo: septimas mutadas dentro de tonalidad, armonias externas normales/mutadas, nombres, colores y vista previa.",
+              "Fuera de tonalidad expande el bajo a 12 grados. Nota base fija la nota mas grave de la octava del bajo; Fundido bajo regula la liberacion."
+            ]
+          },
+          {
+            title: "Disposicion Y Pentagrama",
+            items: [
+              "Sistema, forma de teclas, filas/columnas extra, tonalidad, escritura externa, metronomo y colores estan en Ajustes.",
+              "Cada teclado puede ajustar Q, instrumento, volumen, desplazamiento, sustain de teclado y pedales.",
+              "Exportar/Importar escribe o lee qboard.ini; la pagina tambien guarda opciones en memoria local y cookie.",
+              "El pentagrama muestra los mapas Q y puede mostrar notacion transpuesta para instrumentos transpositores.",
+              "Al final: por que do# menor? Toquemos juntos la Sonata Claro de luna!"
+            ]
+          }
+        ]
+      },
+      pt: {
+        intro: "Q-board e um teclado isomorfo expansivel. Ponteiro, teclado do computador e teclados HID podem ter instrumento, volume e deslocamento proprios; mouse/toque usa vibrato automatico, outras fontes usam vibrato segurado.",
+        sections: [
+          {
+            title: "Tocar",
+            items: [
+              "O teclado do computador mapeia 1 a =, Q a ], A a ' e Z a / pelo sistema bayan escolhido, e aceita acordes.",
+              "Mouse/toque e uma voz monofonica independente com timbre, volume, deslocamento, vibrato automatico, sustain de toque e glissando ao arrastar.",
+              "As setas movem o mapa Q: cima/baixo na diagonal esquerda-cima/direita-baixo e esquerda/direita por oitavas, mantendo a posicao visual estavel."
+            ]
+          },
+          {
+            title: "Pedais E Vibrato",
+            items: [
+              "Segure Espaco para sustain amortecido. Notas soltas decaem pelo sustain global, ate 20 segundos. Shift esquerdo e pedal suave; Shift direito ativa harmonicos artificiais.",
+              "Tab e Backslash deslocam temporariamente as cinco colunas esquerda/direita conforme o sistema. Sustain de toque afeta so mouse/toque; Seguir pedal usa os pedais do teclado principal.",
+              "A area de vibrato curva a altura ao deslizar. Mouse/toque tem Auto vibrato; outras fontes usam vibrato segurado. Glissando toca teclas mantidas por mais que o atraso."
+            ]
+          },
+          {
+            title: "Baixo",
+            items: [
+              "Ative o baixo em Ajustes. O botao sob o nome do baixo alterna entre entrada 1-= e F1-F12.",
+              "Acordes de baixo usam 1 a = ou F1 a F12. Q ou Esc liga setimas conforme a entrada, e ~/· liga a mutacao de acorde.",
+              "O botao ⚙ abre ajustes de baixo: setimas mutadas na tonalidade, harmonias externas normais/mutadas, nomes, cores e previa.",
+              "Fora da tonalidade expande o baixo para 12 graus. Nota base fixa a nota mais grave da oitava do baixo; Fade baixo regula a soltura."
+            ]
+          },
+          {
+            title: "Layout E Pauta",
+            items: [
+              "Sistema, forma das teclas, linhas/colunas extras, tonalidade, escrita fora da tonalidade, metronomo e cores ficam em Ajustes.",
+              "Cada teclado pode definir Q, instrumento, volume, deslocamento, sustain de teclado e pedais.",
+              "Exportar/Importar grava ou le qboard.ini; a pagina tambem salva opcoes localmente e em cookie.",
+              "A pauta mostra os mapas Q e pode exibir escrita transposta para instrumentos transpositores.",
+              "No fim: por que do# menor? Vamos tocar juntos a Sonata ao Luar!"
+            ]
+          }
+        ]
+      },
+      ja: {
+        intro: "Q-board は拡張できる同型鍵盤です。画面ポインタ、PC キーボード、HID キーボードはそれぞれ音色、音量、出力シフトを持てます。マウス/タッチは自動ビブラート、その他は長押しビブラートを使います。",
+        sections: [
+          {
+            title: "演奏",
+            items: [
+              "PC キーボードは選んだバヤン式配列に従って 1 から =、Q から ]、A から '、Z から / を割り当て、和音演奏に対応します。",
+              "マウス/タッチは独立した単音声部で、音色、音量、出力シフト、自動ビブラート、タッチ延音、ドラッグ滑奏を持ちます。",
+              "矢印キーは Q 配置を移動します。上下は左上/右下方向、左右はオクターブ方向で、画面上の位置は安定します。"
+            ]
+          },
+          {
+            title: "ペダルとビブラート",
+            items: [
+              "Space を押すと減衰付きサステインです。離した音は全体の延音減衰で最大 20 秒まで自然に減衰します。左 Shift は弱音、右 Shift は人工倍音です。",
+              "Tab と Backslash は鍵盤方式に従って左/右五列を一時移動します。タッチ延音はマウス/タッチだけに効き、ペダル追従をオンにすると主鍵盤のペダルに従います。",
+              "ビブラート領域を動かすと音高が曲がります。マウス/タッチは自動ビブラート、他の入力は長押しビブラートです。滑奏は遅延時間より長く触れた鍵を鳴らします。"
+            ]
+          },
+          {
+            title: "ベース",
+            items: [
+              "設定でベースを有効にします。ベース名の下のボタンで 1-= 入力と F1-F12 入力を切り替えます。",
+              "ベース和音は 1 から = または F1 から F12 で鳴ります。入力方式に応じて Q または Esc が七和音キー、~/· が和音変異キーです。",
+              "⚙ ボタンで詳細設定を開き、調内の変異七和音、調外の通常/変異和音、名前、色、プレビューを設定できます。",
+              "調外和声はベースを 12 音級へ広げます。基準音はベース八度内の最低音を決め、ベース減衰は離鍵後の長さを決めます。"
+            ]
+          },
+          {
+            title: "配列と譜表",
+            items: [
+              "配列方式、鍵形、追加行/列、調、調外表記、メトロノーム、色は設定にあります。",
+              "各キーボードごとに Q、音色、音量、出力シフト、鍵盤延音、ペダルを設定できます。",
+              "書き出し/読み込みで qboard.ini を保存または復元できます。ページはローカル記憶と cookie にも自動保存します。",
+              "譜表は Q 配置を表示し、移調楽器では記譜音表示に切り替えられます。",
+              "最後に：なぜ C# 短調？月光ソナタを一緒に弾きましょう！"
+            ]
+          }
+        ]
+      },
+      ar: {
+        intro: "Q-board لوحة مفاتيح إيزومورفية قابلة للتوسيع. يمكن للمؤشر ولوحة الكمبيوتر ولوحات HID أن تملك آلة وحجما وإزاحة خرج مستقلة؛ الفأرة/اللمس يستخدم فيبراتو آليا، وبقية المصادر تستخدم فيبراتو بالضغط.",
+        sections: [
+          {
+            title: "العزف",
+            items: [
+              "لوحة الكمبيوتر تربط 1 إلى = و Q إلى ] و A إلى ' و Z إلى / حسب نظام البايان المختار، وتدعم العزف المتعدد.",
+              "الفأرة/اللمس صوت أحادي مستقل له آلة وحجم وإزاحة وفيبراتو آلي وسستين لمس وغليساندو بالسحب.",
+              "مفاتيح الأسهم تحرك خريطة Q: أعلى/أسفل على قطر يسار-أعلى/يمين-أسفل، ويسار/يمين بالأوكتافات مع ثبات الموضع البصري."
+            ]
+          },
+          {
+            title: "الدواسات والفيبراتو",
+            items: [
+              "اضغط Space للسستين المخمد. النغمات المتروكة تخفت بزمن السستين العام حتى 20 ثانية. Shift الأيسر دواسة خفض، و Shift الأيمن يفعّل التوافقيات الاصطناعية.",
+              "Tab و Backslash يحركان مؤقتا الأعمدة الخمسة اليسرى/اليمنى حسب نظام اللوحة. سستين اللمس يؤثر صوت الفأرة/اللمس فقط؛ اتبع الدواسة يجعله يتبع دواسات اللوحة الرئيسية.",
+              "منطقة الفيبراتو تثني الطبقة بالسحب. الفأرة/اللمس لها فيبراتو آلي، أما المصادر الأخرى فلها فيبراتو بالضغط. الغليساندو يعزف المفاتيح التي تبقى تحت المؤشر أطول من التأخير."
+            ]
+          },
+          {
+            title: "الباس",
+            items: [
+              "فعّل الباس من الإعدادات. الزر تحت اسم الباس يبدل بين إدخال 1-= و F1-F12.",
+              "أوتار الباس تعمل من 1 إلى = أو F1 إلى F12. Q أو Esc هو مفتاح السابعة حسب نوع الإدخال، و ~/· هو مفتاح التحوير.",
+              "زر ⚙ يفتح إعدادات الباس التفصيلية: السابعة المحورة داخل المقام، أوتار خارج المقام العادية/المحورة، الأسماء والألوان والمعاينة.",
+              "خارج المقام يوسع الباس إلى 12 درجة. نغمة الأساس تحدد أدنى نغمة في أوكتاف الباس؛ تلاشي الباس يحدد زمن التحرير."
+            ]
+          },
+          {
+            title: "التخطيط والمدرج",
+            items: [
+              "النظام وشكل المفاتيح والصفوف/الأعمدة الإضافية والمقام وكتابة الخارج عن المقام والميترونوم والألوان كلها في الإعدادات.",
+              "كل لوحة يمكنها ضبط Q والآلة والحجم وإزاحة الخرج وسستين اللوحة والدواسات.",
+              "تصدير/استيراد يكتب أو يقرأ qboard.ini؛ كما تحفظ الصفحة الخيارات محليا وفي cookie.",
+              "المدرج يعرض خرائط Q ويمكنه إظهار كتابة منقولة للآلات الناقلة.",
+              "في الختام: لماذا دو# صغير؟ لنعزف سوناتا ضوء القمر معا!"
+            ]
+          }
+        ]
+      },
+      ru: {
+        intro: "Q-board - расширяемая изоморфная клавиатура. Экранный указатель, клавиатура компьютера и HID-клавиатуры могут иметь свой инструмент, громкость и сдвиг выхода; мышь/тач использует авто-вибрато, остальные источники - удерживаемое вибрато.",
+        sections: [
+          {
+            title: "Игра",
+            items: [
+              "Клавиатура компьютера назначает 1 до =, Q до ], A до ' и Z до / по выбранной баянной системе и поддерживает аккорды.",
+              "Мышь/тач - независимый монофонический голос с тембром, громкостью, сдвигом, авто-вибрато, touch sustain и glissando перетаскиванием.",
+              "Стрелки двигают раскладку Q: вверх/вниз по диагонали левый-верх/правый-низ, влево/вправо по октавам, сохраняя экранную позицию."
+            ]
+          },
+          {
+            title: "Педали И Вибрато",
+            items: [
+              "Удерживайте Space для демпфированного sustain. Отпущенные ноты затухают по глобальному sustain decay, до 20 секунд. Левый Shift - soft-педаль; правый Shift включает искусственные гармоники.",
+              "Tab и Backslash временно двигают левые/правые пять столбцов согласно системе клавиатуры. Touch sustain действует только на мышь/тач; Follow pedal привязывает его к педалям главной клавиатуры.",
+              "Поле вибрато изгибает высоту при движении. Мышь/тач имеет авто-вибрато, другие источники - удерживаемое вибрато. Glissando играет клавиши, на которых указатель задержался дольше задержки."
+            ]
+          },
+          {
+            title: "Бас",
+            items: [
+              "Включите бас в Настройках. Кнопка под названием баса переключает ввод между 1-= и F1-F12.",
+              "Басовые аккорды запускаются 1 до = или F1 до F12. Q или Esc включает септаккорды согласно типу ввода, а ~/· включает мутацию аккорда.",
+              "Кнопка ⚙ открывает настройки баса: мутированные септаккорды в тональности, обычные/мутированные внеладовые гармонии, имена, цвета и предпросмотр.",
+              "Внеладовые аккорды расширяют бас до 12 ступеней. Базовая нота задает нижнюю ноту басовой октавы; Fade баса задает отпускание."
+            ]
+          },
+          {
+            title: "Раскладка И Ноты",
+            items: [
+              "Система, форма клавиш, дополнительные ряды/столбцы, тональность, внеладовая запись, метроном и цвета находятся в Настройках.",
+              "Для каждой клавиатуры можно задать Q, инструмент, громкость, сдвиг выхода, key sustain и педали.",
+              "Export/Import записывает или читает qboard.ini; страница также сохраняет опции локально и в cookie.",
+              "Нотный стан показывает Q-раскладки и может показывать транспонированную запись для транспонирующих инструментов.",
+              "В конце: почему до# минор? Давайте сыграем Лунную сонату вместе!"
+            ]
+          }
+        ]
+      }
+    });
+
+    Object.assign(manualCopies, {
+      it: {
+        intro: "Q-board è una tastiera isomorfa espandibile. Puntatore, tastiera del computer e tastiere HID possono avere timbro, volume e spostamento propri; mouse/tocco usa vibrato automatico, le altre sorgenti usano vibrato tenuto.",
+        sections: [
+          {
+            title: "Suonare",
+            items: [
+              "La tastiera del computer segue il sistema bayan scelto e supporta accordi con più tasti.",
+              "Mouse/tocco è una voce monofonica indipendente con timbro, volume, sustain tocco, glissando e vibrato manuale quando l'auto vibrato è spento.",
+              "Le frecce spostano la mappatura Q mantenendo stabile la posizione sullo schermo."
+            ]
+          },
+          {
+            title: "Pedali E Vibrato",
+            items: [
+              "Spazio attiva il sustain smorzato; Shift sinistro è il pedale sordina e Shift destro abilita gli armonici artificiali.",
+              "Tab e Backslash spostano temporaneamente le cinque colonne laterali secondo il sistema di tastiera.",
+              "Il tempo pedale rende graduale l'effetto di sordina e armonici sui suoni già attivi."
+            ]
+          },
+          {
+            title: "Basso",
+            items: [
+              "La parte basso offre armonia automatica in scala e accordi fuori scala personalizzabili.",
+              "Q o Esc attiva le settime secondo il tipo di ingresso; ~/· applica la mutazione dell'accordo.",
+              "Il pulsante ⚙ apre i dettagli del basso con colori, nomi e anteprime degli accordi."
+            ]
+          },
+          {
+            title: "Layout E Pentagramma",
+            items: [
+              "Sistema, forma, scala, nomi fuori scala, metronomo e colori sono in Impostazioni.",
+              "Il pentagramma mostra le mappature Q e può visualizzare la notazione trasposta.",
+              "Alla fine: perché do# minore? Suoniamo insieme la Sonata al chiaro di luna!"
+            ]
+          }
+        ]
+      },
+      ms: {
+        intro: "Q-board ialah papan kekunci isomorfik yang boleh dikembangkan. Tetikus/sentuh, papan kekunci komputer dan HID boleh mempunyai suara, volum dan anjakan masing-masing.",
+        sections: [
+          {
+            title: "Bermain",
+            items: [
+              "Papan kekunci komputer mengikut susun atur bayan yang dipilih dan menyokong kord berbilang kekunci.",
+              "Tetikus/sentuh ialah suara mono bebas dengan glissando, sustain sentuh dan vibrato manual apabila auto vibrato dimatikan.",
+              "Kekunci anak panah menggerakkan peta Q sambil mengekalkan kedudukan skrin."
+            ]
+          },
+          {
+            title: "Pedal Dan Vibrato",
+            items: [
+              "Space menghidupkan sustain; Shift kiri ialah pedal lembut dan Shift kanan menghidupkan harmonik buatan.",
+              "Tab dan Backslash mengalih lima lajur sisi buat sementara mengikut sistem papan kekunci.",
+              "Masa pedal mengawal peralihan lembut untuk pedal lembut dan harmonik pada bunyi yang sedang berbunyi."
+            ]
+          },
+          {
+            title: "Bes",
+            items: [
+              "Bahagian bes memberi harmoni automatik dalam skala dan harmoni luar yang boleh disesuaikan.",
+              "Q atau Esc menghidupkan kord tujuh mengikut jenis input; ~/· melakukan Mutate kord.",
+              "Butang ⚙ membuka butiran bes dengan warna, nama dan pratonton kord."
+            ]
+          },
+          {
+            title: "Layout Dan Staf",
+            items: [
+              "Sistem, bentuk, skala, nama luar, metronom dan warna berada dalam Tetapan.",
+              "Staf memaparkan pemetaan Q dan boleh menunjukkan notasi transpos.",
+              "Akhir sekali: mengapa C# minor? Mari mainkan Moonlight Sonata bersama!"
+            ]
+          }
+        ]
+      },
+      vi: {
+        intro: "Q-board là bàn phím đẳng cấu có thể mở rộng. Chuột/chạm, bàn phím máy tính và bàn phím HID có thể có âm sắc, âm lượng và dịch cao độ riêng.",
+        sections: [
+          {
+            title: "Chơi",
+            items: [
+              "Bàn phím máy tính dùng bố cục kiểu bayan đã chọn và hỗ trợ nhiều phím để chơi hợp âm.",
+              "Chuột/chạm là giọng đơn âm độc lập, có sustain chạm, glissando kéo và rung tay khi tắt rung tự động.",
+              "Phím mũi tên di chuyển ánh xạ Q trong khi vị trí trên màn hình vẫn ổn định."
+            ]
+          },
+          {
+            title: "Pedal Và Rung Âm",
+            items: [
+              "Space bật sustain có giảm chấn; Shift trái là pedal nhẹ, Shift phải bật bồi âm nhân tạo.",
+              "Tab và Backslash tạm thời dịch năm cột bên theo hệ bàn phím.",
+              "Thời gian pedal làm hiệu ứng pedal nhẹ và bồi âm chuyển dần trên âm đang vang."
+            ]
+          },
+          {
+            title: "Bass",
+            items: [
+              "Phần bass có hòa âm tự động trong giọng và hòa âm ngoài giọng tùy chỉnh.",
+              "Q hoặc Esc bật hợp âm bảy theo kiểu nhập; ~/· Mutate hợp âm.",
+              "Nút ⚙ mở chi tiết bass với màu, tên và xem trước hợp âm."
+            ]
+          },
+          {
+            title: "Bố Cục Và Khuông Nhạc",
+            items: [
+              "Hệ, hình phím, âm giai, tên ngoài giọng, máy nhịp và màu nằm trong Cài đặt.",
+              "Khuông nhạc hiển thị ánh xạ Q và có thể hiện ký âm chuyển giọng.",
+              "Viết ở cuối: vì sao là Đô# thứ? Hãy cùng chơi Sonata Ánh trăng!"
+            ]
+          }
+        ]
+      },
+      tr: {
+        intro: "Q-board genişletilebilir izomorfik bir klavyedir. Fare/dokunma, bilgisayar klavyesi ve HID klavyeler kendi ses, ses düzeyi ve çıkış kaymasına sahip olabilir.",
+        sections: [
+          {
+            title: "Çalma",
+            items: [
+              "Bilgisayar klavyesi seçili bayan düzenini kullanır ve çok tuşlu akorları destekler.",
+              "Fare/dokunma bağımsız monofonik bir sestir; dokunma sustain, sürükleme glissando ve oto vibrato kapalıyken elle vibrato vardır.",
+              "Ok tuşları Q eşlemesini taşır, ekrandaki konumu dengede tutar."
+            ]
+          },
+          {
+            title: "Pedallar Ve Vibrato",
+            items: [
+              "Space sönümlü sustain'i açar; sol Shift soft pedal, sağ Shift yapay harmonikleri açar.",
+              "Tab ve Backslash yanlardaki beş sütunu klavye sistemine göre geçici kaydırır.",
+              "Pedal süresi, soft ve harmonik etkilerinin çalmakta olan seslere kademeli geçmesini sağlar."
+            ]
+          },
+          {
+            title: "Bas",
+            items: [
+              "Bas bölümü otomatik gam içi armoni ve özel gam dışı armoni sağlar.",
+              "Q veya Esc giriş türüne göre yedilileri açar; ~/· akoru Mutate eder.",
+              "⚙ düğmesi renkler, adlar ve akor önizlemeleriyle bas ayrıntılarını açar."
+            ]
+          },
+          {
+            title: "Düzen Ve Dizek",
+            items: [
+              "Sistem, şekil, gam, dış adlar, metronom ve renkler Ayarlar içindedir.",
+              "Dizek Q eşlemelerini gösterir ve transpoze yazımı gösterebilir.",
+              "Sonda: neden do# minör? Ay Işığı Sonatı'nı birlikte çalalım!"
+            ]
+          }
+        ]
+      },
+      ko: {
+        intro: "Q-board는 확장 가능한 동형 키보드입니다. 마우스/터치, 컴퓨터 키보드, HID 키보드는 각각 음색, 음량, 출력 이동을 가질 수 있습니다.",
+        sections: [
+          {
+            title: "연주",
+            items: [
+              "컴퓨터 키보드는 선택한 바얀식 배열을 사용하며 여러 키로 화음을 연주할 수 있습니다.",
+              "마우스/터치는 독립 단음 음색이며 터치 서스테인, 드래그 글리산도, 자동 비브라토를 끈 뒤의 수동 비브라토를 쓸 수 있습니다.",
+              "화살표 키는 화면 위치를 안정적으로 유지하면서 Q 매핑을 이동합니다."
+            ]
+          },
+          {
+            title: "페달과 비브라토",
+            items: [
+              "Space는 감쇠 있는 서스테인, 왼쪽 Shift는 소프트 페달, 오른쪽 Shift는 인공 배음을 켭니다.",
+              "Tab과 Backslash는 키보드 시스템에 따라 양쪽 다섯 열을 임시 이동합니다.",
+              "페달 시간은 소프트와 배음 효과가 이미 울리는 음에 점진적으로 적용되는 속도를 정합니다."
+            ]
+          },
+          {
+            title: "베이스",
+            items: [
+              "베이스 파트는 자동 조내 화성과 사용자 조외 화성을 제공합니다.",
+              "Q 또는 Esc는 입력 형식에 따라 7화음을 켜고, ~/·는 화음을 Mutate합니다.",
+              "⚙ 버튼은 색, 이름, 화음 미리보기가 있는 베이스 상세 설정을 엽니다."
+            ]
+          },
+          {
+            title: "배열과 보표",
+            items: [
+              "시스템, 모양, 음계, 조외 이름, 메트로놈, 색은 설정에 있습니다.",
+              "보표는 Q 매핑을 표시하고 이조 악기의 기보음을 보여줄 수 있습니다.",
+              "마지막으로: 왜 C# 단조일까요? 월광 소나타를 함께 연주합시다!"
+            ]
+          }
+        ]
+      }
+    });
 
     const instruments = {
       accordion: {
@@ -4830,7 +7477,7 @@
         ]
       },
       strings: {
-        envelope: { attack: 0.18, decay: 0.24, sustain: 0.84, release: 0.55 },
+        envelope: { attack: 0.12, decay: 0.24, sustain: 0.84, release: 0.55 },
         filter: { type: "lowpass", frequency: 3900, q: 0.7 },
         vibrato: { rate: 5.0, depth: 6 },
         oscillators: [
@@ -5403,6 +8050,19 @@
       els.manualBody.innerHTML = `<p>${escapeSvg(copy.intro)}</p>${sections}`;
     }
 
+    function compactForeignControlLabels(root = document) {
+      const isForeignLanguage = currentLanguage !== "zh";
+      const controls = root.querySelectorAll?.(".command, .toggle, .menu-tab") || [];
+      for (const control of controls) {
+        const length = Array.from(control.textContent.trim()).length;
+        const tight = isForeignLanguage && length > 14;
+        const tiny = isForeignLanguage && length > 22;
+        control.classList.toggle("is-tight-label", tight);
+        control.classList.toggle("is-tiny-label", tiny);
+        if (tight && !control.title) control.title = control.textContent.trim();
+      }
+    }
+
     function updateLanguagePicker() {
       const option = languageOptionByValue.get(currentLanguage) || languageOptionByValue.get("zh");
       els.languageSelect.value = currentLanguage;
@@ -5521,7 +8181,7 @@
       setOptionText(els.keyShape, { hex: "hex", round: "round" });
       setAssistToneOptionText(els.scaleInTone);
       setAssistToneOptionText(els.scaleOutTone);
-      setOptionText(els.labelMode, { dual: "dual", sharp: "sharp", flat: "flat" });
+      setOptionText(els.labelMode, { dual: "dual", sharp: "sharp", flat: "flat", inDual: "inDual", inSharp: "inSharp", inFlat: "inFlat" });
       setOptionText(els.scaleMode, { major: "major", minor: "minor" });
 
       els.colorPrev?.setAttribute("aria-label", tr("prevC"));
@@ -5550,6 +8210,7 @@
       syncStaffVisibility();
       syncMenuTabs();
       if (els.bassConfigPopover && !els.bassConfigPopover.hidden) renderBassConfigPopover();
+      compactForeignControlLabels();
     }
 
     function activeMenuPanel() {
@@ -6343,6 +9004,7 @@
       }
 
       els.profileRows.replaceChildren(fragment);
+      compactForeignControlLabels(els.profileRows);
     }
 
     function syncProfileControls() {
@@ -6410,7 +9072,7 @@
 
     function collectQBoardSettings() {
       return {
-        version: 9,
+        version: 10,
         language: currentLanguage,
         controls: {
           keySystem: els.keySystem.value,
@@ -6460,18 +9122,22 @@
           && (controls.vibratoSensitivity === undefined || storedVibratoSensitivity === -100)
           ? DEFAULT_VIBRATO_SENSITIVITY_CENTS
           : storedVibratoSensitivity;
+        const migrateOldScaleDefault = savedVersion < 10
+          && (controls.tonic === undefined || controls.tonic === "C:0")
+          && (controls.scaleMode === undefined || controls.scaleMode === "major")
+          && (controls.labelMode === undefined || controls.labelMode === "dual");
         for (const [id, value] of Object.entries({
           keySystem: controls.keySystem,
           keyShape: controls.keyShape,
-          labelMode: controls.labelMode,
+          labelMode: migrateOldScaleDefault ? "inDual" : controls.labelMode,
           lowCol: controls.lowCol,
           highCol: controls.highCol,
           upperRows: controls.upperRows,
           lowerRows: controls.lowerRows,
           scaleInTone: controls.scaleInTone,
           scaleOutTone: controls.scaleOutTone,
-          tonicSelect: controls.tonic,
-          scaleMode: controls.scaleMode,
+          tonicSelect: migrateOldScaleDefault ? "C:1" : controls.tonic,
+          scaleMode: migrateOldScaleDefault ? "minor" : controls.scaleMode,
           vibratoSensitivity: migratedVibratoSensitivity,
           pedalTime: controls.pedalTime ?? controls.pedalFadeTime,
           sustainTime: controls.sustainTime,
@@ -6587,10 +9253,11 @@
     }
 
     function resetQBoardSettingsMemory() {
+      const preservedLanguage = supportedLanguages.has(currentLanguage) ? currentLanguage : "zh";
       settingsResetInProgress = true;
       window.clearTimeout(settingsSaveTimer);
       try { localStorage.removeItem("qboard-settings"); } catch (error) {}
-      try { localStorage.removeItem("qboard-language"); } catch (error) {}
+      try { localStorage.setItem("qboard-language", preservedLanguage); } catch (error) {}
       try { clearSettingsCookie(); } catch (error) {}
       setReadout("qboard.ini", tr("settingsResetDone"));
       window.setTimeout(() => window.location.reload(), 90);
@@ -6697,9 +9364,41 @@
       }
     }
 
+    function scaleRelativeNameForPc(pc, direction, spellings = scaleSpellings()) {
+      const normalizedPc = mod(pc, 12);
+      let best = null;
+      for (const spelling of spellings) {
+        const distance = direction === "sharp"
+          ? mod(normalizedPc - spelling.pc, 12)
+          : mod(spelling.pc - normalizedPc, 12);
+        if (distance === 0) return noteNameFromSpelling(spelling);
+        if (distance > 0 && (!best || distance < best.distance)) {
+          best = { spelling, distance };
+        }
+      }
+      if (!best) return sharpNames[normalizedPc];
+      const accidental = best.spelling.accidental + (direction === "sharp" ? best.distance : -best.distance);
+      return `${best.spelling.letter}${accidentalText(accidental)}`;
+    }
+
+    function scaleRelativeNamesForMode(mode) {
+      const spellings = scaleSpellings();
+      return Array.from({ length: 12 }, (_, pc) => {
+        if (mode === "inSharp") return scaleRelativeNameForPc(pc, "sharp", spellings);
+        if (mode === "inFlat") return scaleRelativeNameForPc(pc, "flat", spellings);
+        const names = [
+          scaleRelativeNameForPc(pc, "sharp", spellings),
+          scaleRelativeNameForPc(pc, "flat", spellings)
+        ];
+        return [...new Set(names)].join("/");
+      });
+    }
+
     function namesForMode() {
-      if (els.labelMode.value === "sharp") return sharpNames;
-      if (els.labelMode.value === "flat") return flatNames;
+      const mode = els.labelMode.value;
+      if (mode === "sharp") return sharpNames;
+      if (mode === "flat") return flatNames;
+      if (mode === "inSharp" || mode === "inFlat" || mode === "inDual") return scaleRelativeNamesForMode(mode);
       return dualNames;
     }
 
@@ -6719,6 +9418,7 @@
     function updateColorControl() {
       const hue = hueForPitchClass(0);
       els.colorSwatch.style.setProperty("--swatch-hue", String(hue));
+      document.documentElement.style.setProperty("--logo-rotation", `${cColorIndex * 30}deg`);
       els.colorSwatch.title = tr("cColorTitle", { index: cColorIndex + 1 });
     }
 
@@ -6744,9 +9444,7 @@
 
     function accidentalText(offset) {
       if (offset === 0) return "";
-      if (offset === 2) return "x";
-      if (offset === -2) return "bb";
-      if (offset > 0) return "#".repeat(offset);
+      if (offset > 0) return `${offset % 2 ? "#" : ""}${"x".repeat(Math.floor(offset / 2))}`;
       return "b".repeat(Math.abs(offset));
     }
 
@@ -6768,7 +9466,7 @@
           const option = document.createElement("option");
           option.value = value;
           option.textContent = `${letter}${accidental.suffix}`;
-          if (value === "C:0") option.selected = true;
+          if (value === "C:1") option.selected = true;
           fragment.append(option);
         }
       }
@@ -7376,6 +10074,8 @@
     }
 
     function bassRootLabel(spec, rootPc, isOutsideHarmony = false) {
+      if (isOutsideHarmony) return noteNameForPcInKey(rootPc);
+
       const degree = romanDegree(spec.roman);
       if (degree === null) {
         const spelling = activeScaleSpellingByPc().get(rootPc);
@@ -7385,27 +10085,7 @@
       const primary = bassRootSpelling(spec, rootPc);
       if (!primary) return noteNameForPcInKey(rootPc);
 
-      const names = [noteNameFromBassSpelling(primary, degree)];
-      if (isOutsideHarmony) {
-        const scaleSpelling = scaleSpellings()[degree];
-        let chromaticShift = mod(rootPc - scaleSpelling.pc, 12);
-        if (chromaticShift > 6) chromaticShift -= 12;
-        if (chromaticShift !== 0) {
-          const alternateDegree = mod(degree + Math.sign(chromaticShift), 7);
-          const tonic = selectedTonic();
-          const tonicLetterIndex = noteLetters.indexOf(tonic.letter);
-          const alternateLetter = noteLetters[(tonicLetterIndex + alternateDegree) % noteLetters.length];
-          const alternate = {
-            letter: alternateLetter,
-            accidental: nearestAccidental(rootPc, naturalPitchClasses[alternateLetter]),
-            pc: rootPc,
-            degree: alternateDegree
-          };
-          names.push(noteNameFromBassSpelling(alternate, alternateDegree));
-        }
-      }
-
-      return [...new Set(names)].join("/");
+      return noteNameFromBassSpelling(primary, degree);
     }
 
     function bassSpecs() {
@@ -8196,6 +10876,7 @@
       fragment.append(leftHint, keysWrap, rightHint, settingsButton);
       els.bassDock.replaceChildren(fragment);
       els.bassDock.hidden = false;
+      compactForeignControlLabels(els.bassDock);
     }
 
     function scheduleBassDockRender() {
@@ -8752,7 +11433,12 @@
     function scheduleRender() {
       window.clearTimeout(renderTimer);
       const viewAnchor = captureViewAnchor();
-      renderTimer = window.setTimeout(() => renderKeyboard({ viewAnchor }), 50);
+      renderTimer = window.setTimeout(() => {
+        renderKeyboard({ viewAnchor });
+        renderBassDock();
+        refreshBassConfigIfOpen();
+        renderScaleStaff();
+      }, 50);
     }
 
     function shiftKeyboardColor(step) {
