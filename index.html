@@ -352,12 +352,17 @@
     .control-grid {
       display: grid;
       grid-template-columns:
-        minmax(92px, 0.92fr)
-        minmax(60px, 0.56fr)
-        repeat(4, minmax(48px, 0.44fr))
-        minmax(138px, 1fr);
+        minmax(92px, 0.88fr)
+        minmax(58px, 0.5fr)
+        minmax(74px, 0.52fr)
+        repeat(4, minmax(44px, 0.4fr))
+        minmax(112px, 0.76fr);
       gap: 4px;
       align-items: end;
+    }
+
+    .layout-row .view-control .button-group {
+      grid-template-columns: repeat(2, minmax(42px, 1fr));
     }
 
     .control-grid.music-row {
@@ -447,7 +452,7 @@
 
     .color-stepper {
       display: grid;
-      grid-template-columns: 22px auto 20px 22px;
+      grid-template-columns: auto 20px 22px;
       gap: 3px;
       align-items: center;
       min-height: 24px;
@@ -595,6 +600,38 @@
       background: #fbfcff;
     }
 
+    .profile-row.is-bass {
+      border-style: dashed;
+      background: #fffaf2;
+    }
+
+    .profile-row.is-disabled {
+      opacity: 0.68;
+    }
+
+    .profile-title {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 4px;
+      align-items: stretch;
+      min-width: 0;
+    }
+
+    .profile-enable-switch {
+      display: grid;
+      place-items: center;
+      min-width: 18px;
+      min-height: 24px;
+      cursor: pointer;
+    }
+
+    .profile-enable-switch input {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
     .profile-name {
       min-height: 24px;
       justify-content: flex-start;
@@ -620,6 +657,27 @@
       color: var(--muted);
       font-size: 0.64rem;
       font-weight: 700;
+    }
+
+    .profile-name .bass-source-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      max-width: 100%;
+    }
+
+    .bass-key-mode-button {
+      min-width: 18px;
+      height: 16px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 0 4px;
+      background: #ffffff;
+      color: var(--ink);
+      font-size: 0.58rem;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
     }
 
     .profile-static-name {
@@ -785,6 +843,7 @@
     .stage-wrap {
       min-height: 0;
       overflow: hidden;
+      position: relative;
       display: grid;
       background:
         linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px),
@@ -795,8 +854,307 @@
 
     .keyboard-scroll {
       overflow: auto;
-      padding: 18px 0 26px;
+      padding: 18px 0 132px;
       scrollbar-color: #7b8290 var(--stage);
+    }
+
+    .bass-dock {
+      position: absolute;
+      left: 50%;
+      bottom: 12px;
+      z-index: 8;
+      display: grid;
+      grid-template-columns: minmax(142px, 1fr) auto minmax(142px, 1fr);
+      gap: 14px;
+      align-items: center;
+      justify-content: center;
+      width: min(calc(100% - 24px), 1120px);
+      padding: 8px 24px;
+      border: 1px solid rgba(216, 221, 232, 0.48);
+      border-radius: 999px;
+      background: rgba(251, 252, 255, 0.92);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+      transform: translateX(-50%);
+      backdrop-filter: blur(10px);
+    }
+
+    .bass-dock[hidden] {
+      display: none;
+    }
+
+    .bass-dock-hint {
+      min-width: 0;
+      color: #4c5364;
+      font-size: 0.68rem;
+      font-weight: 850;
+      line-height: 1.12;
+      text-wrap: balance;
+      white-space: normal;
+    }
+
+    .bass-dock-hint.is-left {
+      text-align: left;
+    }
+
+    .bass-dock-hint.is-right {
+      text-align: right;
+    }
+
+    .bass-dock-keys {
+      display: flex;
+      gap: 10px;
+      align-items: end;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .bass-button-wrap {
+      display: grid;
+      gap: 3px;
+      justify-items: center;
+      min-width: 42px;
+    }
+
+    .bass-seventh-button {
+      --bass-left-top-hue: 0;
+      --bass-right-top-hue: 60;
+      --bass-left-bottom-hue: 120;
+      --bass-right-bottom-hue: 180;
+      --bass-center-hue: 0;
+      width: 38px;
+      height: 22px;
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      border: 1px solid rgba(23, 25, 31, 0.24);
+      border-radius: 999px;
+      padding: 0;
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+      background:
+        linear-gradient(to right, hsl(var(--bass-left-top-hue) 62% 46%) 0 50%, hsl(var(--bass-right-top-hue) 62% 46%) 50% 100%) top / 100% 50% no-repeat,
+        linear-gradient(to right, hsl(var(--bass-left-bottom-hue) 62% 46%) 0 50%, hsl(var(--bass-right-bottom-hue) 62% 46%) 50% 100%) bottom / 100% 50% no-repeat;
+      touch-action: none;
+    }
+
+    .bass-seventh-button span {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      font-size: 0.62rem;
+      font-weight: 900;
+      line-height: 1;
+      pointer-events: none;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.62);
+    }
+
+    .bass-seventh-button.is-ninth {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background:
+        linear-gradient(to right, hsl(var(--bass-left-top-hue) 62% 46%) 0 50%, hsl(var(--bass-right-top-hue) 62% 46%) 50% 100%) top / 100% 50% no-repeat,
+        linear-gradient(to right, hsl(var(--bass-left-bottom-hue) 62% 46%) 0 50%, hsl(var(--bass-right-bottom-hue) 62% 46%) 50% 100%) bottom / 100% 50% no-repeat;
+    }
+
+    .bass-seventh-button.is-ninth::after {
+      content: none;
+    }
+
+    .bass-seventh-button.is-ninth span {
+      align-self: center;
+      justify-self: center;
+    }
+
+    .bass-seventh-button.is-ninth .bass-ninth-center {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .bass-ninth-center {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 1;
+      width: 19px;
+      height: 11px;
+      border: 0;
+      border-radius: 999px;
+      background: hsl(var(--bass-center-hue) 62% 46%);
+      transform: translate(-50%, -50%);
+      box-shadow: none;
+      pointer-events: none;
+    }
+
+    .bass-button {
+      --bass-root-hue: 0;
+      --bass-third-hue: 80;
+      --bass-fifth-hue: 160;
+      --bass-seventh-hue: 220;
+      --bass-ninth-hue: 20;
+      width: 32px;
+      height: 32px;
+      border: 2px solid hsl(var(--bass-root-hue) 72% 86%);
+      border-radius: 50%;
+      position: relative;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: conic-gradient(
+        from -60deg,
+        hsl(var(--bass-third-hue) 62% 46%) 0deg 120deg,
+        hsl(var(--bass-root-hue) 62% 46%) 120deg 240deg,
+        hsl(var(--bass-fifth-hue) 62% 46%) 240deg 360deg
+      );
+      color: #ffffff;
+      font-size: 0.78rem;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.62);
+      touch-action: none;
+    }
+
+    .bass-button.is-seventh {
+      background: conic-gradient(
+        from -45deg,
+        hsl(var(--bass-third-hue) 62% 46%) 0deg 90deg,
+        hsl(var(--bass-seventh-hue) 62% 46%) 90deg 180deg,
+        hsl(var(--bass-fifth-hue) 62% 46%) 180deg 270deg,
+        hsl(var(--bass-root-hue) 62% 46%) 270deg 360deg
+      );
+    }
+
+    .bass-button.is-ninth {
+      background:
+        radial-gradient(circle at center, hsl(var(--bass-root-hue) 62% 46%) 0 31%, transparent 32%),
+        conic-gradient(
+          from -45deg,
+          hsl(var(--bass-ninth-hue) 62% 46%) 0deg 90deg,
+          hsl(var(--bass-fifth-hue) 62% 46%) 90deg 180deg,
+          hsl(var(--bass-seventh-hue) 62% 46%) 180deg 270deg,
+          hsl(var(--bass-third-hue) 62% 46%) 270deg 360deg
+        );
+    }
+
+    .bass-button-key {
+      position: relative;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .bass-button.is-active {
+      transform: translateY(2px) scale(0.95);
+      filter: brightness(0.82);
+    }
+
+    .bass-seventh-button.is-active {
+      transform: translateY(1px) scale(0.96);
+      filter: brightness(0.84);
+    }
+
+    .bass-chord-name {
+      max-width: 48px;
+      color: #303643;
+      font-size: 0.62rem;
+      font-weight: 800;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .bass-seventh-name {
+      color: #596173;
+      font-size: 0.58rem;
+    }
+
+    @media (max-width: 760px) {
+      .bass-dock {
+        grid-template-columns: minmax(86px, 1fr) auto minmax(86px, 1fr);
+        gap: 8px;
+        padding-inline: 12px;
+      }
+
+      .bass-dock-hint {
+        font-size: 0.58rem;
+      }
+
+      .bass-dock-keys {
+        gap: 7px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .bass-dock {
+        grid-template-columns: auto;
+        justify-items: center;
+        border-radius: 20px;
+      }
+
+      .bass-dock-hint {
+        display: none;
+      }
+    }
+
+    @supports (color: oklch(60% 0.1 30)) {
+      .bass-button {
+        border-color: oklch(88% 0.04 var(--bass-root-hue));
+        background: conic-gradient(
+          from -60deg,
+          oklch(63% 0.11 var(--bass-third-hue)) 0deg 120deg,
+          oklch(63% 0.11 var(--bass-root-hue)) 120deg 240deg,
+          oklch(63% 0.11 var(--bass-fifth-hue)) 240deg 360deg
+        );
+      }
+
+      .bass-button.is-seventh {
+        background: conic-gradient(
+          from -45deg,
+          oklch(63% 0.11 var(--bass-third-hue)) 0deg 90deg,
+          oklch(63% 0.11 var(--bass-seventh-hue)) 90deg 180deg,
+          oklch(63% 0.11 var(--bass-fifth-hue)) 180deg 270deg,
+          oklch(63% 0.11 var(--bass-root-hue)) 270deg 360deg
+        );
+      }
+
+      .bass-button.is-ninth {
+        background:
+          radial-gradient(circle at center, oklch(63% 0.11 var(--bass-root-hue)) 0 31%, transparent 32%),
+          conic-gradient(
+            from -45deg,
+            oklch(63% 0.11 var(--bass-ninth-hue)) 0deg 90deg,
+            oklch(63% 0.11 var(--bass-fifth-hue)) 90deg 180deg,
+            oklch(63% 0.11 var(--bass-seventh-hue)) 180deg 270deg,
+            oklch(63% 0.11 var(--bass-third-hue)) 270deg 360deg
+          );
+      }
+
+      .bass-seventh-button {
+        background:
+          linear-gradient(to right, oklch(63% 0.11 var(--bass-left-top-hue)) 0 50%, oklch(63% 0.11 var(--bass-right-top-hue)) 50% 100%) top / 100% 50% no-repeat,
+          linear-gradient(to right, oklch(63% 0.11 var(--bass-left-bottom-hue)) 0 50%, oklch(63% 0.11 var(--bass-right-bottom-hue)) 50% 100%) bottom / 100% 50% no-repeat;
+      }
+
+      .bass-seventh-button.is-ninth {
+        background:
+          linear-gradient(to right, oklch(63% 0.11 var(--bass-left-top-hue)) 0 50%, oklch(63% 0.11 var(--bass-right-top-hue)) 50% 100%) top / 100% 50% no-repeat,
+          linear-gradient(to right, oklch(63% 0.11 var(--bass-left-bottom-hue)) 0 50%, oklch(63% 0.11 var(--bass-right-bottom-hue)) 50% 100%) bottom / 100% 50% no-repeat;
+      }
+
+      .bass-seventh-button.is-ninth::after {
+        content: none;
+      }
+
+      .bass-ninth-center {
+        background: oklch(63% 0.11 var(--bass-center-hue));
+      }
     }
 
     .keyboard {
@@ -846,7 +1204,9 @@
 
     .key {
       --hue: 190;
+      --tone-deep: hsl(var(--hue) 24% 15%);
       --tone: hsl(var(--hue) 62% 46%);
+      --tone-gray: hsl(var(--hue) 24% 68%);
       --tone-soft: hsl(var(--hue) 72% 90%);
       --tone-border: hsl(var(--hue) 46% 42%);
       --key-fill: var(--tone-soft);
@@ -931,21 +1291,45 @@
       clip-path: none;
     }
 
+    .key.is-tone-normal,
     .key.is-dark-tone {
       --key-fill: var(--tone);
       --key-stroke: hsl(var(--hue) 72% 86%);
       color: #ffffff;
     }
 
+    .key.is-tone-deep {
+      --key-fill: var(--tone-deep);
+      --key-stroke: hsl(var(--hue) 24% 46%);
+      color: #ffffff;
+    }
+
+    .key.is-tone-gray {
+      --key-fill: var(--tone-gray);
+      --key-stroke: hsl(var(--hue) 28% 86%);
+      color: #ffffff;
+    }
+
     @supports (color: oklch(60% 0.1 30)) {
       .key {
+        --tone-deep: oklch(22% 0.03 var(--hue));
         --tone: oklch(63% 0.11 var(--hue));
+        --tone-gray: oklch(76% 0.03 var(--hue));
         --tone-soft: oklch(92% 0.035 var(--hue));
         --tone-border: oklch(55% 0.09 var(--hue));
       }
 
+      .key.is-tone-normal,
       .key.is-dark-tone {
         --key-stroke: oklch(88% 0.04 var(--hue));
+      }
+
+      .key.is-tone-deep {
+        --key-stroke: oklch(63% 0.03 var(--hue));
+      }
+
+      .key.is-tone-gray {
+        --key-stroke: oklch(88% 0.022 var(--hue));
       }
     }
 
@@ -968,6 +1352,11 @@
 
     .key.is-q-anchor {
       --key-outline: rgba(0, 127, 120, 0.42);
+    }
+
+    .key-map.is-bass-reserved {
+      background: rgba(72, 96, 132, 0.78);
+      color: #eaf2ff;
     }
 
     .note {
@@ -1013,6 +1402,11 @@
     .key.is-active .key-map {
       background: rgba(255, 255, 255, 0.9);
       color: #17191f;
+    }
+
+    .key.is-active .key-map.is-bass-reserved {
+      background: rgba(188, 205, 230, 0.95);
+      color: #1a2b44;
     }
 
     .scale-dock {
@@ -1339,6 +1733,15 @@
             </select>
           </div>
 
+          <div class="control color-control">
+            <span class="group-label">键盘颜色</span>
+            <div class="color-stepper" aria-label="键盘颜色">
+              <span class="color-equals">C=</span>
+              <span class="color-swatch" id="colorSwatch" title="C 的颜色"></span>
+              <button class="color-step" id="colorNext" type="button" aria-label="下一个 C 色块">›</button>
+            </div>
+          </div>
+
           <div class="control">
             <label for="lowCol">低音列</label>
             <input id="lowCol" type="number" step="1" value="-5">
@@ -1359,10 +1762,11 @@
             <input id="lowerRows" type="number" min="0" max="18" step="1" value="2">
           </div>
 
-          <div class="control">
+          <div class="control view-control">
             <span class="group-label">横向扩展</span>
-            <div class="button-group">
+            <div class="button-group two">
               <button class="command primary" id="centerView" type="button">居中</button>
+              <button class="command" id="resetView" type="button">复位</button>
             </div>
           </div>
         </div>
@@ -1380,12 +1784,22 @@
           </div>
 
           <div class="control">
-            <label for="scaleAssist">辅助</label>
-            <select id="scaleAssist">
-              <option value="inDark" selected>调内深色</option>
-              <option value="outDark">调外深色</option>
-              <option value="allDark">全深色</option>
-              <option value="allLight">全浅色</option>
+            <label for="scaleInTone">调内颜色</label>
+            <select id="scaleInTone">
+              <option value="deep">深</option>
+              <option value="normal" selected>正常</option>
+              <option value="gray">灰</option>
+              <option value="light">浅</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="scaleOutTone">调外颜色</label>
+            <select id="scaleOutTone">
+              <option value="deep">深</option>
+              <option value="normal">正常</option>
+              <option value="gray">灰</option>
+              <option value="light" selected>浅</option>
             </select>
           </div>
 
@@ -1416,15 +1830,6 @@
             <span>谱表</span>
           </label>
 
-          <div class="control color-control">
-            <span class="group-label">键盘颜色</span>
-            <div class="color-stepper" aria-label="键盘颜色">
-              <button class="color-step" id="colorPrev" type="button" aria-label="上一个 C 色块">‹</button>
-              <span class="color-equals">C=</span>
-              <span class="color-swatch" id="colorSwatch" title="C 的颜色"></span>
-              <button class="color-step" id="colorNext" type="button" aria-label="下一个 C 色块">›</button>
-            </div>
-          </div>
         </div>
 
         <div class="control-grid pedal-row">
@@ -1505,6 +1910,7 @@
       <div class="keyboard-scroll" id="keyboardScroll">
         <div class="keyboard" id="keyboard" aria-label="Q-board button keyboard"></div>
       </div>
+      <div class="bass-dock" id="bassDock" hidden aria-label="贝司声部"></div>
     </main>
   </div>
 
@@ -1574,6 +1980,16 @@
     const SUSTAIN_CODES = new Set(["Space", "ShiftRight"]);
     const SOFT_PEDAL_CODE = "ShiftLeft";
     const DEFAULT_SOFT_PEDAL_FACTOR = 0.5;
+    const DEFAULT_C_HUE = 29;
+    const DEFAULT_BASS_VOLUME = 0.5;
+    const DEFAULT_BASS_FADE_TIME = 0.5;
+    const DEFAULT_VISIBLE_RANGE = Object.freeze({
+      lowCol: -5,
+      highCol: 18,
+      upperRows: 2,
+      lowerRows: 2
+    });
+    const DEFAULT_Q_ANCHOR = Object.freeze({ row: 1, col: 0 });
     let cColorIndex = 0;
     const languageOptions = [
       ["zh", "中文", "cn", "🇨🇳"],
@@ -1631,6 +2047,30 @@
     const codeToLabel = new Map(
       hardwareRows.flatMap(row => row.codes.map((code, index) => [code, row.labels[index]]))
     );
+    const bassDigitKeyDefs = [
+      { code: "Digit1", key: "1" },
+      { code: "Digit2", key: "2" },
+      { code: "Digit3", key: "3" },
+      { code: "Digit4", key: "4" },
+      { code: "Digit5", key: "5" },
+      { code: "Digit6", key: "6" },
+      { code: "Digit7", key: "7" },
+      { code: "Digit8", key: "8" },
+      { code: "Digit9", key: "9" },
+      { code: "Digit0", key: "0" },
+      { code: "Minus", key: "-" },
+      { code: "Equal", key: "=" }
+    ];
+    const bassFunctionKeyDefs = bassDigitKeyDefs.map((def, index) => ({
+      code: `F${index + 1}`,
+      key: `F${index + 1}`,
+      logicalCode: def.code,
+      logicalKey: def.key
+    }));
+    const bassKeyModeValues = new Set(["digits", "function"]);
+    const BASS_MODIFIER_CODES = new Set(["Backquote"]);
+    const BASS_SEVENTH_CODE = "KeyQ";
+    const BASS_FUNCTION_SEVENTH_CODE = "Escape";
     const codeToHardwarePosition = new Map(
       hardwareRows.flatMap(row => row.codes.map((code, index) => [code, {
         rowDelta: row.rowDelta,
@@ -1645,9 +2085,12 @@
       [0x16, "KeyS"], [0x17, "KeyT"], [0x18, "KeyU"], [0x19, "KeyV"], [0x1A, "KeyW"], [0x1B, "KeyX"],
       [0x1C, "KeyY"], [0x1D, "KeyZ"], [0x1E, "Digit1"], [0x1F, "Digit2"], [0x20, "Digit3"], [0x21, "Digit4"],
       [0x22, "Digit5"], [0x23, "Digit6"], [0x24, "Digit7"], [0x25, "Digit8"], [0x26, "Digit9"], [0x27, "Digit0"],
-      [0x2C, "Space"],
+      [0x29, "Escape"],
+      [0x2B, "Tab"], [0x2C, "Space"],
       [0x2D, "Minus"], [0x2E, "Equal"], [0x2F, "BracketLeft"], [0x30, "BracketRight"],
-      [0x33, "Semicolon"], [0x34, "Quote"], [0x36, "Comma"], [0x37, "Period"], [0x38, "Slash"],
+      [0x33, "Semicolon"], [0x34, "Quote"], [0x35, "Backquote"], [0x36, "Comma"], [0x37, "Period"], [0x38, "Slash"],
+      [0x3A, "F1"], [0x3B, "F2"], [0x3C, "F3"], [0x3D, "F4"], [0x3E, "F5"], [0x3F, "F6"],
+      [0x40, "F7"], [0x41, "F8"], [0x42, "F9"], [0x43, "F10"], [0x44, "F11"], [0x45, "F12"],
       [0xE1, "ShiftLeft"],
       [0xE5, "ShiftRight"]
     ]);
@@ -1664,6 +2107,36 @@
     const scaleModes = {
       major: { label: "大调", intervals: [0, 2, 4, 5, 7, 9, 11] },
       minor: { label: "小调", intervals: [0, 2, 3, 5, 7, 8, 10] }
+    };
+    const bassHarmonySpecs = {
+      major: [
+        { roman: "IV", offset: 5, quality: "major" },
+        { roman: "I", offset: 0, quality: "major" },
+        { roman: "V", offset: 7, quality: "major" },
+        { roman: "ii", offset: 2, quality: "minor" },
+        { roman: "vi", offset: 9, quality: "minor" },
+        { roman: "iii", offset: 4, quality: "minor" },
+        { roman: "vii dim", offset: 11, quality: "dim" },
+        { roman: "#iv dim", offset: 6, quality: "dim" },
+        { roman: "bII", offset: 1, quality: "major" },
+        { roman: "bVI", offset: 8, quality: "major" },
+        { roman: "bIII", offset: 3, quality: "major" },
+        { roman: "bVII", offset: 10, quality: "major" }
+      ],
+      minor: [
+        { roman: "ii dim", offset: 2, quality: "dim" },
+        { roman: "v", offset: 7, quality: "minor" },
+        { roman: "i", offset: 0, quality: "minor" },
+        { roman: "iv", offset: 5, quality: "minor" },
+        { roman: "VII", offset: 10, quality: "major" },
+        { roman: "III", offset: 3, quality: "major" },
+        { roman: "VI", offset: 8, quality: "major" },
+        { roman: "bII", offset: 1, quality: "major" },
+        { roman: "#iv dim", offset: 6, quality: "dim" },
+        { roman: "vii dim", offset: 11, quality: "dim" },
+        { roman: "iii dim", offset: 4, quality: "dim" },
+        { roman: "vi dim", offset: 9, quality: "dim" }
+      ]
     };
     const signatureOrders = {
       sharp: ["F", "C", "G", "D", "A", "E", "B"],
@@ -1684,10 +2157,11 @@
         id: "main",
         label: "主键盘",
         short: "主",
-        anchor: { row: 1, col: 0 },
+        anchor: { ...DEFAULT_Q_ANCHOR },
         instrument: "piano",
         outputShift: 0,
         volume: DEFAULT_PROFILE_VOLUME,
+        enabled: true,
         longVibrato: false,
         sustainEnabled: true,
         sustainPedal: false,
@@ -1703,11 +2177,34 @@
       instrument: "violin",
       outputShift: 12,
       volume: DEFAULT_PROFILE_VOLUME,
+      enabled: true,
       longVibrato: true,
       fadeSustainTime: DEFAULT_POINTER_FADE_TIME,
       followSustainPedal: false,
       source: "pointer",
       monophonic: true
+    };
+    const bassProfile = {
+      id: "bass",
+      label: "贝司声部",
+      short: "贝",
+      enabled: false,
+      keyMode: "digits",
+      instrument: "cello",
+      outputShift: -24,
+      volume: DEFAULT_BASS_VOLUME,
+      longVibrato: true,
+      outHarmony: false,
+      fadeTime: DEFAULT_BASS_FADE_TIME,
+      source: "bass",
+      baseCoord: { ...DEFAULT_Q_ANCHOR },
+      pressedCodes: new Set(),
+      pressedSevenths: new Set(),
+      suppressedTriadCodes: new Set(),
+      modifier: false,
+      seventhMode: false,
+      activePointerCodes: new Map(),
+      activePointerSevenths: new Map()
     };
     const instrumentOptions = [
       ["accordion", "手风琴"],
@@ -1763,14 +2260,22 @@
         lowerRows: "下方行",
         horizontalView: "横向扩展",
         center: "居中",
+        viewReset: "复位",
         scale: "音阶",
         major: "大调",
         minor: "小调",
         assist: "辅助",
+        scaleInTone: "调内颜色",
+        scaleOutTone: "调外颜色",
         inDark: "调内深色",
         outDark: "调外深色",
         allDark: "全深色",
         allLight: "全浅色",
+        toneDeep: "深",
+        toneNormal: "正常",
+        toneGray: "灰",
+        toneLight: "浅",
+        assistPair: "内{inside} / 外{outside}",
         outLabels: "调外",
         dual: "升降号",
         sharp: "升号",
@@ -1811,6 +2316,12 @@
         mouseTouch: "鼠标/触屏",
         mouseShort: "触",
         monoSource: "单音",
+        bassPart: "贝司声部",
+        bassShort: "贝",
+        bassEnable: "贝司",
+        bassBase: "基准音",
+        bassOutHarmony: "调外和声",
+        bassFade: "贝司淡出",
         sourceHid: "HID",
         hidUnsupported: "当前浏览器不支持 WebHID；请用支持 WebHID 的 Chromium 系浏览器打开。",
         hidNoDevice: "没有选择 HID 设备；普通办公键盘可能会被浏览器安全策略隐藏。",
@@ -1881,14 +2392,22 @@
         lowerRows: "Down",
         horizontalView: "View",
         center: "Center",
+        viewReset: "Reset",
         scale: "Scale",
         major: "major",
         minor: "minor",
         assist: "Assist",
+        scaleInTone: "In color",
+        scaleOutTone: "Out color",
         inDark: "In dark",
         outDark: "Out dark",
         allDark: "All dark",
         allLight: "All light",
+        toneDeep: "deep",
+        toneNormal: "normal",
+        toneGray: "gray",
+        toneLight: "light",
+        assistPair: "In {inside} / Out {outside}",
         outLabels: "Out names",
         dual: "Both",
         sharp: "Sharps",
@@ -1929,6 +2448,12 @@
         mouseTouch: "Mouse/touch",
         mouseShort: "Touch",
         monoSource: "Mono",
+        bassPart: "Bass part",
+        bassShort: "Bass",
+        bassEnable: "Bass",
+        bassBase: "Base note",
+        bassOutHarmony: "Outside chords",
+        bassFade: "Bass fade",
         sourceHid: "HID",
         hidUnsupported: "This browser does not support WebHID; use a Chromium browser with WebHID.",
         hidNoDevice: "No HID device was selected; regular office keyboards may be hidden by browser security.",
@@ -1997,14 +2522,22 @@
         lowerRows: "Bas",
         horizontalView: "Vue",
         center: "Centrer",
+        viewReset: "Réinit.",
         scale: "Gamme",
         major: "majeur",
         minor: "mineur",
         assist: "Aide",
+        scaleInTone: "Couleur dedans",
+        scaleOutTone: "Couleur dehors",
         inDark: "Degré foncé",
         outDark: "Hors foncé",
         allDark: "Tout foncé",
         allLight: "Tout clair",
+        toneDeep: "foncé",
+        toneNormal: "normal",
+        toneGray: "gris",
+        toneLight: "clair",
+        assistPair: "Dedans {inside} / Dehors {outside}",
         outLabels: "Alt.",
         dual: "Deux",
         sharp: "Dièses",
@@ -2032,6 +2565,11 @@
         mouseTouch: "Souris/tactile",
         mouseShort: "Tact.",
         monoSource: "Mono",
+        bassPart: "Basse",
+        bassShort: "Basse",
+        bassEnable: "Basse",
+        bassBase: "Base",
+        bassOutHarmony: "Hors gamme",
         sourceHid: "HID",
         hidUnsupported: "Ce navigateur ne prend pas WebHID en charge ; utilisez un navigateur Chromium compatible.",
         hidNoDevice: "Aucun périphérique HID sélectionné ; les claviers bureautiques peuvent être masqués par sécurité.",
@@ -2091,14 +2629,22 @@
         lowerRows: "Unten",
         horizontalView: "Ansicht",
         center: "Mitte",
+        viewReset: "Reset",
         scale: "Tonart",
         major: "Dur",
         minor: "Moll",
         assist: "Hilfe",
+        scaleInTone: "Innenfarbe",
+        scaleOutTone: "Außenfarbe",
         inDark: "In dunkel",
         outDark: "Außen dunkel",
         allDark: "Alle dunkel",
         allLight: "Alle hell",
+        toneDeep: "dunkel",
+        toneNormal: "normal",
+        toneGray: "grau",
+        toneLight: "hell",
+        assistPair: "Innen {inside} / Außen {outside}",
         outLabels: "Außen",
         dual: "Beide",
         sharp: "Kreuze",
@@ -2126,6 +2672,11 @@
         mouseTouch: "Maus/Touch",
         mouseShort: "Touch",
         monoSource: "Mono",
+        bassPart: "Bass",
+        bassShort: "Bass",
+        bassEnable: "Bass",
+        bassBase: "Basis",
+        bassOutHarmony: "Außenakk.",
         sourceHid: "HID",
         hidUnsupported: "Dieser Browser unterstützt WebHID nicht; bitte einen Chromium-Browser mit WebHID verwenden.",
         hidNoDevice: "Kein HID-Gerät ausgewählt; normale Bürotastaturen können aus Sicherheitsgründen verborgen sein.",
@@ -2185,14 +2736,22 @@
         lowerRows: "Abajo",
         horizontalView: "Vista",
         center: "Centrar",
+        viewReset: "Rest.",
         scale: "Escala",
         major: "mayor",
         minor: "menor",
         assist: "Ayuda",
+        scaleInTone: "Color dentro",
+        scaleOutTone: "Color fuera",
         inDark: "Dentro oscuro",
         outDark: "Fuera oscuro",
         allDark: "Todo oscuro",
         allLight: "Todo claro",
+        toneDeep: "oscuro",
+        toneNormal: "normal",
+        toneGray: "gris",
+        toneLight: "claro",
+        assistPair: "Dentro {inside} / Fuera {outside}",
         outLabels: "Fuera",
         dual: "Ambos",
         sharp: "Sostenidos",
@@ -2220,6 +2779,11 @@
         mouseTouch: "Ratón/táctil",
         mouseShort: "Táctil",
         monoSource: "Mono",
+        bassPart: "Bajo",
+        bassShort: "Bajo",
+        bassEnable: "Bajo",
+        bassBase: "Base",
+        bassOutHarmony: "Fuera",
         sourceHid: "HID",
         hidUnsupported: "Este navegador no admite WebHID; usa un navegador Chromium compatible.",
         hidNoDevice: "No se seleccionó ningún dispositivo HID; los teclados comunes pueden estar ocultos por seguridad.",
@@ -2279,14 +2843,22 @@
         lowerRows: "Baixo",
         horizontalView: "Vista",
         center: "Centrar",
+        viewReset: "Repor",
         scale: "Escala",
         major: "maior",
         minor: "menor",
         assist: "Auxílio",
+        scaleInTone: "Cor dentro",
+        scaleOutTone: "Cor fora",
         inDark: "Dentro escuro",
         outDark: "Fora escuro",
         allDark: "Tudo escuro",
         allLight: "Tudo claro",
+        toneDeep: "escuro",
+        toneNormal: "normal",
+        toneGray: "cinza",
+        toneLight: "claro",
+        assistPair: "Dentro {inside} / Fora {outside}",
         outLabels: "Fora",
         dual: "Ambos",
         sharp: "Sustenidos",
@@ -2314,6 +2886,11 @@
         mouseTouch: "Mouse/toque",
         mouseShort: "Toque",
         monoSource: "Mono",
+        bassPart: "Baixo",
+        bassShort: "Baixo",
+        bassEnable: "Baixo",
+        bassBase: "Base",
+        bassOutHarmony: "Fora",
         sourceHid: "HID",
         hidUnsupported: "Este navegador não suporta WebHID; use um navegador Chromium compatível.",
         hidNoDevice: "Nenhum dispositivo HID foi selecionado; teclados comuns podem ficar ocultos por segurança.",
@@ -2373,14 +2950,22 @@
         lowerRows: "下行",
         horizontalView: "表示",
         center: "中央",
+        viewReset: "復位",
         scale: "音階",
         major: "長調",
         minor: "短調",
         assist: "補助",
+        scaleInTone: "内色",
+        scaleOutTone: "外色",
         inDark: "内を濃く",
         outDark: "外を濃く",
         allDark: "全濃色",
         allLight: "全淡色",
+        toneDeep: "濃",
+        toneNormal: "通常",
+        toneGray: "灰",
+        toneLight: "淡",
+        assistPair: "内{inside} / 外{outside}",
         outLabels: "外音名",
         dual: "両方",
         sharp: "シャープ",
@@ -2408,6 +2993,11 @@
         mouseTouch: "マウス/タッチ",
         mouseShort: "触",
         monoSource: "単音",
+        bassPart: "ベース",
+        bassShort: "ベ",
+        bassEnable: "ベース",
+        bassBase: "基準音",
+        bassOutHarmony: "外和音",
         sourceHid: "HID",
         hidUnsupported: "このブラウザは WebHID に対応していません。対応する Chromium 系ブラウザを使ってください。",
         hidNoDevice: "HID デバイスが選択されていません。一般的なキーボードは安全上非表示になることがあります。",
@@ -2467,14 +3057,22 @@
         lowerRows: "أسفل",
         horizontalView: "العرض",
         center: "توسيط",
+        viewReset: "إعادة",
         scale: "السلم",
         major: "كبير",
         minor: "صغير",
         assist: "مساعدة",
+        scaleInTone: "لون الداخل",
+        scaleOutTone: "لون الخارج",
         inDark: "داخل داكن",
         outDark: "خارج داكن",
         allDark: "كلها داكنة",
         allLight: "كلها فاتحة",
+        toneDeep: "داكن",
+        toneNormal: "عادي",
+        toneGray: "رمادي",
+        toneLight: "فاتح",
+        assistPair: "داخل {inside} / خارج {outside}",
         outLabels: "الأسماء",
         dual: "كلاهما",
         sharp: "دييز",
@@ -2502,6 +3100,11 @@
         mouseTouch: "فأرة/لمس",
         mouseShort: "لمس",
         monoSource: "أحادي",
+        bassPart: "الباس",
+        bassShort: "باس",
+        bassEnable: "باس",
+        bassBase: "النغمة",
+        bassOutHarmony: "خارج السلم",
         sourceHid: "HID",
         hidUnsupported: "هذا المتصفح لا يدعم WebHID؛ استخدم متصفح Chromium يدعمه.",
         hidNoDevice: "لم يتم اختيار جهاز HID؛ قد تخفي حماية المتصفح لوحات المفاتيح العادية.",
@@ -2561,14 +3164,22 @@
         lowerRows: "Снизу",
         horizontalView: "Вид",
         center: "Центр",
+        viewReset: "Сброс",
         scale: "Лад",
         major: "мажор",
         minor: "минор",
         assist: "Подсв.",
+        scaleInTone: "Цвет в ладу",
+        scaleOutTone: "Цвет вне",
         inDark: "В ладу темн.",
         outDark: "Вне темн.",
         allDark: "Все темн.",
         allLight: "Все светл.",
+        toneDeep: "тёмн.",
+        toneNormal: "норм.",
+        toneGray: "сер.",
+        toneLight: "светл.",
+        assistPair: "В ладу {inside} / Вне {outside}",
         outLabels: "Вне",
         dual: "Оба",
         sharp: "Диезы",
@@ -2596,6 +3207,11 @@
         mouseTouch: "Мышь/сенсор",
         mouseShort: "Сенс.",
         monoSource: "Моно",
+        bassPart: "Бас",
+        bassShort: "Бас",
+        bassEnable: "Бас",
+        bassBase: "База",
+        bassOutHarmony: "Вне лада",
         sourceHid: "HID",
         hidUnsupported: "Этот браузер не поддерживает WebHID; используйте Chromium-браузер с WebHID.",
         hidNoDevice: "HID-устройство не выбрано; обычные офисные клавиатуры могут быть скрыты защитой браузера.",
@@ -2660,6 +3276,15 @@
             ]
           },
           {
+            title: "贝司",
+            items: [
+              "设置页中的“贝司”开关启用贝司声部；贝司行名称下方的 ↔ 可在 1-= 与 F1-F12 两种贝司输入类型之间切换。",
+              "贝司使用 1 到 = 或 F1 到 F12 触发和弦；数字输入类型下按 Q 切换七和弦，功能键输入类型下按 Esc 切换七和弦。",
+              "按 · 切换和弦类型：三和弦会在大小/减等近邻类型间变换；与七和弦键一起使用时，属七降九等扩展和弦的预览会把主音放在圆盘中心，其余音放在四个象限。",
+              "“调外和声”会从 7 个调内和弦扩展到 12 个和弦；“基准音”用当前选中按键设定贝司音区；“贝司淡出”控制松键后的释放时间。"
+            ]
+          },
+          {
             title: "布局与谱表",
             items: [
               "排键系统、按键形状、扩展行列和音阶辅助在设置页中调整。",
@@ -2686,6 +3311,15 @@
               "Hold Space or Right Shift on a computer or HID keyboard for damped sustain. Released notes fade automatically by the global sustain decay time, up to 10 seconds. Left Shift is the soft pedal and lowers that keyboard output.",
               "Mouse/touch sustain only affects the pointer voice. If Follow pedal is enabled, that independent sustain is disabled and the pointer follows the Space/Right Shift pedal instead.",
               "Drag left or right in the vibrato pad to bend pitch; each input source has its own hold-vibrato switch. Drag glissando plays keys hovered longer than Glide delay."
+            ]
+          },
+          {
+            title: "Bass",
+            items: [
+              "Enable the bass part with the Bass switch on the Settings page. The ↔ button under the bass name switches the bass input type between 1-= and F1-F12.",
+              "Bass chords are triggered by 1 through = or F1 through F12. In digit mode, Q toggles seventh-chord mode; in function-key mode, Esc toggles seventh-chord mode.",
+              "Press · to switch chord type. When combined with the seventh key, extended dominant chords such as 7b9 show the root in the center of the disk and the other four tones in the four quadrants.",
+              "Outside chords expands the bass from 7 in-key chords to 12 chords. Base note sets the bass register from the selected key. Bass fade controls the release after key-up."
             ]
           },
           {
@@ -2947,8 +3581,8 @@
       lowerRows: document.querySelector("#lowerRows"),
       labelMode: document.querySelector("#labelMode"),
       keyShape: document.querySelector("#keyShape"),
-      scaleAssist: document.querySelector("#scaleAssist"),
-      colorPrev: document.querySelector("#colorPrev"),
+      scaleInTone: document.querySelector("#scaleInTone"),
+      scaleOutTone: document.querySelector("#scaleOutTone"),
       colorNext: document.querySelector("#colorNext"),
       colorSwatch: document.querySelector("#colorSwatch"),
       vibratoSensitivity: document.querySelector("#vibratoSensitivity"),
@@ -2967,7 +3601,9 @@
       metronomeStepButtons: [...document.querySelectorAll("[data-metronome-step]")],
       showStaff: document.querySelector("#showStaff"),
       centerView: document.querySelector("#centerView"),
+      resetView: document.querySelector("#resetView"),
       profileRows: document.querySelector("#profileRows"),
+      bassDock: document.querySelector("#bassDock"),
       scaleDock: document.querySelector("#scaleDock"),
       scaleZoomOut: document.querySelector("#scaleZoomOut"),
       scaleZoomIn: document.querySelector("#scaleZoomIn"),
@@ -2986,9 +3622,9 @@
     let audioContext;
     let renderTimer = 0;
     let ignoreNextClickUntil = 0;
-    let selectedCoord = { row: 1, col: 0 };
+    let selectedCoord = { ...DEFAULT_Q_ANCHOR };
     let activeProfileId = "main";
-    let qAnchor = { row: 1, col: 0 };
+    let qAnchor = { ...DEFAULT_Q_ANCHOR };
     let manualBendCents = 0;
     let longVibratoState = null;
     const longVibratoHolds = new Map();
@@ -2997,6 +3633,7 @@
     const voices = new Map();
     const codeToCoord = new Map();
     const coordToLabels = new Map();
+    const coordToReservedLabels = new Map();
     const hidSuppressedCodeUntil = new Map();
     const pendingBrowserStarts = new Map();
     let metronomeBpm = DEFAULT_METRONOME_BPM;
@@ -3024,6 +3661,31 @@
       for (const option of select.options) {
         const key = labels[option.value];
         if (key) option.textContent = tr(key);
+      }
+    }
+
+    const assistToneLabelKeys = {
+      deep: "toneDeep",
+      normal: "toneNormal",
+      gray: "toneGray",
+      light: "toneLight"
+    };
+
+    function normalizeAssistTone(value) {
+      return assistToneLabelKeys[value] ? value : "normal";
+    }
+
+    function selectedAssistToneLevels() {
+      return {
+        inside: normalizeAssistTone(els.scaleInTone?.value || "normal"),
+        outside: normalizeAssistTone(els.scaleOutTone?.value || "light")
+      };
+    }
+
+    function setAssistToneOptionText(select) {
+      if (!select) return;
+      for (const option of select.options) {
+        option.textContent = tr(assistToneLabelKeys[normalizeAssistTone(option.value)]);
       }
     }
 
@@ -3058,6 +3720,10 @@
 
     function pointerFadeTime() {
       return clampFloat(pointerProfile.fadeSustainTime, DEFAULT_POINTER_FADE_TIME, 0.1, 3);
+    }
+
+    function bassFadeTime() {
+      return clampFloat(bassProfile.fadeTime, DEFAULT_BASS_FADE_TIME, 0, 2);
     }
 
     function formatRatio(value) {
@@ -3176,6 +3842,8 @@
       }
       pointerProfile.label = tr("mouseTouch");
       pointerProfile.short = tr("mouseShort");
+      bassProfile.label = tr("bassPart");
+      bassProfile.short = tr("bassShort");
 
       setText(els.appTitle, "appTitle");
       els.menuTabs.setAttribute("aria-label", tr("menuTabs"));
@@ -3192,7 +3860,8 @@
       setLabel("highCol", "highCol");
       setLabel("upperRows", "upperRows");
       setLabel("lowerRows", "lowerRows");
-      setLabel("scaleAssist", "assist");
+      setLabel("scaleInTone", "scaleInTone");
+      setLabel("scaleOutTone", "scaleOutTone");
       setLabel("labelMode", "outLabels");
       setLabel("vibratoSensitivity", "vibratoSensitivity");
       setLabel("sustainTime", "sustainTime");
@@ -3200,8 +3869,9 @@
       setLabel("softPedalRatio", "softPedalRatio");
       setLabel("glissandoDwell", "glissandoDwell");
 
-      setText(".layout-row .group-label", "horizontalView");
+      setText(".view-control .group-label", "horizontalView");
       setText("#centerView", "center");
+      setText("#resetView", "viewReset");
       setText(".scale-choice .group-label", "scale");
       setText(".color-control .group-label", "keyColor");
       setText(".metronome-control .group-label", "metronome");
@@ -3209,14 +3879,15 @@
       setText("#vibratoPad span:last-child", "vibrato");
 
       setOptionText(els.keyShape, { hex: "hex", round: "round" });
-      setOptionText(els.scaleAssist, { inDark: "inDark", outDark: "outDark", allDark: "allDark", allLight: "allLight" });
+      setAssistToneOptionText(els.scaleInTone);
+      setAssistToneOptionText(els.scaleOutTone);
       setOptionText(els.labelMode, { dual: "dual", sharp: "sharp", flat: "flat" });
       setOptionText(els.scaleMode, { major: "major", minor: "minor" });
 
-      els.colorPrev.setAttribute("aria-label", tr("prevC"));
       els.colorNext.setAttribute("aria-label", tr("nextC"));
       document.querySelector(".color-stepper")?.setAttribute("aria-label", tr("keyColor"));
       els.scaleDock.setAttribute("aria-label", tr("staff"));
+      els.bassDock.setAttribute("aria-label", tr("bassPart"));
       document.querySelector(".scale-tools")?.setAttribute("aria-label", tr("staffScale"));
       els.scaleZoomOut.setAttribute("aria-label", tr("zoomOut"));
       els.scaleZoomIn.setAttribute("aria-label", tr("zoomIn"));
@@ -3317,12 +3988,45 @@
       return isLeftShiftEvent(event);
     }
 
+    function bassKeyMode() {
+      return bassKeyModeValues.has(bassProfile.keyMode) ? bassProfile.keyMode : "digits";
+    }
+
+    function bassUsesFunctionKeys() {
+      return bassKeyMode() === "function";
+    }
+
+    function activeBassKeyDefs() {
+      return bassUsesFunctionKeys() ? bassFunctionKeyDefs : bassDigitKeyDefs;
+    }
+
+    function activeBassSeventhCode() {
+      return bassUsesFunctionKeys() ? BASS_FUNCTION_SEVENTH_CODE : BASS_SEVENTH_CODE;
+    }
+
+    function activeBassSeventhKeyLabel() {
+      return bassUsesFunctionKeys() ? "Esc" : "Q";
+    }
+
+    function bassKeyModeLabel() {
+      return bassUsesFunctionKeys() ? "F1-F12" : "1-=";
+    }
+
+    function isBassModifierCode(code) {
+      return BASS_MODIFIER_CODES.has(code);
+    }
+
+    function isBassSeventhCode(code) {
+      return code === activeBassSeventhCode();
+    }
+
     function activeProfile() {
       return mappingProfiles.find(profile => profile.id === activeProfileId) || mappingProfiles[0];
     }
 
     function profileById(id) {
       if (id === pointerProfile.id) return pointerProfile;
+      if (id === bassProfile.id) return bassProfile;
       return mappingProfiles.find(profile => profile.id === id);
     }
 
@@ -3332,6 +4036,12 @@
 
     function profileVolume(profile) {
       return clampFloat(profile?.volume, DEFAULT_PROFILE_VOLUME, 0, 1);
+    }
+
+    function profileIsEnabled(profile) {
+      if (!profile) return true;
+      if (profile === bassProfile) return Boolean(bassProfile.enabled);
+      return profile.enabled !== false;
     }
 
     function profileOutputGain(profile) {
@@ -3461,6 +4171,28 @@
         return fadeControl;
       }
 
+      function createBassFadeControl() {
+        const fadeControl = document.createElement("div");
+        fadeControl.className = "control";
+        const fadeLabel = document.createElement("label");
+        fadeLabel.textContent = tr("bassFade");
+        const fadeWrap = document.createElement("div");
+        fadeWrap.className = "profile-volume";
+        const fadeInput = document.createElement("input");
+        fadeInput.type = "range";
+        fadeInput.min = "0";
+        fadeInput.max = "2";
+        fadeInput.step = "0.05";
+        fadeInput.value = String(bassFadeTime());
+        fadeInput.dataset.profileField = "bassFadeTime";
+        const fadeOutput = document.createElement("output");
+        fadeOutput.dataset.profileBassFadeOutput = "";
+        fadeOutput.textContent = formatSeconds(fadeInput.value);
+        fadeWrap.append(fadeInput, fadeOutput);
+        fadeControl.append(fadeLabel, fadeWrap);
+        return fadeControl;
+      }
+
       function createFollowPedalControl() {
         const label = document.createElement("label");
         label.className = "toggle profile-follow-pedal";
@@ -3487,6 +4219,35 @@
         return label;
       }
 
+      function createCheckboxControl(profile, field, labelKey) {
+        const label = document.createElement("label");
+        label.className = "toggle profile-follow-pedal";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = Boolean(profile[field]);
+        input.dataset.profileField = field;
+        const span = document.createElement("span");
+        span.textContent = tr(labelKey);
+        label.append(input, span);
+        return label;
+      }
+
+      function createProfileHeader(profile, titleElement) {
+        const header = document.createElement("div");
+        header.className = "profile-title";
+        const enableLabel = document.createElement("label");
+        enableLabel.className = "profile-enable-switch";
+        enableLabel.title = `${profile.label} on/off`;
+        const enableInput = document.createElement("input");
+        enableInput.type = "checkbox";
+        enableInput.checked = profileIsEnabled(profile);
+        enableInput.dataset.profileField = "enabled";
+        enableInput.setAttribute("aria-label", `${profile.label} on/off`);
+        enableLabel.append(enableInput);
+        header.append(enableLabel, titleElement);
+        return header;
+      }
+
       function createPlaceholder() {
         const placeholder = document.createElement("span");
         placeholder.className = "profile-placeholder";
@@ -3495,18 +4256,17 @@
 
       const pointerRow = document.createElement("div");
       pointerRow.className = "profile-row is-pointer";
+      if (!profileIsEnabled(pointerProfile)) pointerRow.classList.add("is-disabled");
       pointerRow.dataset.profileId = pointerProfile.id;
-      const pointerName = document.createElement("button");
-      pointerName.type = "button";
+      const pointerName = document.createElement("div");
       pointerName.className = "command profile-name profile-static-name";
-      pointerName.tabIndex = -1;
       const pointerNameText = document.createElement("span");
       pointerNameText.textContent = tr("mouseTouch");
       const pointerSource = document.createElement("small");
       pointerSource.textContent = tr("monoSource");
       pointerName.append(pointerNameText, pointerSource);
       pointerRow.append(
-        pointerName,
+        createProfileHeader(pointerProfile, pointerName),
         createInstrumentControl(pointerProfile),
         createShiftControl(pointerProfile),
         createVolumeControl(pointerProfile),
@@ -3518,10 +4278,51 @@
       );
       fragment.append(pointerRow);
 
+      const bassRow = document.createElement("div");
+      bassRow.className = "profile-row is-bass";
+      if (!profileIsEnabled(bassProfile)) bassRow.classList.add("is-disabled");
+      bassRow.dataset.profileId = bassProfile.id;
+      const bassName = document.createElement("div");
+      bassName.className = "command profile-name profile-static-name";
+      const bassNameText = document.createElement("span");
+      bassNameText.textContent = tr("bassPart");
+      const bassSource = document.createElement("small");
+      bassSource.className = "bass-source-line";
+      const bassSourceText = document.createElement("span");
+      bassSourceText.textContent = bassKeyModeLabel();
+      const bassModeButton = document.createElement("button");
+      bassModeButton.type = "button";
+      bassModeButton.className = "bass-key-mode-button";
+      bassModeButton.dataset.profileAction = "toggleBassKeyMode";
+      bassModeButton.textContent = "↔";
+      bassModeButton.title = "1-= / F1-F12";
+      bassSource.append(bassSourceText, bassModeButton);
+      bassName.append(bassNameText, bassSource);
+      const bassBaseGroup = document.createElement("div");
+      bassBaseGroup.className = "button-group two";
+      const bassBaseButton = document.createElement("button");
+      bassBaseButton.type = "button";
+      bassBaseButton.className = "command primary";
+      bassBaseButton.dataset.profileAction = "bindBassBase";
+      bassBaseButton.textContent = tr("bassBase");
+      bassBaseGroup.append(bassBaseButton, createPlaceholder());
+      bassRow.append(
+        createProfileHeader(bassProfile, bassName),
+        createInstrumentControl(bassProfile),
+        createShiftControl(bassProfile),
+        createVolumeControl(bassProfile),
+        createLongVibratoControl(bassProfile),
+        createBassFadeControl(),
+        createCheckboxControl(bassProfile, "outHarmony", "bassOutHarmony"),
+        bassBaseGroup
+      );
+      fragment.append(bassRow);
+
       for (const profile of mappingProfiles) {
         const row = document.createElement("div");
         row.className = "profile-row";
         if (profile.id === activeProfileId) row.classList.add("is-active");
+        if (!profileIsEnabled(profile)) row.classList.add("is-disabled");
         row.dataset.profileId = profile.id;
 
         const sourceText = profile.source === "hid" ? tr("sourceHid") : tr("computerKeyboard");
@@ -3534,7 +4335,7 @@
         const sourceLabel = document.createElement("small");
         sourceLabel.textContent = sourceText;
         nameButton.append(nameText, sourceLabel);
-        row.append(nameButton);
+        row.append(createProfileHeader(profile, nameButton));
 
         const instrumentControl = document.createElement("div");
         instrumentControl.className = "control";
@@ -3635,7 +4436,7 @@
 
     function hueForPitchClass(pc) {
       const fifthIndex = FIFTH_INDEX.get(mod(pc, 12)) ?? 0;
-      return mod(5 + mod(fifthIndex + cColorIndex, 12) * 30, 360);
+      return mod(DEFAULT_C_HUE + mod(fifthIndex + cColorIndex, 12) * 30, 360);
     }
 
     const supportsOklch = Boolean(globalThis.CSS?.supports?.("color", "oklch(60% 0.1 30)"));
@@ -3685,6 +4486,12 @@
       return `${spelling.letter}${accidentalText(spelling.accidental)}${octave}`;
     }
 
+    function noteNameFromBassSpelling(spelling, degree = null) {
+      const scaleSpelling = Number.isInteger(degree) ? scaleSpellings()[mod(degree, 7)] : null;
+      const naturalPrefix = spelling.accidental === 0 && scaleSpelling?.accidental !== 0 ? "♮" : "";
+      return `${naturalPrefix}${spelling.letter}${accidentalText(spelling.accidental)}`;
+    }
+
     function populateTonicSelect() {
       const fragment = document.createDocumentFragment();
 
@@ -3732,18 +4539,8 @@
       return new Map(scaleSpellings().map(spelling => [spelling.pc, spelling]));
     }
 
-    function shouldUseDarkKey(display) {
-      switch (els.scaleAssist.value) {
-        case "outDark":
-          return !display.inScale;
-        case "allDark":
-          return true;
-        case "allLight":
-          return false;
-        case "inDark":
-        default:
-          return display.inScale;
-      }
+    function assistToneForDisplay(display, levels) {
+      return display.inScale ? levels.inside : levels.outside;
     }
 
     function displayNoteForMidi(midi, info, spellingByPc) {
@@ -3765,6 +4562,26 @@
         label: `${note}${octave}`,
         inScale: true
       };
+    }
+
+    const romanDegreeIndex = new Map([
+      ["i", 0],
+      ["ii", 1],
+      ["iii", 2],
+      ["iv", 3],
+      ["v", 4],
+      ["vi", 5],
+      ["vii", 6]
+    ]);
+
+    function romanDegree(roman) {
+      const match = String(roman || "").match(/[ivIV]+/);
+      return match ? romanDegreeIndex.get(match[0].toLowerCase()) : null;
+    }
+
+    function noteNameForPcInKey(pc) {
+      const spelling = activeScaleSpellingByPc().get(mod(pc, 12));
+      return spelling ? noteNameFromSpelling(spelling) : namesForMode()[mod(pc, 12)];
     }
 
     function sharpSvg(x, y, size = 18) {
@@ -3859,6 +4676,7 @@
 
       for (const rowDef of hardwareRows) {
         for (let index = 0; index < rowDef.codes.length; index += 1) {
+          if (profile.source === "browser" && bassClaimsBrowserCode(rowDef.codes[index])) continue;
           const coord = {
             row: profile.anchor.row + rowDef.rowDelta,
             col: profile.anchor.col + index
@@ -4078,10 +4896,10 @@
     }
 
     function sanitizeRange() {
-      let low = clampNumber(els.lowCol.value, -5, -240, 240);
-      let high = clampNumber(els.highCol.value, 18, -240, 240);
-      const upper = clampNumber(els.upperRows.value, 2, 0, 18);
-      const lower = clampNumber(els.lowerRows.value, 2, 0, 18);
+      let low = clampNumber(els.lowCol.value, DEFAULT_VISIBLE_RANGE.lowCol, -240, 240);
+      let high = clampNumber(els.highCol.value, DEFAULT_VISIBLE_RANGE.highCol, -240, 240);
+      const upper = clampNumber(els.upperRows.value, DEFAULT_VISIBLE_RANGE.upperRows, 0, 18);
+      const lower = clampNumber(els.lowerRows.value, DEFAULT_VISIBLE_RANGE.lowerRows, 0, 18);
 
       if (low > high) [low, high] = [high, low];
       if (high - low > 180) high = low + 180;
@@ -4095,10 +4913,10 @@
     }
 
     function includeCoord(coord) {
-      let low = clampNumber(els.lowCol.value, -5, -240, 240);
-      let high = clampNumber(els.highCol.value, 18, -240, 240);
-      let upper = clampNumber(els.upperRows.value, 2, 0, 18);
-      let lower = clampNumber(els.lowerRows.value, 2, 0, 18);
+      let low = clampNumber(els.lowCol.value, DEFAULT_VISIBLE_RANGE.lowCol, -240, 240);
+      let high = clampNumber(els.highCol.value, DEFAULT_VISIBLE_RANGE.highCol, -240, 240);
+      let upper = clampNumber(els.upperRows.value, DEFAULT_VISIBLE_RANGE.upperRows, 0, 18);
+      let lower = clampNumber(els.lowerRows.value, DEFAULT_VISIBLE_RANGE.lowerRows, 0, 18);
 
       low = Math.min(low, coord.col);
       high = Math.max(high, coord.col);
@@ -4125,18 +4943,31 @@
     function buildHardwareMap() {
       codeToCoord.clear();
       coordToLabels.clear();
+      coordToReservedLabels.clear();
 
       for (const rowDef of hardwareRows) {
         for (let index = 0; index < rowDef.codes.length; index += 1) {
+          const code = rowDef.codes[index];
           const coord = {
             row: qAnchor.row + rowDef.rowDelta,
             col: qAnchor.col + index
           };
           const key = coordKey(coord.row, coord.col);
+          if (activeProfile().source === "browser" && bassClaimsBrowserCode(code)) {
+            if (isBassSeventhCode(code)) {
+              const labels = coordToLabels.get(key) || [];
+              labels.push(rowDef.labels[index]);
+              coordToLabels.set(key, labels);
+              const reservedLabels = coordToReservedLabels.get(key) || [];
+              reservedLabels.push(rowDef.labels[index]);
+              coordToReservedLabels.set(key, reservedLabels);
+            }
+            continue;
+          }
           const labels = coordToLabels.get(key) || [];
           labels.push(rowDef.labels[index]);
           coordToLabels.set(key, labels);
-          codeToCoord.set(rowDef.codes[index], coord);
+          codeToCoord.set(code, coord);
         }
       }
     }
@@ -4167,6 +4998,641 @@
       };
     }
 
+    function sourceFromMidi(midi, label = "") {
+      const info = midiToInfo(midi);
+      const display = displayNoteForMidi(midi, info, activeScaleSpellingByPc());
+      return {
+        dataset: {
+          row: "bass",
+          col: String(midi),
+          midi: String(midi),
+          label: label || display.label,
+          hz: info.hz.toFixed(2)
+        },
+        classList: {
+          add() {},
+          remove() {}
+        }
+      };
+    }
+
+    let bassVoiceSerial = 0;
+
+    function bassBaseMidi() {
+      return buttonMidi(bassProfile.baseCoord.row, bassProfile.baseCoord.col);
+    }
+
+    function midiInBassWindow(pc) {
+      const base = bassBaseMidi();
+      return base + mod(pc - mod(base, 12), 12);
+    }
+
+    function bassRootSpelling(spec, rootPc) {
+      const degree = romanDegree(spec.roman);
+      if (degree === null) return activeScaleSpellingByPc().get(rootPc) || null;
+
+      const tonic = selectedTonic();
+      const tonicLetterIndex = noteLetters.indexOf(tonic.letter);
+      const letter = noteLetters[(tonicLetterIndex + degree) % noteLetters.length];
+      const accidental = nearestAccidental(rootPc, naturalPitchClasses[letter]);
+      return { letter, accidental, pc: rootPc, degree };
+    }
+
+    function bassRootLabel(spec, rootPc, isOutsideHarmony = false) {
+      const degree = romanDegree(spec.roman);
+      if (degree === null) {
+        const spelling = activeScaleSpellingByPc().get(rootPc);
+        return spelling ? noteNameFromSpelling(spelling) : noteNameForPcInKey(rootPc);
+      }
+
+      const primary = bassRootSpelling(spec, rootPc);
+      if (!primary) return noteNameForPcInKey(rootPc);
+
+      const names = [noteNameFromBassSpelling(primary, degree)];
+      if (isOutsideHarmony) {
+        const scaleSpelling = scaleSpellings()[degree];
+        let chromaticShift = mod(rootPc - scaleSpelling.pc, 12);
+        if (chromaticShift > 6) chromaticShift -= 12;
+        if (chromaticShift !== 0) {
+          const alternateDegree = mod(degree + Math.sign(chromaticShift), 7);
+          const tonic = selectedTonic();
+          const tonicLetterIndex = noteLetters.indexOf(tonic.letter);
+          const alternateLetter = noteLetters[(tonicLetterIndex + alternateDegree) % noteLetters.length];
+          const alternate = {
+            letter: alternateLetter,
+            accidental: nearestAccidental(rootPc, naturalPitchClasses[alternateLetter]),
+            pc: rootPc,
+            degree: alternateDegree
+          };
+          names.push(noteNameFromBassSpelling(alternate, alternateDegree));
+        }
+      }
+
+      return [...new Set(names)].join("/");
+    }
+
+    function bassSpecs() {
+      const mode = els.scaleMode.value === "minor" ? "minor" : "major";
+      const count = bassProfile.outHarmony ? 12 : 7;
+      const keyDefs = activeBassKeyDefs();
+      return bassHarmonySpecs[mode].slice(0, count).map((spec, index) => {
+        const rootPc = mod(selectedTonic().pc + spec.offset, 12);
+        const keyDef = keyDefs[index] || bassDigitKeyDefs[index];
+        return {
+          ...spec,
+          index,
+          code: keyDef.code,
+          key: keyDef.key,
+          logicalCode: keyDef.logicalCode || keyDef.code,
+          logicalKey: keyDef.logicalKey || keyDef.key,
+          rootPc,
+          rootName: bassRootLabel(spec, rootPc, index >= 7)
+        };
+      });
+    }
+
+    function activeBassKeyCodes() {
+      const count = bassProfile.outHarmony ? 12 : 7;
+      return new Set(activeBassKeyDefs().slice(0, count).map(def => def.code));
+    }
+
+    function bassClaimsBrowserCode(code) {
+      return bassProfile.enabled && (activeBassKeyCodes().has(code) || isBassModifierCode(code) || isBassSeventhCode(code));
+    }
+
+    function bassSpecByCode(code) {
+      return bassSpecs().find(spec => spec.code === code) || null;
+    }
+
+    function bassMode() {
+      return els.scaleMode.value === "minor" ? "minor" : "major";
+    }
+
+    function outsideBassIntervals(spec) {
+      const mode = bassMode();
+      if (mode === "major") {
+        if (spec.quality === "dim") return [0, 3, 6, 9];
+        if (spec.roman === "bVII") return [0, 4, 7, 10];
+        return [0, 4, 7, 11];
+      }
+
+      if (spec.roman === "bII" || spec.roman === "#iv dim" || spec.roman === "iii dim") return [0, 4, 7, 10];
+      return [0, 3, 6, 9];
+    }
+
+    function intervalsForBassSpec(spec, modifier = false) {
+      if (!modifier) {
+        if (spec.quality === "minor") return [0, 3, 7];
+        if (spec.quality === "dim") return [0, 3, 6];
+        return [0, 4, 7];
+      }
+
+      if (spec.index >= 7) return outsideBassIntervals(spec);
+
+      if (spec.quality === "dim") return [0, 3, 6, 9];
+      if (spec.quality === "minor") return [0, 4, 7];
+      return [0, 3, 7];
+    }
+
+    function rootNameForPc(pc) {
+      return noteNameForPcInKey(pc);
+    }
+
+    function intervalSignature(intervals) {
+      return [...new Set(intervals.map(interval => mod(interval, 12)))]
+        .sort((a, b) => a - b)
+        .join(",");
+    }
+
+    function normalizedIntervals(intervals) {
+      return [...new Set(intervals.map(interval => mod(interval, 12)))]
+        .sort((a, b) => a - b);
+    }
+
+    function modifiedSeventhIntervals(intervals, modifier = false) {
+      const unique = normalizedIntervals(intervals);
+      if (!modifier) return unique;
+
+      const signature = intervalSignature(unique);
+      if (signature === "0,3,6,10") return [0, 4, 7, 10];
+
+      return unique.map(interval => {
+        if (interval === 3) return 4;
+        if (interval === 4) return 3;
+        return interval;
+      }).sort((a, b) => a - b);
+    }
+
+    function modifiedDiatonicSeventhIntervals(spec, intervals, mode, modifier = false) {
+      const unique = normalizedIntervals(intervals);
+      if (!modifier) return unique;
+
+      if (mode === "major" && spec.roman === "V") return [0, 1, 4, 7, 10];
+      if (mode === "minor" && spec.roman === "i") return [0, 3, 7, 11];
+      if (mode === "minor" && spec.roman.startsWith("ii")) return [0, 3, 7, 10];
+      if (mode === "minor" && spec.roman === "v") return [0, 4, 7, 10];
+
+      return [0, 4, 7, 10];
+    }
+
+    function chordNameForIntervals(rootPc, intervals, rootName = rootNameForPc(rootPc)) {
+      const suffixBySignature = new Map([
+        ["0,4,7", ""],
+        ["0,3,7", "m"],
+        ["0,3,6", "-"],
+        ["0,1,4,7,10", "7b9"],
+        ["0,4,7,10", "7"],
+        ["0,4,7,11", "△7"],
+        ["0,3,7,10", "m7"],
+        ["0,3,7,11", "m△7"],
+        ["0,3,6,10", "ø7"],
+        ["0,3,6,9", "-7"]
+      ]);
+      const suffix = suffixBySignature.get(intervalSignature(intervals)) ?? "";
+      return String(rootName).split("/").map(name => `${name}${suffix}`).join("/");
+    }
+
+    function chordTonePcs(rootPc, intervals) {
+      const unique = [...new Set(intervals.map(interval => mod(interval, 12)))];
+      const third = unique.includes(4) ? 4 : unique.includes(3) ? 3 : 4;
+      const fifth = unique.includes(7) ? 7 : unique.includes(6) ? 6 : 7;
+      const seventh = unique.includes(11) ? 11 : unique.includes(10) ? 10 : unique.includes(9) ? 9 : 10;
+      const ninth = unique.includes(1) ? 1 : unique.includes(2) ? 2 : null;
+      return {
+        root: mod(rootPc, 12),
+        third: mod(rootPc + third, 12),
+        fifth: mod(rootPc + fifth, 12),
+        seventh: mod(rootPc + seventh, 12),
+        ninth: ninth === null ? null : mod(rootPc + ninth, 12)
+      };
+    }
+
+    function bassChordName(spec, modifier = false) {
+      return chordNameForIntervals(spec.rootPc, intervalsForBassSpec(spec, modifier), spec.rootName);
+    }
+
+    function bassChordMidisForSpec(spec, modifier = false) {
+      return intervalsForBassSpec(spec, modifier)
+        .map(interval => midiInBassWindow(mod(spec.rootPc + interval, 12)));
+    }
+
+    function bassDiatonicSevenths(modifier = bassProfile.modifier) {
+      const specs = bassSpecs().slice(0, 7);
+      const mode = els.scaleMode.value === "minor" ? "minor" : "major";
+      const pairIndices = mode === "minor"
+        ? [3, 4, 5, 6, 0, 1, 2]
+        : [4, 5, 6, 0, 1, 2, 3];
+
+      return specs.map((spec, index) => {
+        const partner = specs[pairIndices[index]];
+        const baseMidis = [...new Set([
+          ...bassChordMidisForSpec(spec, false),
+          ...bassChordMidisForSpec(partner, false)
+        ])].sort((a, b) => a - b);
+        const intervals = modifiedDiatonicSeventhIntervals(
+          spec,
+          baseMidis.map(midi => mod(mod(midi, 12) - spec.rootPc, 12)),
+          mode,
+          modifier
+        );
+        const midis = intervals
+          .map(interval => midiInBassWindow(mod(spec.rootPc + interval, 12)))
+          .sort((a, b) => a - b);
+        return {
+          index,
+          spec,
+          partner,
+          intervals,
+          label: chordNameForIntervals(spec.rootPc, intervals, spec.rootName),
+          tonePcs: chordTonePcs(spec.rootPc, intervals),
+          isNinth: normalizedIntervals(intervals).length >= 5,
+          midis,
+          keyA: spec.key,
+          keyB: partner.key
+        };
+      });
+    }
+
+    function bassDockChordForSpec(spec, diatonicSevenths) {
+      if (bassProfile.seventhMode) {
+        if (spec.index < 7) {
+          const seventh = diatonicSevenths[spec.index];
+          if (seventh) return seventh;
+        }
+        const intervals = intervalsForBassSpec(spec, true);
+        return {
+          intervals,
+          label: chordNameForIntervals(spec.rootPc, intervals, spec.rootName),
+          tonePcs: chordTonePcs(spec.rootPc, intervals),
+          isNinth: normalizedIntervals(intervals).length >= 5
+        };
+      }
+
+      const intervals = intervalsForBassSpec(spec, bassProfile.modifier);
+      return {
+        intervals,
+        label: chordNameForIntervals(spec.rootPc, intervals, spec.rootName),
+        tonePcs: chordTonePcs(spec.rootPc, intervals),
+        isNinth: normalizedIntervals(intervals).length >= 5
+      };
+    }
+
+    function detectedSeventhRootPc(midis) {
+      const pcs = [...new Set(midis.map(midi => mod(midi, 12)))];
+      if (pcs.length !== 4) return null;
+      const seventhTypes = [
+        "0,3,6,9",
+        "0,3,6,10",
+        "0,3,7,10",
+        "0,3,7,11",
+        "0,4,7,10",
+        "0,4,7,11"
+      ];
+      for (const rootPc of pcs) {
+        const signature = pcs.map(pc => mod(pc - rootPc, 12)).sort((a, b) => a - b).join(",");
+        if (seventhTypes.includes(signature)) return rootPc;
+      }
+      return null;
+    }
+
+    function adjustedSeventhChordMidis(specs, midis, modifier, rootPc) {
+      const unique = [...new Set(midis)].sort((a, b) => a - b);
+      if (unique.length !== 4 || !modifier || specs.length === 0 || rootPc === null) return unique;
+
+      const intervals = unique.map(midi => mod(mod(midi, 12) - rootPc, 12));
+      return modifiedSeventhIntervals(intervals, modifier)
+        .map(interval => midiInBassWindow(mod(rootPc + interval, 12)))
+        .sort((a, b) => a - b);
+    }
+
+    function currentBassChord() {
+      const sevenths = [...bassProfile.pressedSevenths]
+        .map(index => bassDiatonicSevenths(bassProfile.modifier)[index])
+        .filter(Boolean)
+        .sort((a, b) => a.index - b.index);
+      if (sevenths.length > 0) {
+        const midis = [...new Set(sevenths.flatMap(seventh => seventh.midis))].sort((a, b) => a - b);
+        return {
+          label: sevenths.map(seventh => seventh.label).join("+"),
+          midis
+        };
+      }
+
+      const pressedSpecs = [...bassProfile.pressedCodes]
+        .map(code => bassSpecByCode(code))
+        .filter(Boolean);
+      if (bassProfile.seventhMode) {
+        const spec = pressedSpecs[0];
+        if (!spec) return null;
+        if (spec.index >= 7) {
+          return {
+            label: bassChordName(spec, true),
+            midis: [...new Set(bassChordMidisForSpec(spec, true))].sort((a, b) => a - b)
+          };
+        }
+        const seventh = bassDiatonicSevenths(bassProfile.modifier)[spec.index];
+        return seventh
+          ? { label: seventh.label, midis: [...new Set(seventh.midis)].sort((a, b) => a - b) }
+          : null;
+      }
+
+      const specs = pressedSpecs.sort((a, b) => a.index - b.index);
+      if (specs.length === 0) return null;
+      if (specs.length === 1 && bassProfile.suppressedTriadCodes.has(specs[0].code)) return null;
+
+      const effectiveSpecs = bassProfile.modifier && specs.some(spec => spec.index >= 7)
+        ? specs.filter(spec => spec.index >= 7)
+        : specs;
+      if (effectiveSpecs.length === 0) return null;
+
+      if (bassProfile.modifier && effectiveSpecs.some(spec => spec.index >= 7)) {
+        const midis = [...new Set(effectiveSpecs.flatMap(spec => bassChordMidisForSpec(spec, true)))].sort((a, b) => a - b);
+        return {
+          label: effectiveSpecs.map(spec => bassChordName(spec, true)).join("+"),
+          midis
+        };
+      }
+
+      if (effectiveSpecs.length === 1) {
+        const spec = effectiveSpecs[0];
+        return {
+          label: bassChordName(spec, bassProfile.modifier),
+          midis: [...new Set(bassChordMidisForSpec(spec, bassProfile.modifier))].sort((a, b) => a - b)
+        };
+      }
+
+      const combined = effectiveSpecs.flatMap(spec => bassChordMidisForSpec(spec, false));
+      const seventhRootPc = detectedSeventhRootPc(combined);
+      if (seventhRootPc === null) return null;
+      const midis = adjustedSeventhChordMidis(effectiveSpecs, combined, bassProfile.modifier, seventhRootPc);
+      const intervals = [...new Set(midis.map(midi => mod(mod(midi, 12) - seventhRootPc, 12)))];
+      const rootSpec = effectiveSpecs.find(spec => spec.rootPc === seventhRootPc);
+      return {
+        label: chordNameForIntervals(seventhRootPc, intervals, rootSpec?.rootName ?? rootNameForPc(seventhRootPc)),
+        midis
+      };
+    }
+
+    function stopBassVoices(releaseOverride = null) {
+      for (const id of [...voices.keys()]) {
+        if (id.startsWith("bass-")) stopVoice(id, releaseOverride);
+      }
+      els.bassDock.querySelectorAll(".bass-button.is-active, .bass-seventh-button.is-active").forEach(button => button.classList.remove("is-active"));
+    }
+
+    function stopVoicesForProfile(profile, releaseOverride = 0.08) {
+      for (const [id, voice] of [...voices.entries()]) {
+        if (voice.profile === profile) stopVoice(id, releaseOverride);
+      }
+    }
+
+    function updateBassVoices(releaseOverride = bassFadeTime()) {
+      stopBassVoices(releaseOverride);
+      if (!bassProfile.enabled) return;
+      const chord = currentBassChord();
+      if (!chord) return;
+      bassVoiceSerial += 1;
+      chord.midis.forEach((midi, index) => {
+        startVoice(sourceFromMidi(midi, chord.label), `bass-${bassVoiceSerial}-${index}`, 0, bassProfile);
+      });
+      setReadout(chord.label, `${tr("bassPart")} · ${chord.midis.map(midi => noteNameForPcInKey(midi)).join(" ")}`);
+      for (const code of bassProfile.pressedCodes) {
+        els.bassDock.querySelector(`[data-bass-code="${code}"]`)?.classList.add("is-active");
+      }
+      for (const index of bassProfile.pressedSevenths) {
+        els.bassDock.querySelector(`[data-bass-seventh-index="${index}"]`)?.classList.add("is-active");
+      }
+      if (bassProfile.seventhMode) {
+        const spec = [...bassProfile.pressedCodes].map(code => bassSpecByCode(code)).find(Boolean);
+        if (spec?.index < 7) els.bassDock.querySelector(`[data-bass-seventh-index="${spec.index}"]`)?.classList.add("is-active");
+      }
+    }
+
+    function isBassSeventhActive() {
+      const chord = currentBassChord();
+      return Boolean(chord && chord.midis.length >= 4);
+    }
+
+    function enforceSingleBassCodeForSeventhMode() {
+      if (!bassProfile.seventhMode || bassProfile.pressedCodes.size <= 1) return;
+      const firstCode = bassProfile.pressedCodes.values().next().value;
+      bassProfile.pressedCodes = firstCode ? new Set([firstCode]) : new Set();
+      for (const [pointerId, code] of [...bassProfile.activePointerCodes.entries()]) {
+        if (code !== firstCode) bassProfile.activePointerCodes.delete(pointerId);
+      }
+    }
+
+    function updateBassVoicesForRecognition(wasSeventhActive = false) {
+      updateBassVoices(!wasSeventhActive && isBassSeventhActive() ? 0.03 : bassFadeTime());
+    }
+
+    function setBassEnabled(enabled) {
+      bassProfile.enabled = Boolean(enabled);
+      if (!bassProfile.enabled) {
+        bassProfile.pressedCodes.clear();
+        bassProfile.pressedSevenths.clear();
+        bassProfile.suppressedTriadCodes.clear();
+        bassProfile.activePointerCodes.clear();
+        bassProfile.activePointerSevenths.clear();
+        bassProfile.modifier = false;
+        bassProfile.seventhMode = false;
+        stopBassVoices(bassFadeTime());
+      }
+      const viewAnchor = captureViewAnchor();
+      renderBassDock();
+      renderKeyboard({ viewAnchor });
+      renderScaleStaff();
+    }
+
+    function setBassKeyMode(mode) {
+      if (!bassKeyModeValues.has(mode) || mode === bassKeyMode()) return;
+      bassProfile.keyMode = mode;
+      bassProfile.pressedCodes.clear();
+      bassProfile.pressedSevenths.clear();
+      bassProfile.suppressedTriadCodes.clear();
+      bassProfile.activePointerCodes.clear();
+      bassProfile.activePointerSevenths.clear();
+      bassProfile.modifier = false;
+      bassProfile.seventhMode = false;
+      stopBassVoices(bassFadeTime());
+      const viewAnchor = captureViewAnchor();
+      renderMappingProfileOptions();
+      renderBassDock();
+      renderKeyboard({ viewAnchor });
+      renderScaleStaff();
+    }
+
+    function setProfileEnabled(profile, enabled) {
+      if (profile === bassProfile) {
+        setBassEnabled(enabled);
+        return;
+      }
+
+      profile.enabled = Boolean(enabled);
+      if (!profile.enabled) {
+        for (const [code, pending] of [...pendingBrowserStarts.entries()]) {
+          if (pending.profileId !== profile.id) continue;
+          window.clearTimeout(pending.timer);
+          pendingBrowserStarts.delete(code);
+        }
+        if (profile === pointerProfile) clearGlissandoStates();
+        releaseProfilePressedCodes(profile);
+        stopVoicesForProfile(profile, 0.08);
+      }
+
+      const viewAnchor = captureViewAnchor();
+      renderMappingProfileOptions();
+      renderKeyboard({ viewAnchor });
+      renderScaleStaff();
+    }
+
+    function renderBassDock() {
+      if (!bassProfile.enabled) {
+        els.bassDock.hidden = true;
+        els.bassDock.replaceChildren();
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      const leftHint = document.createElement("div");
+      leftHint.className = "bass-dock-hint is-left";
+      leftHint.textContent = `${activeBassSeventhKeyLabel()}切换七和弦`;
+      const keysWrap = document.createElement("div");
+      keysWrap.className = "bass-dock-keys";
+      const rightHint = document.createElement("div");
+      rightHint.className = "bass-dock-hint is-right";
+      rightHint.textContent = "·切换和弦类型";
+      const diatonicSevenths = bassDiatonicSevenths();
+      for (const spec of bassSpecs()) {
+        const wrap = document.createElement("div");
+        wrap.className = "bass-button-wrap";
+        if (!bassProfile.seventhMode && spec.index < 7) {
+          const seventh = diatonicSevenths[spec.index];
+          const seventhButton = document.createElement("button");
+          seventhButton.type = "button";
+          seventhButton.className = "bass-seventh-button";
+          seventhButton.dataset.bassSeventhIndex = String(seventh.index);
+          if (seventh.isNinth) {
+            seventhButton.classList.add("is-ninth");
+            seventhButton.style.setProperty("--bass-center-hue", String(hueForPitchClass(seventh.tonePcs.root)));
+            seventhButton.style.setProperty("--bass-left-top-hue", String(hueForPitchClass(seventh.tonePcs.ninth)));
+            seventhButton.style.setProperty("--bass-right-top-hue", String(hueForPitchClass(seventh.tonePcs.fifth)));
+            seventhButton.style.setProperty("--bass-left-bottom-hue", String(hueForPitchClass(seventh.tonePcs.third)));
+            seventhButton.style.setProperty("--bass-right-bottom-hue", String(hueForPitchClass(seventh.tonePcs.seventh)));
+            const center = document.createElement("i");
+            center.className = "bass-ninth-center";
+            center.setAttribute("aria-hidden", "true");
+            seventhButton.append(center);
+          } else {
+            seventhButton.style.setProperty("--bass-left-top-hue", String(hueForPitchClass(seventh.tonePcs.seventh)));
+            seventhButton.style.setProperty("--bass-right-top-hue", String(hueForPitchClass(seventh.tonePcs.fifth)));
+            seventhButton.style.setProperty("--bass-left-bottom-hue", String(hueForPitchClass(seventh.tonePcs.third)));
+            seventhButton.style.setProperty("--bass-right-bottom-hue", String(hueForPitchClass(seventh.tonePcs.root)));
+          }
+          const leftKey = document.createElement("span");
+          leftKey.textContent = seventh.keyA;
+          const rightKey = document.createElement("span");
+          rightKey.textContent = seventh.keyB;
+          seventhButton.append(leftKey, rightKey);
+          seventhButton.title = `${seventh.keyA}+${seventh.keyB} · ${seventh.label}`;
+          seventhButton.setAttribute("aria-label", seventhButton.title);
+          if (
+            bassProfile.pressedSevenths.has(seventh.index) ||
+            (bassProfile.seventhMode && bassProfile.pressedCodes.has(spec.code))
+          ) seventhButton.classList.add("is-active");
+          const seventhName = document.createElement("span");
+          seventhName.className = "bass-chord-name bass-seventh-name";
+          seventhName.textContent = seventh.label;
+          wrap.append(seventhButton, seventhName);
+        }
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "bass-button";
+        button.dataset.bassCode = spec.code;
+        const displayChord = bassDockChordForSpec(spec, diatonicSevenths);
+        const specIntervals = displayChord.intervals;
+        const tonePcs = displayChord.tonePcs;
+        if (normalizedIntervals(specIntervals).length >= 4) button.classList.add("is-seventh");
+        if (displayChord.isNinth) button.classList.add("is-ninth");
+        button.style.setProperty("--bass-root-hue", String(hueForPitchClass(tonePcs.root)));
+        button.style.setProperty("--bass-third-hue", String(hueForPitchClass(tonePcs.third)));
+        button.style.setProperty("--bass-fifth-hue", String(hueForPitchClass(tonePcs.fifth)));
+        button.style.setProperty("--bass-seventh-hue", String(hueForPitchClass(tonePcs.seventh)));
+        if (tonePcs.ninth !== null) button.style.setProperty("--bass-ninth-hue", String(hueForPitchClass(tonePcs.ninth)));
+        const buttonKey = document.createElement("span");
+        buttonKey.className = "bass-button-key";
+        buttonKey.textContent = spec.key;
+        button.append(buttonKey);
+        button.title = `${spec.key} · ${displayChord.label} · ${spec.roman}`;
+        button.setAttribute("aria-label", button.title);
+        if (bassProfile.pressedCodes.has(spec.code)) button.classList.add("is-active");
+        const name = document.createElement("span");
+        name.className = "bass-chord-name";
+        name.textContent = displayChord.label;
+        wrap.append(button, name);
+        keysWrap.append(wrap);
+      }
+      fragment.append(leftHint, keysWrap, rightHint);
+      els.bassDock.replaceChildren(fragment);
+      els.bassDock.hidden = false;
+    }
+
+    function handleBassCodeDown(code) {
+      if (!bassProfile.enabled) return false;
+      if (isBassModifierCode(code)) {
+        const wasSeventhActive = isBassSeventhActive();
+        bassProfile.modifier = true;
+        renderBassDock();
+        updateBassVoicesForRecognition(wasSeventhActive);
+        return true;
+      }
+      if (isBassSeventhCode(code)) {
+        const wasSeventhActive = isBassSeventhActive();
+        bassProfile.seventhMode = true;
+        enforceSingleBassCodeForSeventhMode();
+        renderBassDock();
+        updateBassVoicesForRecognition(wasSeventhActive);
+        return true;
+      }
+      if (!activeBassKeyCodes().has(code)) return false;
+      if (!bassSpecByCode(code)) return true;
+      if (bassProfile.seventhMode && bassProfile.pressedCodes.size > 0 && !bassProfile.pressedCodes.has(code)) return true;
+      if (bassProfile.pressedCodes.size === 0) bassProfile.suppressedTriadCodes.clear();
+      bassProfile.suppressedTriadCodes.delete(code);
+      const wasSeventhActive = isBassSeventhActive();
+      bassProfile.pressedCodes.add(code);
+      enforceSingleBassCodeForSeventhMode();
+      updateBassVoicesForRecognition(wasSeventhActive);
+      return true;
+    }
+
+    function handleBassCodeUp(code) {
+      if (!bassProfile.enabled) return false;
+      if (isBassModifierCode(code)) {
+        bassProfile.modifier = false;
+        renderBassDock();
+        updateBassVoices();
+        return true;
+      }
+      if (isBassSeventhCode(code)) {
+        bassProfile.seventhMode = false;
+        renderBassDock();
+        updateBassVoices();
+        return true;
+      }
+      if (!activeBassKeyCodes().has(code)) return false;
+      const wasTwoKeySeventh = bassProfile.pressedSevenths.size === 0
+        && bassProfile.pressedCodes.size === 2
+        && (currentBassChord()?.midis.length || 0) >= 4;
+      bassProfile.pressedCodes.delete(code);
+      if (wasTwoKeySeventh && bassProfile.pressedCodes.size === 1) {
+        for (const remainingCode of bassProfile.pressedCodes) bassProfile.suppressedTriadCodes.add(remainingCode);
+      }
+      if (bassProfile.pressedCodes.size === 0) bassProfile.suppressedTriadCodes.clear();
+      updateBassVoices();
+      return true;
+    }
+
     function coordForProfileCode(profile, code) {
       const position = codeToHardwarePosition.get(code);
       if (!position) return null;
@@ -4191,6 +5657,7 @@
       cancelPendingBrowserCode(code);
       const timer = window.setTimeout(() => {
         pendingBrowserStarts.delete(code);
+        if (!profileIsEnabled(profile)) return;
         if (shouldSuppressBrowserCode(code)) return;
         const source = sourceFromCoord(coord.row, coord.col);
         startVoice(source, `computer-${profile.id}-${code}`, 0, profile);
@@ -4249,6 +5716,12 @@
     }
 
     function handleProfileCodeDown(profile, code) {
+      if (bassClaimsBrowserCode(code)) {
+        suppressBrowserCodeOnce(code);
+        handleBassCodeDown(code);
+        return;
+      }
+      if (!profileIsEnabled(profile)) return;
       if (isSustainCode(code)) {
         suppressBrowserCodeOnce(code);
         setSustainPedal(profile, true);
@@ -4267,6 +5740,12 @@
     }
 
     function handleProfileCodeUp(profile, code) {
+      if (bassClaimsBrowserCode(code)) {
+        suppressBrowserCodeOnce(code);
+        handleBassCodeUp(code);
+        return;
+      }
+      if (!profileIsEnabled(profile)) return;
       if (isSustainCode(code)) {
         suppressBrowserCodeOnce(code);
         setSustainPedal(profile, false);
@@ -4283,6 +5762,7 @@
 
     function releaseProfilePressedCodes(profile) {
       for (const code of profile.pressedCodes || []) {
+        if (bassClaimsBrowserCode(code)) handleBassCodeUp(code);
         stopVoiceByPrefix(voicePrefixForProfileCode(profile, code));
       }
       setSustainPedal(profile, false);
@@ -4369,6 +5849,7 @@
           instrument: activeProfile().instrument || "accordion",
           outputShift: 0,
           volume: profileVolume(activeProfile()),
+          enabled: true,
           longVibrato: profileAllowsLongVibrato(activeProfile()),
           sustainEnabled: activeProfile().sustainEnabled !== false,
           sustainPedal: false,
@@ -4492,6 +5973,7 @@
       const lastRow = ROW_COUNT - 1 + lower;
       const system = currentSystem();
       const spellingByPc = activeScaleSpellingByPc();
+      const assistToneLevels = selectedAssistToneLevels();
 
       for (let row = firstRow; row <= lastRow; row += 1) {
         const rowEl = document.createElement("div");
@@ -4515,12 +5997,13 @@
           const display = displayNoteForMidi(midi, info, spellingByPc);
           const key = document.createElement("button");
           const hardwareLabels = coordToLabels.get(coordKey(row, col));
+          const reservedLabels = coordToReservedLabels.get(coordKey(row, col)) || [];
 
           key.type = "button";
           key.className = "key";
           if (spellingByPc) {
             key.classList.add(display.inScale ? "is-scale-tone" : "is-out-scale");
-            if (shouldUseDarkKey(display)) key.classList.add("is-dark-tone");
+            key.classList.add(`is-tone-${assistToneForDisplay(display, assistToneLevels)}`);
           }
           key.style.setProperty("--hue", String(info.hue));
           key.dataset.midi = String(midi);
@@ -4535,6 +6018,7 @@
           if (hardwareLabels) {
             const map = document.createElement("span");
             map.className = "key-map";
+            if (hardwareLabels.some(label => reservedLabels.includes(label))) map.classList.add("is-bass-reserved");
             map.textContent = hardwareLabels.join("/");
             key.append(map);
           }
@@ -4550,6 +6034,7 @@
       els.keyboard.replaceChildren(fragment);
       updateAnchorState();
       renderScaleStaff();
+      renderBassDock();
 
       requestAnimationFrame(() => {
         if (viewAnchor) {
@@ -4574,6 +6059,7 @@
       const viewAnchor = captureViewAnchor();
       updateColorControl();
       renderKeyboard({ viewAnchor });
+      renderBassDock();
       updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
     }
 
@@ -4581,6 +6067,18 @@
       const scroller = els.keyboardScroll;
       scroller.scrollLeft = Math.max(0, (scroller.scrollWidth - scroller.clientWidth) / 2);
       scroller.scrollTop = Math.max(0, (scroller.scrollHeight - scroller.clientHeight) / 2);
+    }
+
+    function resetVisibleRangeAndQ() {
+      els.lowCol.value = DEFAULT_VISIBLE_RANGE.lowCol;
+      els.highCol.value = DEFAULT_VISIBLE_RANGE.highCol;
+      els.upperRows.value = DEFAULT_VISIBLE_RANGE.upperRows;
+      els.lowerRows.value = DEFAULT_VISIBLE_RANGE.lowerRows;
+      setActiveAnchor(DEFAULT_Q_ANCHOR);
+      selectedCoord = { ...qAnchor };
+      renderMappingProfileOptions();
+      renderKeyboard({ keepScroll: false });
+      updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
     }
 
     function ensureAudio() {
@@ -4716,6 +6214,7 @@
     }
 
     function startVoice(target, voiceId = "single", autoStopMs = 0, profile = activeProfile()) {
+      if (!profileIsEnabled(profile)) return;
       const context = ensureAudio();
       const id = voiceKey(target, voiceId);
       const existingVoice = voices.get(id);
@@ -5063,7 +6562,15 @@
         profile.sustainPedal = false;
         profile.softPedal = false;
       }
+      bassProfile.pressedCodes.clear();
+      bassProfile.activePointerCodes.clear();
+      bassProfile.modifier = false;
+      bassProfile.seventhMode = false;
+      bassProfile.pressedSevenths.clear();
+      bassProfile.activePointerSevenths.clear();
+      bassProfile.suppressedTriadCodes.clear();
       els.keyboard.querySelectorAll(".is-active").forEach(key => key.classList.remove("is-active"));
+      els.bassDock.querySelectorAll(".bass-button.is-active, .bass-seventh-button.is-active").forEach(button => button.classList.remove("is-active"));
       clearLongVibrato();
       updatePedalSwitches();
     }
@@ -5247,6 +6754,7 @@
       event.preventDefault();
       ignoreNextClickUntil = performance.now() + 300;
       selectButton(target);
+      if (!profileIsEnabled(pointerProfile)) return;
 
       target.setPointerCapture?.(event.pointerId);
       stopPointerVoices();
@@ -5291,6 +6799,7 @@
       if (!target) return;
       if (performance.now() < ignoreNextClickUntil) return;
       selectButton(target);
+      if (!profileIsEnabled(pointerProfile)) return;
       stopPointerVoices();
       startVoice(target, "click", 0, pointerProfile);
       window.setTimeout(() => releasePointerVoicePrefix("click"), 140);
@@ -5307,12 +6816,12 @@
         return;
       }
       const profile = browserProfile();
-      if (isSustainEvent(event)) {
+      if (profileIsEnabled(profile) && isSustainEvent(event)) {
         event.preventDefault();
         if (!event.repeat) setSustainPedal(profile, true);
         return;
       }
-      if (isSoftPedalEvent(event)) {
+      if (profileIsEnabled(profile) && isSoftPedalEvent(event)) {
         event.preventDefault();
         if (!event.repeat) setSoftPedal(profile, true);
         return;
@@ -5333,7 +6842,13 @@
         return;
       }
 
+      if (bassClaimsBrowserCode(event.code)) {
+        event.preventDefault();
+        if (!event.repeat) handleBassCodeDown(event.code);
+        return;
+      }
       if (event.repeat) return;
+      if (!profileIsEnabled(profile)) return;
       const coord = coordForProfileCode(profile, event.code);
       if (!coord) return;
 
@@ -5347,18 +6862,22 @@
         return;
       }
       const profile = browserProfile();
-      if (isSustainEvent(event)) {
+      if (profileIsEnabled(profile) && isSustainEvent(event)) {
         event.preventDefault();
         setSustainPedal(profile, false);
         return;
       }
-      if (isSoftPedalEvent(event)) {
+      if (profileIsEnabled(profile) && isSoftPedalEvent(event)) {
         event.preventDefault();
         setSoftPedal(profile, false);
         return;
       }
       if (isTypingTarget(event.target)) return;
-      if (coordForProfileCode(profile, event.code)) {
+      if (handleBassCodeUp(event.code)) {
+        event.preventDefault();
+        return;
+      }
+      if (profileIsEnabled(profile) && coordForProfileCode(profile, event.code)) {
         event.preventDefault();
         cancelPendingBrowserCode(event.code);
         releaseVoicePrefixForProfile(`computer-${profile.id}-${event.code}`, profile);
@@ -5380,6 +6899,7 @@
       renderMappingProfileOptions();
       renderKeyboard({ viewAnchor });
       renderScaleStaff();
+      renderBassDock();
       updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
     });
 
@@ -5395,6 +6915,13 @@
 
       if (action === "activate") {
         activateProfile(profile, { viewAnchor });
+      } else if (action === "bindBassBase") {
+        bassProfile.baseCoord = { ...selectedCoord };
+        const bassBaseSource = sourceFromCoord(bassProfile.baseCoord.row, bassProfile.baseCoord.col);
+        renderMappingProfileOptions();
+        renderBassDock();
+        updateBassVoices();
+        setReadout(bassBaseSource.dataset.label, `${tr("bassBase")} · ${bassBaseSource.dataset.hz} Hz · MIDI ${bassBaseSource.dataset.midi}`);
       } else if (action === "bindQ") {
         activeProfileId = profile.id;
         setActiveAnchor(selectedCoord);
@@ -5414,6 +6941,8 @@
         removeActiveKeyboard(profile);
       } else if (action === "addHid") {
         addHidKeyboard();
+      } else if (action === "toggleBassKeyMode") {
+        setBassKeyMode(bassUsesFunctionKeys() ? "digits" : "function");
       }
     });
 
@@ -5425,7 +6954,20 @@
       if (!profile) return;
       releaseControlFocus(event);
 
-      if (field === "instrument") {
+      if (field === "enabled") {
+        setProfileEnabled(profile, event.target.checked);
+      } else if (field === "outHarmony") {
+        bassProfile.outHarmony = event.target.checked;
+        const activeCodes = activeBassKeyCodes();
+        for (const code of [...bassProfile.pressedCodes]) {
+          if (!activeCodes.has(code)) bassProfile.pressedCodes.delete(code);
+        }
+        bassProfile.suppressedTriadCodes.clear();
+        const viewAnchor = captureViewAnchor();
+        renderBassDock();
+        renderKeyboard({ viewAnchor });
+        updateBassVoices();
+      } else if (field === "instrument") {
         profile.instrument = event.target.value;
         stopAllVoices();
       } else if (field === "outputShift") {
@@ -5452,6 +6994,10 @@
         pointerProfile.fadeSustainTime = clampFloat(event.target.value, DEFAULT_POINTER_FADE_TIME, 0.1, 3);
         event.target.value = pointerProfile.fadeSustainTime;
         event.target.closest(".profile-volume")?.querySelector("[data-profile-fade-output]")?.replaceChildren(formatSeconds(pointerProfile.fadeSustainTime));
+      } else if (field === "bassFadeTime") {
+        bassProfile.fadeTime = clampFloat(event.target.value, DEFAULT_BASS_FADE_TIME, 0, 2);
+        event.target.value = bassProfile.fadeTime;
+        event.target.closest(".profile-volume")?.querySelector("[data-profile-bass-fade-output]")?.replaceChildren(formatSeconds(bassProfile.fadeTime));
       } else if (field === "followSustainPedal") {
         pointerProfile.followSustainPedal = event.target.checked;
         if (pointerProfile.followSustainPedal && !anySustainPedalActive()) releaseSustainedVoices(pointerProfile, 0.08);
@@ -5464,7 +7010,7 @@
 
     els.profileRows.addEventListener("input", event => {
       const field = event.target.dataset.profileField;
-      if (field !== "outputShift" && field !== "volume" && field !== "fadeSustainTime") return;
+      if (field !== "outputShift" && field !== "volume" && field !== "fadeSustainTime" && field !== "bassFadeTime") return;
       const row = event.target.closest(".profile-row");
       const profile = profileById(row?.dataset.profileId);
       if (!profile) return;
@@ -5477,8 +7023,53 @@
       } else if (field === "fadeSustainTime") {
         pointerProfile.fadeSustainTime = clampFloat(event.target.value, DEFAULT_POINTER_FADE_TIME, 0.1, 3);
         event.target.closest(".profile-volume")?.querySelector("[data-profile-fade-output]")?.replaceChildren(formatSeconds(pointerProfile.fadeSustainTime));
+      } else if (field === "bassFadeTime") {
+        bassProfile.fadeTime = clampFloat(event.target.value, DEFAULT_BASS_FADE_TIME, 0, 2);
+        event.target.closest(".profile-volume")?.querySelector("[data-profile-bass-fade-output]")?.replaceChildren(formatSeconds(bassProfile.fadeTime));
       }
     });
+
+    els.bassDock.addEventListener("pointerdown", event => {
+      const seventhButton = event.target.closest("[data-bass-seventh-index]");
+      if (seventhButton && bassProfile.enabled) {
+        event.preventDefault();
+        const index = Number(seventhButton.dataset.bassSeventhIndex);
+        bassProfile.activePointerSevenths.set(event.pointerId, index);
+        seventhButton.setPointerCapture?.(event.pointerId);
+        const wasSeventhActive = isBassSeventhActive();
+        bassProfile.pressedSevenths.add(index);
+        updateBassVoicesForRecognition(wasSeventhActive);
+        return;
+      }
+
+      const button = event.target.closest("[data-bass-code]");
+      if (!button || !bassProfile.enabled) return;
+      event.preventDefault();
+      const code = button.dataset.bassCode;
+      bassProfile.activePointerCodes.set(event.pointerId, code);
+      button.setPointerCapture?.(event.pointerId);
+      handleBassCodeDown(code);
+    });
+
+    function releaseBassPointer(event) {
+      const seventhIndex = bassProfile.activePointerSevenths.get(event.pointerId);
+      if (seventhIndex !== undefined) {
+        event.preventDefault();
+        bassProfile.activePointerSevenths.delete(event.pointerId);
+        bassProfile.pressedSevenths.delete(seventhIndex);
+        updateBassVoices();
+        return;
+      }
+
+      const code = bassProfile.activePointerCodes.get(event.pointerId);
+      if (!code) return;
+      event.preventDefault();
+      bassProfile.activePointerCodes.delete(event.pointerId);
+      handleBassCodeUp(code);
+    }
+
+    els.bassDock.addEventListener("pointerup", releaseBassPointer);
+    els.bassDock.addEventListener("pointercancel", releaseBassPointer);
 
     els.keySystem.addEventListener("change", event => {
       releaseControlFocus(event);
@@ -5487,7 +7078,7 @@
       updateReadoutForCoord(currentSystem().label, qAnchor.row, qAnchor.col);
     });
 
-    for (const control of [els.lowCol, els.highCol, els.upperRows, els.lowerRows, els.labelMode, els.keyShape, els.scaleAssist]) {
+    for (const control of [els.lowCol, els.highCol, els.upperRows, els.lowerRows, els.labelMode, els.keyShape, els.scaleInTone, els.scaleOutTone]) {
       control.addEventListener("change", event => {
         releaseControlFocus(event);
         scheduleRender();
@@ -5495,14 +7086,14 @@
       control.addEventListener("input", scheduleRender);
     }
 
-    els.colorPrev.addEventListener("click", event => {
-      releaseControlFocus(event);
-      shiftKeyboardColor(-1);
-    });
-
     els.colorNext.addEventListener("click", event => {
       releaseControlFocus(event);
       shiftKeyboardColor(1);
+    });
+
+    els.resetView.addEventListener("click", event => {
+      releaseControlFocus(event);
+      resetVisibleRangeAndQ();
     });
 
     els.vibratoSensitivity.addEventListener("change", releaseControlFocus);
@@ -5597,11 +7188,15 @@
       releaseControlFocus(event);
       scheduleRender();
       renderScaleStaff();
+      renderBassDock();
+      updateBassVoices();
     });
     els.scaleMode.addEventListener("change", event => {
       releaseControlFocus(event);
       scheduleRender();
       renderScaleStaff();
+      renderBassDock();
+      updateBassVoices();
     });
 
     if ("hid" in navigator) {
@@ -5630,6 +7225,7 @@
     includeProfileHardwareRange();
     renderKeyboard({ keepScroll: false });
     renderScaleStaff();
+    renderBassDock();
     updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
   </script>
 </body>
