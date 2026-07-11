@@ -132,6 +132,10 @@
       color: #ffffff;
     }
 
+    .mobile-menu-tab {
+      display: none;
+    }
+
     .brand {
       display: flex;
       align-items: center;
@@ -988,8 +992,20 @@
     }
 
     .keyboard-scroll.is-touch-vibrato-locked {
+      overflow: hidden;
       touch-action: none;
       overscroll-behavior: contain;
+    }
+
+    .touch-vibrato-pan-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 34;
+      pointer-events: none;
+    }
+
+    .touch-vibrato-pan-overlay[hidden] {
+      display: none;
     }
 
     .bass-dock {
@@ -1049,21 +1065,9 @@
       min-width: 0;
     }
 
-    .bass-touch-lock-cluster {
-      display: grid;
-      grid-template-columns: auto;
-      gap: 4px;
-      align-items: center;
-      justify-items: center;
-    }
-
-    .bass-dock.is-touch-vibrato-locked .bass-touch-lock-cluster {
-      grid-template-columns: 24px 28px 24px;
-    }
-
     .bass-settings-button,
     .bass-touch-lock-button,
-    .bass-touch-pan-button {
+    .touch-vibrato-pan-button {
       width: 28px;
       height: 28px;
       border: 1px solid rgba(48, 54, 67, 0.28);
@@ -1084,27 +1088,33 @@
     .bass-settings-button:hover,
     .bass-touch-lock-button.is-active,
     .bass-touch-lock-button:hover,
-    .bass-touch-pan-button:hover {
+    .touch-vibrato-pan-button:hover {
       border-color: #17191f;
       background: #17191f;
       color: #ffffff;
     }
 
     .bass-touch-lock-button,
-    .bass-touch-pan-button {
+    .touch-vibrato-pan-button {
       touch-action: none;
     }
 
-    .bass-touch-pan-button {
-      display: none;
-      width: 24px;
-      height: 24px;
-      border-radius: 7px;
-      font-size: 0.78rem;
+    .touch-vibrato-pan-button {
+      position: absolute;
+      bottom: 18px;
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      font-size: 1.5rem;
+      pointer-events: auto;
     }
 
-    .bass-dock.is-touch-vibrato-locked .bass-touch-pan-button {
-      display: grid;
+    .touch-vibrato-pan-button.is-left {
+      left: 12px;
+    }
+
+    .touch-vibrato-pan-button.is-right {
+      right: 12px;
     }
 
     .bass-lock-icon {
@@ -1920,6 +1930,17 @@
       color: #1a2b44;
     }
 
+    .key-map.is-edge-octave-trigger {
+      border-color: rgba(184, 107, 0, 0.7);
+      background: #fff1d5;
+      color: #754500;
+    }
+
+    .key.is-active .key-map.is-edge-octave-trigger {
+      background: #ffe3a8;
+      color: #5d3700;
+    }
+
     .scale-dock {
       position: relative;
       display: block;
@@ -2241,6 +2262,133 @@
         min-height: 42px;
       }
     }
+
+    @media (max-width: 900px) {
+      .mobile-menu-tab {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        border-radius: 6px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      #menuSettings,
+      #menuManual,
+      #menuCollapse,
+      .app-tagline,
+      .readout,
+      .top-staff-toggle {
+        display: none;
+      }
+
+      .controls[data-mobile-panel] {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "panel";
+      }
+
+      .controls[data-mobile-panel] > .control-section,
+      .controls[data-mobile-panel] > .scale-dock {
+        display: none !important;
+      }
+
+      .controls[data-mobile-panel="global"] .global-section,
+      .controls[data-mobile-panel="keyboard"] .keyboard-section,
+      .controls[data-mobile-panel="shortcuts"] .shortcut-section,
+      .controls[data-mobile-panel="manual"] .manual-section {
+        display: grid !important;
+        grid-area: panel;
+      }
+
+      .controls[data-mobile-panel="staff"] > .scale-dock.is-open {
+        display: block !important;
+        grid-area: panel;
+        height: min(34dvh, 270px);
+        min-height: 150px;
+      }
+    }
+
+    @media (max-width: 900px) and (orientation: portrait) {
+      .topbar {
+        position: relative;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+        padding-right: 48px;
+      }
+
+      .top-actions {
+        position: absolute;
+        top: 7px;
+        right: 10px;
+        width: auto;
+        margin: 0;
+      }
+
+      .menu-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        width: 100%;
+        gap: 3px;
+        overflow: visible;
+      }
+
+      .mobile-menu-tab {
+        min-height: 27px;
+        padding-inline: 4px;
+        font-size: 0.64rem;
+      }
+    }
+
+    @media (max-width: 900px) and (orientation: landscape) {
+      .app {
+        padding-left: 72px;
+      }
+
+      .topbar {
+        position: absolute;
+        inset: 0 auto 0 0;
+        z-index: 6;
+        width: 72px;
+        min-height: 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        padding: 6px 5px;
+        border-right: 1px solid var(--line);
+        border-bottom: 0;
+      }
+
+      .brand h1 {
+        display: none;
+      }
+
+      .menu-tabs {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        width: 100%;
+        gap: 5px;
+        overflow: visible;
+      }
+
+      .mobile-menu-tab {
+        min-height: 34px;
+        padding-inline: 3px;
+        font-size: 0.6rem;
+        white-space: normal;
+        text-align: center;
+      }
+
+      .top-actions {
+        width: auto;
+        margin: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2253,6 +2401,10 @@
       <nav class="menu-tabs" id="menuTabs" aria-label="选项标签">
         <button class="menu-tab is-active" id="menuSettings" type="button" data-menu-panel="settings" aria-controls="controlsPanel" aria-selected="true">设置</button>
         <button class="menu-tab" id="menuManual" type="button" data-menu-panel="manual" aria-controls="controlsPanel" aria-selected="false">说明书</button>
+        <button class="menu-tab mobile-menu-tab" id="menuGlobal" type="button" data-mobile-panel="global" aria-controls="controlsPanel" aria-selected="true">全局设置</button>
+        <button class="menu-tab mobile-menu-tab" id="menuKeyboard" type="button" data-mobile-panel="keyboard" aria-controls="controlsPanel" aria-selected="false">键盘设置</button>
+        <button class="menu-tab mobile-menu-tab" id="menuStaff" type="button" data-mobile-panel="staff" aria-controls="controlsPanel" aria-selected="false">谱表</button>
+        <button class="menu-tab mobile-menu-tab" id="menuShortcuts" type="button" data-mobile-panel="shortcuts" aria-controls="controlsPanel" aria-selected="false">快捷键</button>
         <button class="menu-tab menu-collapse" id="menuCollapse" type="button" aria-controls="controlsPanel" aria-expanded="true">收起</button>
         <span class="app-tagline" id="appTagline">来自巴扬手风琴键系统，你最好的电脑乐器。By cbv_deux</span>
       </nav>
@@ -2288,7 +2440,7 @@
       </div>
     </header>
 
-    <section class="controls" id="controlsPanel" data-active-panel="settings" aria-label="设置">
+    <section class="controls" id="controlsPanel" data-active-panel="settings" data-mobile-panel="global" aria-label="设置">
       <div class="control-section shortcut-section">
         <div class="section-heading" data-i18n="shortcutList">快捷键</div>
         <dl class="shortcut-list">
@@ -2315,6 +2467,10 @@
           <div class="shortcut-item">
             <dt class="shortcut-key">Tab / \</dt>
             <dd class="shortcut-desc" data-shortcut-edge-summary>左/右五列降/升八度</dd>
+          </div>
+          <div class="shortcut-item">
+            <dt class="shortcut-key">Tab + 1 / \ + ←</dt>
+            <dd class="shortcut-desc" data-i18n="shortcutEdgeOctaveCombo">临时全局降/升八度</dd>
           </div>
           <div class="shortcut-item">
             <dt class="shortcut-key">Space</dt>
@@ -2569,6 +2725,10 @@
         <div class="keyboard" id="keyboard" aria-label="Q-board button keyboard"></div>
       </div>
       <div class="bass-dock" id="bassDock" hidden aria-label="贝司声部"></div>
+      <div class="touch-vibrato-pan-overlay" id="touchVibratoPanOverlay" hidden aria-hidden="true">
+        <button class="touch-vibrato-pan-button is-left" type="button" data-touch-vibrato-pan="-4">‹</button>
+        <button class="touch-vibrato-pan-button is-right" type="button" data-touch-vibrato-pan="4">›</button>
+      </div>
       <div class="bass-config-popover" id="bassConfigPopover" hidden>
         <div class="bass-config-head">
           <div class="bass-config-title" id="bassConfigTitle">贝司详细设置</div>
@@ -2949,6 +3109,7 @@
       controls: document.querySelector("#controlsPanel"),
       menuTabs: document.querySelector("#menuTabs"),
       menuPanelButtons: [...document.querySelectorAll("[data-menu-panel]")],
+      mobilePanelButtons: [...document.querySelectorAll("#menuTabs [data-mobile-panel]")],
       menuCollapse: document.querySelector("#menuCollapse"),
       menuSettings: document.querySelector("#menuSettings"),
       menuManual: document.querySelector("#menuManual"),
@@ -3008,6 +3169,8 @@
       staffSvg: document.querySelector("#staffSvg"),
       keyboard: document.querySelector("#keyboard"),
       keyboardScroll: document.querySelector("#keyboardScroll"),
+      touchVibratoPanOverlay: document.querySelector("#touchVibratoPanOverlay"),
+      touchVibratoPanButtons: [...document.querySelectorAll("[data-touch-vibrato-pan]")],
       currentNote: document.querySelector("#currentNote"),
       noteMeta: document.querySelector("#noteMeta"),
       manualBody: document.querySelector("#manualBody"),
@@ -3031,6 +3194,7 @@
     const codeToCoord = new Map();
     const coordToLabels = new Map();
     const coordToReservedLabels = new Map();
+    const heldBrowserCodes = new Set();
     const hidSuppressedCodeUntil = new Map();
     const pendingBrowserStarts = new Map();
     let metronomeBpm = DEFAULT_METRONOME_BPM;
@@ -3038,7 +3202,9 @@
     let metronomeTimerId = null;
     let metronomeBeat = 0;
     const pointerGlissandoStates = new Map();
-    const touchVibratoLockPointers = new Set();
+    let touchVibratoLocked = false;
+    let touchVibratoLockedScroll = null;
+    let edgeOctaveCombo = null;
 
     function tr(key, values = {}) {
       const dictionary = translations[currentLanguage] || translations.zh;
@@ -3391,8 +3557,16 @@
       els.controls.setAttribute("aria-label", tr("menuTabs"));
       setText("#menuSettings", "settings");
       setText("#menuManual", "manualSettings");
+      setText("#menuGlobal", "globalSettings");
+      setText("#menuKeyboard", "keyboardSettings");
+      setText("#menuStaff", "staff");
+      setText("#menuShortcuts", "shortcutList");
       setHelp(els.menuSettings, "open", "settings");
       setHelp(els.menuManual, "open", "manualSettings");
+      setHelp(document.querySelector("#menuGlobal"), "open", "globalSettings");
+      setHelp(document.querySelector("#menuKeyboard"), "open", "keyboardSettings");
+      setHelp(document.querySelector("#menuStaff"), "open", "staff");
+      setHelp(document.querySelector("#menuShortcuts"), "open", "shortcutList");
       setHelp(els.menuCollapse, "command", els.controls.classList.contains("is-collapsed") ? "showOptions" : "collapseOptions");
       setHelp(els.addHidButton, "command", "addHid");
       setText(".global-section .section-heading", "globalSettings");
@@ -3505,11 +3679,27 @@
       return ["settings", "manual"].includes(panel) ? panel : "settings";
     }
 
+    function activeMobilePanel() {
+      const panel = els.controls.dataset.mobilePanel || "global";
+      return ["global", "keyboard", "staff", "shortcuts", "manual"].includes(panel) ? panel : "global";
+    }
+
+    function mobileLayoutActive() {
+      return window.matchMedia("(max-width: 900px)").matches;
+    }
+
     function syncMenuTabs() {
       const collapsed = els.controls.classList.contains("is-collapsed");
       const activePanel = activeMenuPanel();
       for (const button of els.menuPanelButtons) {
         const isActive = !collapsed && button.dataset.menuPanel === activePanel;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-selected", String(isActive));
+      }
+
+      const activeMobile = activeMobilePanel();
+      for (const button of els.mobilePanelButtons) {
+        const isActive = !collapsed && button.dataset.mobilePanel === activeMobile;
         button.classList.toggle("is-active", isActive);
         button.setAttribute("aria-selected", String(isActive));
       }
@@ -3527,6 +3717,14 @@
       els.controls.classList.remove("is-collapsed");
       syncMenuTabs();
       if (panel === "settings") renderScaleStaff();
+    }
+
+    function showMobilePanel(panel) {
+      if (!["global", "keyboard", "staff", "shortcuts", "manual"].includes(panel)) return;
+      els.controls.dataset.mobilePanel = panel;
+      els.controls.classList.remove("is-collapsed");
+      syncMenuTabs();
+      if (panel === "staff") renderScaleStaff();
     }
 
     function toggleMenuCollapse() {
@@ -5404,6 +5602,14 @@
       return bassProfile.enabled && (activeBassKeyCodes().has(code) || isBassModifierCode(code) || isBassSeventhCode(code));
     }
 
+    function edgeOctaveComboMarksCoord(row, col) {
+      if (!edgeOctaveCombo) return false;
+      return edgeOctaveCombo.triggerCodes.some(code => {
+        const coord = codeToCoord.get(code);
+        return coord && coord.row === row && coord.col === col;
+      });
+    }
+
     function bassSpecByCode(code) {
       return bassSpecs().find(spec => spec.code === code) || null;
     }
@@ -6060,43 +6266,47 @@
     }
 
     function isTouchVibratoLocked() {
-      return touchVibratoLockPointers.size > 0;
+      return touchVibratoLocked;
+    }
+
+    function setTouchVibratoLocked(active) {
+      const next = Boolean(active);
+      if (touchVibratoLocked === next) {
+        syncTouchVibratoLockButtons();
+        return;
+      }
+      touchVibratoLocked = next;
+      if (touchVibratoLocked) freezeActivePointerGlissandiForVibrato();
+      syncTouchVibratoLockButtons();
     }
 
     function syncTouchVibratoLockButtons() {
       const active = isTouchVibratoLocked();
+      if (active && !touchVibratoLockedScroll) {
+        touchVibratoLockedScroll = {
+          left: els.keyboardScroll.scrollLeft,
+          top: els.keyboardScroll.scrollTop
+        };
+      } else if (!active) {
+        touchVibratoLockedScroll = null;
+      }
       els.bassDock.classList.toggle("is-touch-vibrato-locked", active);
       els.keyboardScroll.classList.toggle("is-touch-vibrato-locked", active);
+      if (els.touchVibratoPanOverlay) {
+        els.touchVibratoPanOverlay.hidden = !active;
+        els.touchVibratoPanOverlay.setAttribute("aria-hidden", String(!active));
+      }
       for (const button of els.bassDock.querySelectorAll("[data-touch-vibrato-lock]")) {
         button.classList.toggle("is-active", active);
         button.setAttribute("aria-pressed", String(active));
         button.title = tr("touchVibratoLockHelp");
         button.setAttribute("aria-label", tr("touchVibratoLockHelp"));
       }
-      for (const button of els.bassDock.querySelectorAll("[data-touch-vibrato-pan]")) {
+      for (const button of els.touchVibratoPanButtons) {
         const key = Number(button.dataset.touchVibratoPan) < 0 ? "touchVibratoPanLeftHelp" : "touchVibratoPanRightHelp";
         button.title = tr(key);
         button.setAttribute("aria-label", tr(key));
       }
-    }
-
-    function createTouchVibratoPanButton(columns) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "bass-touch-pan-button";
-      button.dataset.touchVibratoPan = String(columns);
-      button.textContent = columns < 0 ? "‹" : "›";
-      const key = columns < 0 ? "touchVibratoPanLeftHelp" : "touchVibratoPanRightHelp";
-      button.title = tr(key);
-      button.setAttribute("aria-label", tr(key));
-      return button;
-    }
-
-    function createTouchVibratoLockCluster() {
-      const cluster = document.createElement("div");
-      cluster.className = "bass-touch-lock-cluster";
-      cluster.append(createTouchVibratoPanButton(-4), createTouchVibratoLockButton(), createTouchVibratoPanButton(4));
-      return cluster;
     }
 
     function createTouchVibratoLockButton() {
@@ -6117,10 +6327,10 @@
 
     function renderBassDock() {
       const fragment = document.createDocumentFragment();
-      const lockCluster = createTouchVibratoLockCluster();
+      const lockButton = createTouchVibratoLockButton();
       if (!bassProfile.enabled) {
         els.bassDock.classList.add("is-touch-lock-only");
-        fragment.append(lockCluster);
+        fragment.append(lockButton);
         els.bassDock.replaceChildren(fragment);
         els.bassDock.hidden = false;
         syncTouchVibratoLockButtons();
@@ -6221,7 +6431,7 @@
         wrap.append(button, name);
         keysWrap.append(wrap);
       }
-      fragment.append(lockCluster, leftHint, keysWrap, rightHint, settingsButton);
+      fragment.append(lockButton, leftHint, keysWrap, rightHint, settingsButton);
       els.bassDock.replaceChildren(fragment);
       els.bassDock.hidden = false;
       syncTouchVibratoLockButtons();
@@ -6750,6 +6960,7 @@
             const map = document.createElement("span");
             map.className = "key-map";
             if (hardwareLabels.some(label => reservedLabels.includes(label))) map.classList.add("is-bass-reserved");
+            if (edgeOctaveComboMarksCoord(row, col)) map.classList.add("is-edge-octave-trigger");
             map.textContent = hardwareLabels.join("/");
             key.append(map);
           }
@@ -6818,7 +7029,22 @@
 
     function panKeyboardViewColumns(columns) {
       const scroller = els.keyboardScroll;
-      scroller.scrollLeft = Math.max(0, Math.min(scroller.scrollWidth - scroller.clientWidth, scroller.scrollLeft + keyboardColumnStepPx() * columns));
+      const nextLeft = Math.max(0, Math.min(scroller.scrollWidth - scroller.clientWidth, scroller.scrollLeft + keyboardColumnStepPx() * columns));
+      if (isTouchVibratoLocked()) {
+        touchVibratoLockedScroll = { left: nextLeft, top: scroller.scrollTop };
+      }
+      scroller.scrollLeft = nextLeft;
+    }
+
+    function restoreTouchVibratoLockedScroll() {
+      if (!isTouchVibratoLocked() || !touchVibratoLockedScroll) return;
+      const scroller = els.keyboardScroll;
+      if (Math.abs(scroller.scrollLeft - touchVibratoLockedScroll.left) > 0.5) {
+        scroller.scrollLeft = touchVibratoLockedScroll.left;
+      }
+      if (Math.abs(scroller.scrollTop - touchVibratoLockedScroll.top) > 0.5) {
+        scroller.scrollTop = touchVibratoLockedScroll.top;
+      }
     }
 
     function resetVisibleRangeAndQ() {
@@ -7649,6 +7875,92 @@
       updateReadoutForCoord(prefix, qAnchor.row, qAnchor.col);
     }
 
+    function octaveAnchorForDelta(deltaSemitones) {
+      const system = currentSystem();
+      if (Math.abs(deltaSemitones) === 12 && system.octaveColStep !== null) {
+        return { row: qAnchor.row, col: qAnchor.col + system.octaveColStep * Math.sign(deltaSemitones) };
+      }
+      return findIntervalCoord(deltaSemitones);
+    }
+
+    function setTemporaryActiveAnchor(coord) {
+      qAnchor = { row: coord.row, col: coord.col };
+      activeProfile().anchor = { ...qAnchor };
+    }
+
+    function silenceEdgeOctaveTrigger(profile, code) {
+      profile.pressedCodes.delete(code);
+      cancelPendingBrowserCode(code);
+      stopVoiceByPrefix(`computer-${profile.id}-${code}`);
+    }
+
+    function edgeOctaveComboRequest(profile) {
+      if (!profileIsEnabled(profile)) return null;
+      if (heldBrowserCodes.has("Backslash") && heldBrowserCodes.has("Backspace")) {
+        return { id: "up", delta: 12, triggerCodes: ["Backslash", "Backspace"] };
+      }
+      if (
+        !bassClaimsBrowserCode("Digit1") &&
+        heldBrowserCodes.has("Tab") &&
+        heldBrowserCodes.has("Digit1")
+      ) {
+        return { id: "down", delta: -12, triggerCodes: ["Tab", "Digit1"] };
+      }
+      return null;
+    }
+
+    function startEdgeOctaveCombo(profile, request) {
+      const next = octaveAnchorForDelta(request.delta);
+      if (!next) return false;
+
+      const viewAnchor = captureViewAnchor();
+      edgeOctaveCombo = {
+        ...request,
+        anchorBefore: { ...qAnchor },
+        selectedBefore: { ...selectedCoord }
+      };
+      for (const code of edgeOctaveCombo.triggerCodes) silenceEdgeOctaveTrigger(profile, code);
+      setTemporaryActiveAnchor(next);
+      selectedCoord = { ...next };
+      includeProfileHardwareRange(profile);
+      renderKeyboard({ viewAnchor, preserveVoices: true });
+      updateReadoutForCoord(`Q ${request.delta > 0 ? "+8" : "-8"}`, qAnchor.row, qAnchor.col);
+      return true;
+    }
+
+    function stopEdgeOctaveCombo(profile) {
+      if (!edgeOctaveCombo) return false;
+      const combo = edgeOctaveCombo;
+      const viewAnchor = captureViewAnchor();
+      edgeOctaveCombo = null;
+      setTemporaryActiveAnchor(combo.anchorBefore);
+      selectedCoord = { ...combo.selectedBefore };
+      includeProfileHardwareRange(profile);
+      renderKeyboard({ viewAnchor, preserveVoices: true });
+      updateReadoutForCoord("Q", qAnchor.row, qAnchor.col);
+      return true;
+    }
+
+    function syncEdgeOctaveCombo(profile) {
+      const request = edgeOctaveComboRequest(profile);
+      if (!request) return stopEdgeOctaveCombo(profile);
+      if (edgeOctaveCombo?.id === request.id) return true;
+      if (edgeOctaveCombo) stopEdgeOctaveCombo(profile);
+      return startEdgeOctaveCombo(profile, request);
+    }
+
+    function trackEdgeOctaveComboCode(event, active) {
+      if (!event?.code || isTypingTarget(event.target)) return;
+      if (!["Tab", "Backslash", "Digit1", "Backspace"].includes(event.code)) return;
+      if (active) heldBrowserCodes.add(event.code);
+      else heldBrowserCodes.delete(event.code);
+    }
+
+    function clearEdgeOctaveCombo() {
+      heldBrowserCodes.clear();
+      stopEdgeOctaveCombo(browserProfile());
+    }
+
     function modifierShortcutSide(code) {
       if (code === "AltLeft" || code === "ControlLeft") return "left";
       if (code === "AltRight" || code === "ControlRight") return "right";
@@ -7918,6 +8230,7 @@
       const target = event.target;
       if (!target?.closest) return false;
       if (target === els.qboardImportInput) return false;
+      if (target.closest("[data-touch-vibrato-pan]")) return false;
       if (els.keyboard?.contains(target) || els.staffSvg?.contains(target) || els.vibratoPad?.contains(target)) return false;
       if (els.bassDock?.contains(target) && !target.closest("[data-bass-settings]")) return false;
       return Boolean(target.closest("input, select, textarea, button"));
@@ -7992,6 +8305,14 @@
     }
 
     document.addEventListener("keydown", event => {
+      trackEdgeOctaveComboCode(event, true);
+    }, { capture: true });
+
+    document.addEventListener("keyup", event => {
+      trackEdgeOctaveComboCode(event, false);
+    }, { capture: true });
+
+    document.addEventListener("keydown", event => {
       handlePhysicalShiftPedalEvent(event, true);
     }, { capture: true });
 
@@ -7999,10 +8320,15 @@
       handlePhysicalShiftPedalEvent(event, false);
     }, { capture: true });
 
-    window.addEventListener("blur", clearPhysicalShiftPedals);
+    window.addEventListener("blur", () => {
+      clearPhysicalShiftPedals();
+      clearEdgeOctaveCombo();
+    });
 
     document.addEventListener("visibilitychange", () => {
-      if (document.hidden) clearPhysicalShiftPedals();
+      if (!document.hidden) return;
+      clearPhysicalShiftPedals();
+      clearEdgeOctaveCombo();
     });
 
     window.addEventListener("keydown", event => {
@@ -8029,9 +8355,14 @@
       if (profileIsEnabled(profile) && isEdgePedalEvent(event)) {
         event.preventDefault();
         if (!event.repeat) setEdgePedal(profile, edgePedalSide(event.code), true);
+        syncEdgeOctaveCombo(profile);
         return;
       }
       if (isTypingTarget(event.target)) return;
+      if (profileIsEnabled(profile) && syncEdgeOctaveCombo(profile)) {
+        event.preventDefault();
+        return;
+      }
       const intervalShortcut = modifierIntervalShortcut(event.code);
       if (intervalShortcut) {
         event.preventDefault();
@@ -8076,6 +8407,7 @@
         return;
       }
       const profile = browserProfile();
+      const comboUsedReleasedCode = Boolean(edgeOctaveCombo?.triggerCodes.includes(event.code));
       if (profileIsEnabled(profile) && isSustainEvent(event)) {
         event.preventDefault();
         setSustainPedal(profile, false);
@@ -8093,10 +8425,17 @@
       }
       if (profileIsEnabled(profile) && isEdgePedalEvent(event)) {
         event.preventDefault();
+        if (comboUsedReleasedCode) stopEdgeOctaveCombo(profile);
         setEdgePedal(profile, edgePedalSide(event.code), false);
+        if (!comboUsedReleasedCode) syncEdgeOctaveCombo(profile);
         return;
       }
       if (isTypingTarget(event.target)) return;
+      if (comboUsedReleasedCode) {
+        syncEdgeOctaveCombo(profile);
+        event.preventDefault();
+        return;
+      }
       if (isModifierIntervalShortcutCode(event.code)) {
         event.preventDefault();
         return;
@@ -8280,20 +8619,10 @@
     });
 
     els.bassDock.addEventListener("pointerdown", event => {
-      const touchPanButton = event.target.closest("[data-touch-vibrato-pan]");
-      if (touchPanButton) {
-        event.preventDefault();
-        panKeyboardViewColumns(Number(touchPanButton.dataset.touchVibratoPan) || 0);
-        return;
-      }
-
       const touchLockButton = event.target.closest("[data-touch-vibrato-lock]");
       if (touchLockButton) {
         event.preventDefault();
-        touchVibratoLockPointers.add(event.pointerId);
-        touchLockButton.setPointerCapture?.(event.pointerId);
-        freezeActivePointerGlissandiForVibrato();
-        syncTouchVibratoLockButtons();
+        setTouchVibratoLocked(!isTouchVibratoLocked());
         return;
       }
 
@@ -8320,12 +8649,6 @@
     });
 
     function releaseBassPointer(event) {
-      if (touchVibratoLockPointers.delete(event.pointerId)) {
-        event.preventDefault();
-        syncTouchVibratoLockButtons();
-        return;
-      }
-
       const seventhIndex = bassProfile.activePointerSevenths.get(event.pointerId);
       if (seventhIndex !== undefined) {
         event.preventDefault();
@@ -8345,22 +8668,37 @@
 
     els.bassDock.addEventListener("pointerup", releaseBassPointer);
     els.bassDock.addEventListener("pointercancel", releaseBassPointer);
-    els.bassDock.addEventListener("lostpointercapture", event => {
-      if (!touchVibratoLockPointers.delete(event.pointerId)) return;
-      syncTouchVibratoLockButtons();
+
+    els.touchVibratoPanOverlay?.addEventListener("pointerdown", event => {
+      const button = event.target.closest("[data-touch-vibrato-pan]");
+      if (!button || !isTouchVibratoLocked()) return;
+      event.preventDefault();
+      panKeyboardViewColumns(Number(button.dataset.touchVibratoPan) || 0);
     });
 
-    window.addEventListener("blur", () => {
-      if (!touchVibratoLockPointers.size) return;
-      touchVibratoLockPointers.clear();
-      syncTouchVibratoLockButtons();
+    els.touchVibratoPanOverlay?.addEventListener("click", event => {
+      if (!event.target.closest("[data-touch-vibrato-pan]")) return;
+      event.preventDefault();
+    });
+
+    els.keyboardScroll.addEventListener("wheel", event => {
+      if (!isTouchVibratoLocked()) return;
+      event.preventDefault();
+      restoreTouchVibratoLockedScroll();
+    }, { passive: false });
+
+    els.keyboardScroll.addEventListener("touchmove", event => {
+      if (!isTouchVibratoLocked()) return;
+      event.preventDefault();
+      restoreTouchVibratoLockedScroll();
+    }, { passive: false });
+
+    els.keyboardScroll.addEventListener("scroll", () => {
+      if (!isTouchVibratoLocked()) return;
+      requestAnimationFrame(restoreTouchVibratoLockedScroll);
     });
 
     els.bassDock.addEventListener("click", event => {
-      if (event.target.closest("[data-touch-vibrato-pan]")) {
-        event.preventDefault();
-        return;
-      }
       if (event.target.closest("[data-touch-vibrato-lock]")) {
         event.preventDefault();
         return;
@@ -8534,6 +8872,13 @@
     els.vibratoPad.addEventListener("pointercancel", () => setManualBend(0));
 
     els.menuTabs.addEventListener("click", event => {
+      const mobilePanelButton = event.target.closest("[data-mobile-panel]");
+      if (mobilePanelButton && mobileLayoutActive()) {
+        releaseControlFocus(event);
+        showMobilePanel(mobilePanelButton.dataset.mobilePanel);
+        return;
+      }
+
       const panelButton = event.target.closest("[data-menu-panel]");
       if (panelButton) {
         releaseControlFocus(event);

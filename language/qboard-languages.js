@@ -3866,20 +3866,20 @@
     }
 
     const touchVibratoLockTranslations = {
-      zh: "触屏揉弦锁：按住时，鼠标/触屏拖动不会触发滑奏或切换到别的键，只按当前键的上下位置改变揉弦；松开后恢复滑奏。",
-      en: "Touch vibrato lock: hold to stop mouse/touch drag from triggering glissando or moving to another key; movement only bends the current key by vertical position. Release to restore glide.",
-      fr: "Verrou vibrato tactile : maintenez pour empêcher le glissando ou le passage à une autre touche; le geste ne module que la touche actuelle verticalement. Relâchez pour rétablir le glissement.",
-      de: "Touch-Vibrato-Sperre: Halten verhindert Glissando oder Wechsel auf andere Tasten; die Bewegung beugt nur die aktuelle Taste vertikal. Loslassen aktiviert Gleiten wieder.",
-      es: "Bloqueo de vibrato táctil: mantén para impedir glissando o cambio de tecla; el gesto solo curva la tecla actual por posición vertical. Suelta para restaurar el deslizamiento.",
-      pt: "Trava de vibrato por toque: segure para impedir glissando ou troca de tecla; o movimento só altera a tecla atual pela posição vertical. Solte para restaurar o deslize.",
-      ja: "タッチ・ビブラートロック: 押している間、ドラッグでグリッサンドや別キー移動をせず、現在のキーの上下位置だけでビブラートします。離すと復帰します。",
-      ar: "قفل فيبراتو اللمس: اضغط مطولا لمنع الغليساندو أو الانتقال إلى مفتاح آخر؛ الحركة تغير المفتاح الحالي عموديا فقط. اتركه لاستعادة الانزلاق.",
-      ru: "Блокировка touch-вибрато: удерживайте, чтобы перетаскивание не включало глиссандо и не переходило на другую клавишу; движение только изгибает текущую клавишу по вертикали. Отпустите для возврата.",
-      it: "Blocco vibrato touch: tieni premuto per evitare glissando o passaggio ad altri tasti; il gesto piega solo il tasto corrente in verticale. Rilascia per ripristinare lo scorrimento.",
-      ms: "Kunci vibrato sentuh: tahan supaya seretan tetikus/sentuh tidak mencetus glissando atau beralih kekunci; gerakan hanya membengkokkan kekunci semasa mengikut posisi menegak. Lepas untuk pulihkan gelongsor.",
-      vi: "Khóa rung chạm: giữ để kéo chuột/chạm không kích hoạt glissando hoặc chuyển sang phím khác; chuyển động chỉ bẻ cao độ phím hiện tại theo vị trí dọc. Nhả để khôi phục lướt.",
-      tr: "Dokunmatik vibrato kilidi: basılı tutunca sürükleme glissando veya başka tuşa geçiş yapmaz; hareket yalnızca geçerli tuşu dikey konuma göre büker. Bırakınca kayma geri gelir.",
-      ko: "터치 비브라토 잠금: 누르고 있으면 드래그가 글리산도나 다른 키 이동을 만들지 않고, 현재 키의 세로 위치로만 피치를 굽힙니다. 놓으면 글라이드가 돌아옵니다."
+      zh: "触屏揉弦锁：点击开启后，鼠标/触屏拖动不会触发滑奏或切换到别的键，只按当前键的上下位置改变揉弦；再次点击解锁。",
+      en: "Touch vibrato lock: click to turn on. Mouse/touch drag will not trigger glissando or move to another key; vertical movement bends the current key. Click again to unlock.",
+      fr: "Verrou vibrato tactile : cliquez pour l'activer. Le glissement souris/tactile ne déclenche ni glissando ni changement de touche ; le mouvement vertical module la touche actuelle. Recliquez pour déverrouiller.",
+      de: "Touch-Vibrato-Sperre: klicken zum Aktivieren. Ziehen mit Maus/Touch löst kein Glissando und keinen Tastenwechsel aus; vertikale Bewegung beugt nur die aktuelle Taste. Nochmals klicken zum Entsperren.",
+      es: "Bloqueo de vibrato táctil: haz clic para activarlo. Arrastrar con ratón/toque no dispara glissando ni cambia de tecla; el movimiento vertical curva la tecla actual. Haz clic otra vez para desbloquear.",
+      pt: "Trava de vibrato por toque: clique para ativar. Arrastar com mouse/toque não dispara glissando nem troca de tecla; o movimento vertical altera a tecla atual. Clique novamente para destravar.",
+      ja: "タッチ・ビブラートロック：クリックでオン。マウス/タッチのドラッグでグリッサンドや別キーへの移動を起こさず、上下移動だけで現在のキーをベンドします。もう一度クリックで解除。",
+      ar: "قفل فيبراتو اللمس: انقر للتفعيل. لن يؤدي سحب الماوس/اللمس إلى غليساندو أو الانتقال إلى مفتاح آخر؛ الحركة العمودية تثني المفتاح الحالي فقط. انقر مرة أخرى لإلغاء القفل.",
+      ru: "Блокировка touch-вибрато: нажмите, чтобы включить. Перетаскивание мышью/касанием не включает глиссандо и не переходит на другую клавишу; вертикальное движение изгибает только текущую клавишу. Нажмите еще раз для разблокировки.",
+      it: "Blocco vibrato touch: fai clic per attivarlo. Il trascinamento mouse/touch non avvia glissando né passa ad altri tasti; il movimento verticale piega solo il tasto corrente. Fai clic di nuovo per sbloccare.",
+      ms: "Kunci vibrato sentuh: klik untuk hidupkan. Seretan tetikus/sentuh tidak mencetus glissando atau beralih kekunci; gerakan menegak hanya membengkokkan kekunci semasa. Klik sekali lagi untuk buka kunci.",
+      vi: "Khóa rung chạm: bấm để bật. Kéo chuột/chạm sẽ không kích hoạt glissando hay chuyển sang phím khác; chuyển động dọc chỉ uốn phím hiện tại. Bấm lần nữa để mở khóa.",
+      tr: "Dokunmatik vibrato kilidi: açmak için tıklayın. Fare/dokunma sürüklemesi glissando başlatmaz veya başka tuşa geçmez; dikey hareket yalnızca geçerli tuşu büker. Kilidi açmak için tekrar tıklayın.",
+      ko: "터치 비브라토 잠금: 클릭하면 켜집니다. 마우스/터치 드래그가 글리산도나 다른 키 이동을 일으키지 않고, 세로 움직임만 현재 키를 벤딩합니다. 다시 클릭하면 해제됩니다."
     };
 
     for (const [language, touchVibratoLockHelp] of Object.entries(touchVibratoLockTranslations)) {
@@ -4466,6 +4466,28 @@
       }
     });
 
+
+    const edgeOctaveComboTranslations = {
+      zh: "临时全局降/升八度",
+      en: "Temporary global octave down/up",
+      fr: "Décalage global temporaire d'une octave bas/haut",
+      de: "Vorübergehend global eine Oktave tiefer/höher",
+      es: "Baja/sube temporalmente todo una octava",
+      pt: "Desce/sobe temporariamente tudo uma oitava",
+      ja: "一時的に全体を1オクターブ下/上へ",
+      ar: "خفض/رفع مؤقت لكل المفاتيح بمقدار أوكتاف",
+      ru: "Временно опустить/поднять все на октаву",
+      it: "Abbassa/alza temporaneamente tutto di un'ottava",
+      ms: "Turunkan/naikkan semua satu oktaf sementara",
+      vi: "Tạm thời hạ/nâng toàn bộ một quãng tám",
+      tr: "Tümünü geçici olarak bir oktav indir/yükselt",
+      ko: "전체를 일시적으로 한 옥타브 내리기/올리기"
+    };
+
+    for (const [language, shortcutEdgeOctaveCombo] of Object.entries(edgeOctaveComboTranslations)) {
+      if (!translations[language]) translations[language] = {};
+      translations[language].shortcutEdgeOctaveCombo = shortcutEdgeOctaveCombo;
+    }
 
     window.QBOARD_LANGUAGE_DATA = { languageOptions, languageMeta, translations, manualCopies };
 })();
