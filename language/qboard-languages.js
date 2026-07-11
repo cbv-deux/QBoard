@@ -3887,6 +3887,29 @@
       translations[language].touchVibratoLockHelp = touchVibratoLockHelp;
     }
 
+    const touchVibratoPanTranslations = {
+      zh: ["锁住揉弦时，键盘视野向左平移四格。", "锁住揉弦时，键盘视野向右平移四格。"],
+      en: ["While vibrato lock is held, pan the keyboard view left by four keys.", "While vibrato lock is held, pan the keyboard view right by four keys."],
+      fr: ["Avec le verrou vibrato maintenu, décaler la vue clavier de quatre touches vers la gauche.", "Avec le verrou vibrato maintenu, décaler la vue clavier de quatre touches vers la droite."],
+      de: ["Bei gehaltener Vibrato-Sperre die Tastaturansicht vier Tasten nach links verschieben.", "Bei gehaltener Vibrato-Sperre die Tastaturansicht vier Tasten nach rechts verschieben."],
+      es: ["Con el bloqueo de vibrato pulsado, desplaza la vista del teclado cuatro teclas a la izquierda.", "Con el bloqueo de vibrato pulsado, desplaza la vista del teclado cuatro teclas a la derecha."],
+      pt: ["Com a trava de vibrato pressionada, move a vista do teclado quatro teclas para a esquerda.", "Com a trava de vibrato pressionada, move a vista do teclado quatro teclas para a direita."],
+      ja: ["ビブラートロック中、鍵盤表示を左へ4キー分移動します。", "ビブラートロック中、鍵盤表示を右へ4キー分移動します。"],
+      ar: ["أثناء قفل الفيبراتو، حرّك عرض لوحة المفاتيح أربع مفاتيح إلى اليسار.", "أثناء قفل الفيبراتو، حرّك عرض لوحة المفاتيح أربع مفاتيح إلى اليمين."],
+      ru: ["При удержании блокировки вибрато сдвинуть вид клавиатуры влево на четыре клавиши.", "При удержании блокировки вибрато сдвинуть вид клавиатуры вправо на четыре клавиши."],
+      it: ["Con il blocco vibrato premuto, sposta la vista tastiera a sinistra di quattro tasti.", "Con il blocco vibrato premuto, sposta la vista tastiera a destra di quattro tasti."],
+      ms: ["Semasa kunci vibrato ditahan, alihkan paparan papan kekunci empat kekunci ke kiri.", "Semasa kunci vibrato ditahan, alihkan paparan papan kekunci empat kekunci ke kanan."],
+      vi: ["Khi đang giữ khóa rung, dịch khung nhìn bàn phím sang trái bốn phím.", "Khi đang giữ khóa rung, dịch khung nhìn bàn phím sang phải bốn phím."],
+      tr: ["Vibrato kilidi basılıyken klavye görünümünü dört tuş sola kaydır.", "Vibrato kilidi basılıyken klavye görünümünü dört tuş sağa kaydır."],
+      ko: ["비브라토 잠금 중 키보드 보기를 왼쪽으로 네 키 이동합니다.", "비브라토 잠금 중 키보드 보기를 오른쪽으로 네 키 이동합니다."]
+    };
+
+    for (const [language, labels] of Object.entries(touchVibratoPanTranslations)) {
+      if (!translations[language]) translations[language] = {};
+      translations[language].touchVibratoPanLeftHelp = labels[0];
+      translations[language].touchVibratoPanRightHelp = labels[1];
+    }
+
     const manualCopies = {
       zh: {
         intro: "Q-board 是一个可扩展的同构键盘：屏幕按键、电脑键盘和外接 HID 键盘可以各自选择音色、音量、输出偏移；鼠标/触屏使用自动揉弦，其他输入源使用长按揉弦。",

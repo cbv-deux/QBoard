@@ -987,6 +987,11 @@
       scrollbar-color: #7b8290 var(--stage);
     }
 
+    .keyboard-scroll.is-touch-vibrato-locked {
+      touch-action: none;
+      overscroll-behavior: contain;
+    }
+
     .bass-dock {
       position: fixed;
       left: 50%;
@@ -1044,8 +1049,21 @@
       min-width: 0;
     }
 
+    .bass-touch-lock-cluster {
+      display: grid;
+      grid-template-columns: auto;
+      gap: 4px;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .bass-dock.is-touch-vibrato-locked .bass-touch-lock-cluster {
+      grid-template-columns: 24px 28px 24px;
+    }
+
     .bass-settings-button,
-    .bass-touch-lock-button {
+    .bass-touch-lock-button,
+    .bass-touch-pan-button {
       width: 28px;
       height: 28px;
       border: 1px solid rgba(48, 54, 67, 0.28);
@@ -1065,14 +1083,28 @@
     .bass-settings-button.is-open,
     .bass-settings-button:hover,
     .bass-touch-lock-button.is-active,
-    .bass-touch-lock-button:hover {
+    .bass-touch-lock-button:hover,
+    .bass-touch-pan-button:hover {
       border-color: #17191f;
       background: #17191f;
       color: #ffffff;
     }
 
-    .bass-touch-lock-button {
+    .bass-touch-lock-button,
+    .bass-touch-pan-button {
       touch-action: none;
+    }
+
+    .bass-touch-pan-button {
+      display: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      font-size: 0.78rem;
+    }
+
+    .bass-dock.is-touch-vibrato-locked .bass-touch-pan-button {
+      display: grid;
     }
 
     .bass-lock-icon {
@@ -6033,12 +6065,38 @@
 
     function syncTouchVibratoLockButtons() {
       const active = isTouchVibratoLocked();
+      els.bassDock.classList.toggle("is-touch-vibrato-locked", active);
+      els.keyboardScroll.classList.toggle("is-touch-vibrato-locked", active);
       for (const button of els.bassDock.querySelectorAll("[data-touch-vibrato-lock]")) {
         button.classList.toggle("is-active", active);
         button.setAttribute("aria-pressed", String(active));
         button.title = tr("touchVibratoLockHelp");
         button.setAttribute("aria-label", tr("touchVibratoLockHelp"));
       }
+      for (const button of els.bassDock.querySelectorAll("[data-touch-vibrato-pan]")) {
+        const key = Number(button.dataset.touchVibratoPan) < 0 ? "touchVibratoPanLeftHelp" : "touchVibratoPanRightHelp";
+        button.title = tr(key);
+        button.setAttribute("aria-label", tr(key));
+      }
+    }
+
+    function createTouchVibratoPanButton(columns) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "bass-touch-pan-button";
+      button.dataset.touchVibratoPan = String(columns);
+      button.textContent = columns < 0 ? "‹" : "›";
+      const key = columns < 0 ? "touchVibratoPanLeftHelp" : "touchVibratoPanRightHelp";
+      button.title = tr(key);
+      button.setAttribute("aria-label", tr(key));
+      return button;
+    }
+
+    function createTouchVibratoLockCluster() {
+      const cluster = document.createElement("div");
+      cluster.className = "bass-touch-lock-cluster";
+      cluster.append(createTouchVibratoPanButton(-4), createTouchVibratoLockButton(), createTouchVibratoPanButton(4));
+      return cluster;
     }
 
     function createTouchVibratoLockButton() {
@@ -6059,12 +6117,13 @@
 
     function renderBassDock() {
       const fragment = document.createDocumentFragment();
-      const lockButton = createTouchVibratoLockButton();
+      const lockCluster = createTouchVibratoLockCluster();
       if (!bassProfile.enabled) {
         els.bassDock.classList.add("is-touch-lock-only");
-        fragment.append(lockButton);
+        fragment.append(lockCluster);
         els.bassDock.replaceChildren(fragment);
         els.bassDock.hidden = false;
+        syncTouchVibratoLockButtons();
         return;
       }
 
@@ -6162,9 +6221,10 @@
         wrap.append(button, name);
         keysWrap.append(wrap);
       }
-      fragment.append(lockButton, leftHint, keysWrap, rightHint, settingsButton);
+      fragment.append(lockCluster, leftHint, keysWrap, rightHint, settingsButton);
       els.bassDock.replaceChildren(fragment);
       els.bassDock.hidden = false;
+      syncTouchVibratoLockButtons();
       compactForeignControlLabels(els.bassDock);
     }
 
@@ -6745,6 +6805,20 @@
       const scroller = els.keyboardScroll;
       scroller.scrollLeft = Math.max(0, (scroller.scrollWidth - scroller.clientWidth) / 2);
       scroller.scrollTop = Math.max(0, (scroller.scrollHeight - scroller.clientHeight) / 2);
+    }
+
+    function cssPixelNumber(name, fallback) {
+      const parsed = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+      return Number.isFinite(parsed) ? parsed : fallback;
+    }
+
+    function keyboardColumnStepPx() {
+      return cssPixelNumber("--key-size", 66) + cssPixelNumber("--key-gap", 10);
+    }
+
+    function panKeyboardViewColumns(columns) {
+      const scroller = els.keyboardScroll;
+      scroller.scrollLeft = Math.max(0, Math.min(scroller.scrollWidth - scroller.clientWidth, scroller.scrollLeft + keyboardColumnStepPx() * columns));
     }
 
     function resetVisibleRangeAndQ() {
@@ -8206,6 +8280,13 @@
     });
 
     els.bassDock.addEventListener("pointerdown", event => {
+      const touchPanButton = event.target.closest("[data-touch-vibrato-pan]");
+      if (touchPanButton) {
+        event.preventDefault();
+        panKeyboardViewColumns(Number(touchPanButton.dataset.touchVibratoPan) || 0);
+        return;
+      }
+
       const touchLockButton = event.target.closest("[data-touch-vibrato-lock]");
       if (touchLockButton) {
         event.preventDefault();
@@ -8276,6 +8357,10 @@
     });
 
     els.bassDock.addEventListener("click", event => {
+      if (event.target.closest("[data-touch-vibrato-pan]")) {
+        event.preventDefault();
+        return;
+      }
       if (event.target.closest("[data-touch-vibrato-lock]")) {
         event.preventDefault();
         return;
