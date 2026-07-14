@@ -1240,6 +1240,43 @@
       overscroll-behavior: contain;
     }
 
+    .keyboard-view-controls {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      z-index: 46;
+      display: grid;
+      gap: 6px;
+      transform: translateY(-50%);
+      direction: ltr;
+    }
+
+    .keyboard-view-button {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 6px;
+      background: rgba(23, 25, 31, 0.88);
+      color: #ffffff;
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+    }
+
+    .keyboard-view-button:hover,
+    .keyboard-view-button:focus-visible {
+      border-color: #ffffff;
+      background: #007f78;
+    }
+
+    .keyboard-view-button:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
     .touch-vibrato-pan-overlay {
       position: absolute;
       inset: 0;
@@ -1996,6 +2033,11 @@
       padding: 10px clamp(16px, 3vw, 34px) 30px;
       display: grid;
       gap: var(--row-gap);
+      zoom: var(--keyboard-zoom, 1);
+    }
+
+    .keyboard.pointer-glissando-enabled .key {
+      touch-action: none;
     }
 
     .button-row {
@@ -3176,6 +3218,10 @@
       <div class="keyboard-scroll" id="keyboardScroll">
         <div class="keyboard" id="keyboard" aria-label="Q-board button keyboard"></div>
       </div>
+      <div class="keyboard-view-controls" aria-label="Keyboard zoom">
+        <button class="keyboard-view-button" id="keyboardZoomOut" type="button" aria-label="Zoom keyboard out">−</button>
+        <button class="keyboard-view-button" id="keyboardZoomIn" type="button" aria-label="Zoom keyboard in">+</button>
+      </div>
       <div class="bass-dock" id="bassDock" hidden aria-label="贝司声部"></div>
       <div class="touch-vibrato-pan-overlay" id="touchVibratoPanOverlay" hidden aria-hidden="true">
         <button class="touch-vibrato-pan-button is-left" type="button" data-touch-vibrato-pan="-4">‹</button>
@@ -3266,6 +3312,9 @@
     const MIN_METRONOME_BPM = 30;
     const MAX_METRONOME_BPM = 300;
     const DEFAULT_GLISSANDO_DWELL_MS = 30;
+    const MIN_KEYBOARD_ZOOM = 0.5;
+    const MAX_KEYBOARD_ZOOM = 2;
+    const KEYBOARD_ZOOM_STEP = 0.1;
     const DEFAULT_VIBRATO_SENSITIVITY_CENTS = 25;
     const MAX_VIBRATO_CENTS = 100;
     const SUSTAIN_CODES = new Set(["Space"]);
@@ -3492,7 +3541,8 @@
       fadeSustainTime: DEFAULT_POINTER_FADE_TIME,
       followSustainPedal: false,
       source: "pointer",
-      monophonic: true
+      monophonic: true,
+      glissandoEnabled: true
     };
     const mainBassProfile = {
       id: "bass",
@@ -3701,6 +3751,10 @@
     const translations = qboardLanguageData.translations || { zh: {}, en: {} };
     const localTranslationFallbacks = {
       zh: {
+        keyboardZoomOut: "缩小键盘",
+        keyboardZoomIn: "放大键盘",
+        pointerGlissandoMode: "滑奏",
+        pointerModeSwitch: "切换单音/滑奏",
         addKeyboard: "添加外接键盘",
         mainBassPart: "主贝司声部",
         bassStateSeventh: "七和弦",
@@ -3750,6 +3804,10 @@
         bridgeManual5: "键盘设置标题中的“+”统一添加桥接键盘；每点一次会新增一个独立声部并等待下一把实体键盘。"
       },
       en: {
+        keyboardZoomOut: "Zoom keyboard out",
+        keyboardZoomIn: "Zoom keyboard in",
+        pointerGlissandoMode: "Glissando",
+        pointerModeSwitch: "Switch mono/glissando",
         addKeyboard: "Add external keyboard",
         mainBassPart: "Main bass part",
         bassStateSeventh: "Seventh chord",
@@ -3898,6 +3956,8 @@
       staffSvg: document.querySelector("#staffSvg"),
       keyboard: document.querySelector("#keyboard"),
       keyboardScroll: document.querySelector("#keyboardScroll"),
+      keyboardZoomOut: document.querySelector("#keyboardZoomOut"),
+      keyboardZoomIn: document.querySelector("#keyboardZoomIn"),
       touchVibratoPanOverlay: document.querySelector("#touchVibratoPanOverlay"),
       touchVibratoPanButtons: [...document.querySelectorAll("[data-touch-vibrato-pan]")],
       currentNote: document.querySelector("#currentNote"),
@@ -3919,6 +3979,7 @@
     const longVibratoHolds = new Map();
     let autoVibratoFrame = 0;
     let staffZoom = 1;
+    let keyboardZoom = 1;
     const voices = new Map();
     const codeToCoord = new Map();
     const coordToLabels = new Map();
@@ -4433,6 +4494,10 @@
       document.querySelector(".scale-tools")?.setAttribute("aria-label", tr("staffScale"));
       els.scaleZoomOut.setAttribute("aria-label", tr("zoomOut"));
       els.scaleZoomIn.setAttribute("aria-label", tr("zoomIn"));
+      els.keyboardZoomOut.title = tr("keyboardZoomOut");
+      els.keyboardZoomOut.setAttribute("aria-label", tr("keyboardZoomOut"));
+      els.keyboardZoomIn.title = tr("keyboardZoomIn");
+      els.keyboardZoomIn.setAttribute("aria-label", tr("keyboardZoomIn"));
       els.staffSvg.setAttribute("aria-label", tr("staffAria"));
       els.keyboard.setAttribute("aria-label", tr("keyboardAria"));
       if (els.currentNote.textContent === "--") els.noteMeta.textContent = tr("clickAnyKey");
@@ -4761,6 +4826,14 @@
       if (!profile) return true;
       if (profile === bassProfile) return Boolean(bassProfile.enabled);
       return profile.enabled !== false;
+    }
+
+    function pointerGlissandoEnabled() {
+      return pointerProfile.glissandoEnabled !== false;
+    }
+
+    function syncPointerInteractionMode() {
+      els.keyboard.classList.toggle("pointer-glissando-enabled", pointerGlissandoEnabled());
     }
 
     function profileFollowsMainPedals(profile) {
@@ -5128,7 +5201,17 @@
       const pointerNameText = document.createElement("span");
       pointerNameText.textContent = tr("mouseTouch");
       const pointerSource = document.createElement("small");
-      pointerSource.textContent = tr("monoSource");
+      pointerSource.className = "bass-source-line";
+      const pointerSourceText = document.createElement("span");
+      pointerSourceText.textContent = tr(pointerGlissandoEnabled() ? "pointerGlissandoMode" : "monoSource");
+      const pointerModeButton = document.createElement("button");
+      pointerModeButton.type = "button";
+      pointerModeButton.className = "bass-key-mode-button";
+      pointerModeButton.dataset.profileAction = "togglePointerMode";
+      pointerModeButton.textContent = "↔";
+      pointerModeButton.title = tr("pointerModeSwitch");
+      pointerModeButton.setAttribute("aria-label", tr("pointerModeSwitch"));
+      pointerSource.append(pointerSourceText, pointerModeButton);
       pointerName.append(pointerNameText, pointerSource);
       pointerRow.append(
         createProfileHeader(pointerProfile, pointerName),
@@ -5352,6 +5435,7 @@
         sustainEnabled: profile.sustainEnabled,
         fadeSustainTime: profile.fadeSustainTime,
         followSustainPedal: profile.followSustainPedal,
+        glissandoEnabled: profile.glissandoEnabled,
         keyMode: profile.keyMode,
         outHarmony: profile.outHarmony,
         edgeMirror: profile.edgeMirror,
@@ -5377,6 +5461,7 @@
       if (typeof data.sustainEnabled === "boolean") profile.sustainEnabled = data.sustainEnabled;
       if (Number.isFinite(data.fadeSustainTime)) profile.fadeSustainTime = data.fadeSustainTime;
       if (typeof data.followSustainPedal === "boolean") profile.followSustainPedal = data.followSustainPedal;
+      if (typeof data.glissandoEnabled === "boolean") profile.glissandoEnabled = data.glissandoEnabled;
       if (data.keyMode && bassKeyModeValues.has(data.keyMode)) profile.keyMode = data.keyMode;
       if (typeof data.outHarmony === "boolean") profile.outHarmony = data.outHarmony;
       if (typeof data.edgeMirror === "boolean") profile.edgeMirror = data.edgeMirror;
@@ -5409,7 +5494,7 @@
 
     function collectQBoardSettings() {
       return {
-        version: 14,
+        version: 15,
         language: currentLanguage,
         controls: {
           keySystem: els.keySystem.value,
@@ -5437,6 +5522,7 @@
           staffZoom,
           transpose: els.staffTranspose?.checked !== false
         },
+        keyboardView: { zoom: keyboardZoom },
         metronome: { bpm: metronomeBpm },
         activeProfileId,
         qAnchor: { ...qAnchor },
@@ -5491,6 +5577,7 @@
         if (Number.isFinite(settings.color?.cColorIndex)) cColorIndex = mod(settings.color.cColorIndex, 12);
         if (Number.isFinite(settings.staff?.staffZoom)) staffZoom = Math.max(0.5, Math.min(2.4, settings.staff.staffZoom));
         if (typeof settings.staff?.transpose === "boolean" && els.staffTranspose) els.staffTranspose.checked = settings.staff.transpose;
+        if (Number.isFinite(settings.keyboardView?.zoom)) keyboardZoom = Math.max(MIN_KEYBOARD_ZOOM, Math.min(MAX_KEYBOARD_ZOOM, settings.keyboardView.zoom));
         if (Number.isFinite(settings.metronome?.bpm)) metronomeBpm = clampNumber(settings.metronome.bpm, DEFAULT_METRONOME_BPM, MIN_METRONOME_BPM, MAX_METRONOME_BPM);
         const profileSettings = Array.isArray(settings.profiles) ? settings.profiles : [];
         for (const savedProfile of profileSettings) {
@@ -5681,6 +5768,8 @@
       updateMetronomeDisplay();
       syncStaffVisibility();
       syncShortcutVisibility();
+      syncPointerInteractionMode();
+      setKeyboardZoom(keyboardZoom, { preserveCenter: false, persist: false });
       renderKeyboard({ keepScroll: false });
       renderScaleStaff();
       renderBassDock();
@@ -6090,6 +6179,30 @@
     function changeStaffZoom(delta) {
       staffZoom = Math.max(0.5, Math.min(2.4, Math.round((staffZoom + delta) * 100) / 100));
       applyStaffZoom();
+    }
+
+    function syncKeyboardZoomControls() {
+      els.keyboardZoomOut.disabled = keyboardZoom <= MIN_KEYBOARD_ZOOM + 0.001;
+      els.keyboardZoomIn.disabled = keyboardZoom >= MAX_KEYBOARD_ZOOM - 0.001;
+    }
+
+    function setKeyboardZoom(value, { preserveCenter = true, persist = true } = {}) {
+      const scroller = els.keyboardScroll;
+      const oldWidth = Math.max(1, scroller.scrollWidth);
+      const oldHeight = Math.max(1, scroller.scrollHeight);
+      const centerRatioX = (scroller.scrollLeft + scroller.clientWidth / 2) / oldWidth;
+      const centerRatioY = (scroller.scrollTop + scroller.clientHeight / 2) / oldHeight;
+      keyboardZoom = Math.max(MIN_KEYBOARD_ZOOM, Math.min(MAX_KEYBOARD_ZOOM, Math.round(Number(value) * 10) / 10));
+      els.keyboard.style.setProperty("--keyboard-zoom", String(keyboardZoom));
+      syncKeyboardZoomControls();
+
+      if (preserveCenter) {
+        requestAnimationFrame(() => {
+          scroller.scrollLeft = centerRatioX * scroller.scrollWidth - scroller.clientWidth / 2;
+          scroller.scrollTop = centerRatioY * scroller.scrollHeight - scroller.clientHeight / 2;
+        });
+      }
+      if (persist) scheduleSaveSettings();
     }
 
     function renderScaleStaff() {
@@ -9921,6 +10034,13 @@
         updatePointerKeyBend(event, state.currentTarget);
         return;
       }
+      if (!pointerGlissandoEnabled()) {
+        clearGlissandoTimer(state);
+        state.pendingIdentity = state.currentIdentity;
+        state.lastClientY = event.clientY;
+        updatePointerKeyBend(event, state.currentTarget);
+        return;
+      }
       const target = keyFromPointerEvent(event);
       if (!target) {
         clearGlissandoTimer(state);
@@ -10247,6 +10367,13 @@
         addHidKeyboard();
       } else if (action === "toggleBassKeyMode") {
         withBassLayer(profile, () => setBassKeyMode(bassUsesFunctionKeys() ? "digits" : "function"));
+      } else if (action === "togglePointerMode" && profile === pointerProfile) {
+        pointerProfile.glissandoEnabled = !pointerGlissandoEnabled();
+        clearGlissandoStates();
+        stopPointerVoices();
+        syncPointerInteractionMode();
+        renderMappingProfileOptions();
+        scheduleSaveSettings();
       } else if (action === "toggleEdgeMirror") {
         setEdgeMirrorSetting(!edgeMirrorActive(), { viewAnchor });
       }
@@ -10703,6 +10830,16 @@
       changeStaffZoom(0.15);
     });
 
+    els.keyboardZoomOut.addEventListener("click", event => {
+      releaseControlFocus(event);
+      setKeyboardZoom(keyboardZoom - KEYBOARD_ZOOM_STEP);
+    });
+
+    els.keyboardZoomIn.addEventListener("click", event => {
+      releaseControlFocus(event);
+      setKeyboardZoom(keyboardZoom + KEYBOARD_ZOOM_STEP);
+    });
+
     els.tonicSelect.addEventListener("change", event => {
       releaseControlFocus(event);
       scheduleRender();
@@ -10753,6 +10890,8 @@
     updateMetronomeDisplay();
     syncStaffVisibility();
     syncShortcutVisibility();
+    syncPointerInteractionMode();
+    setKeyboardZoom(keyboardZoom, { preserveCenter: false, persist: false });
     renderKeyboard({ keepScroll: false });
     renderScaleStaff();
     renderBassDock();
