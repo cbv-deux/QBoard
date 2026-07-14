@@ -3979,7 +3979,7 @@
     let qAnchor = { ...DEFAULT_Q_ANCHOR };
     let manualBendCents = 0;
     let longVibratoState = null;
-    const browserShiftDownSides = new Set();
+    const browserShiftPedalEdges = new Map();
     const longVibratoHolds = new Map();
     let autoVibratoFrame = 0;
     let staffZoom = 1;
@@ -8221,10 +8221,8 @@
       releaseBrowserBassCode(code);
       stopVoiceByPrefix(`computer-${profile.id}-${code}`, 0.03);
       if (isSustainCode(code) && profile.sustainPedal) setSustainPedal(profile, false);
-      if (isSoftPedalCode(code) && profile.softPedal) setSoftPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
-      if (isHarmonicPedalCode(code) && profile.harmonicPedal) setHarmonicPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
       const shiftSide = shiftPhysicalSideFromCode(code);
-      if (shiftSide) browserShiftDownSides.delete(shiftSide);
+      if (shiftSide) releaseBrowserShiftPedalEdge(shiftSide);
       if (isEdgePedalCode(code)) setEdgePedal(profile, edgePedalSide(code), false);
     }
 
@@ -10155,22 +10153,36 @@
       return shiftPhysicalSideFromCode(event?.code) || shiftPhysicalSideFromLocation(event);
     }
 
+    function applyBrowserShiftPedalEdge(edge, active) {
+      if (!edge?.profile || !edge.role) return;
+      if (edge.role === "soft") setSoftPedal(edge.profile, active, PHYSICAL_PEDAL_TRANSITION);
+      if (edge.role === "harmonic") setHarmonicPedal(edge.profile, active, PHYSICAL_PEDAL_TRANSITION);
+    }
+
+    function releaseBrowserShiftPedalEdge(side) {
+      const edge = browserShiftPedalEdges.get(side);
+      if (!edge) return false;
+      browserShiftPedalEdges.delete(side);
+      applyBrowserShiftPedalEdge(edge, false);
+      return true;
+    }
+
     function handlePhysicalShiftKeyEvent(event, active) {
       const side = resolveBrowserShiftEventSide(event);
-      const role = shiftPedalRoleForSide(side);
-      if (!role) return false;
-      const profile = browserProfile();
-      if (!profileIsEnabled(profile)) return false;
+      if (!side) return false;
       if (active) {
         if (event?.code && shouldSuppressBrowserCode(event.code)) return false;
-        browserShiftDownSides.add(side);
+        if (!browserShiftPedalEdges.has(side)) {
+          const profile = browserProfile();
+          const role = shiftPedalRoleForSide(side);
+          if (!role || !profileIsEnabled(profile)) return false;
+          const edge = { profile, role };
+          browserShiftPedalEdges.set(side, edge);
+          applyBrowserShiftPedalEdge(edge, true);
+        }
       } else {
-        const pedalIsActive = role === "soft" ? profile.softPedal : profile.harmonicPedal;
-        if (!browserShiftDownSides.has(side) && !pedalIsActive) return false;
-        browserShiftDownSides.delete(side);
+        if (!releaseBrowserShiftPedalEdge(side)) return false;
       }
-      if (role === "soft") setSoftPedal(profile, active, PHYSICAL_PEDAL_TRANSITION);
-      if (role === "harmonic") setHarmonicPedal(profile, active, PHYSICAL_PEDAL_TRANSITION);
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation?.();
@@ -10178,11 +10190,9 @@
     }
 
     function releasePhysicalShiftPedalsOnFocusLoss() {
-      const profile = browserProfile();
-      browserShiftDownSides.clear();
-      if (!profile) return;
-      if (profile.softPedal) setSoftPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
-      if (profile.harmonicPedal) setHarmonicPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
+      for (const side of [...browserShiftPedalEdges.keys()]) {
+        releaseBrowserShiftPedalEdge(side);
+      }
     }
 
     document.addEventListener("keydown", event => {
