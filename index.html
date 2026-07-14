@@ -186,7 +186,8 @@
       background: #ffffff;
     }
 
-    .top-staff-toggle {
+    .top-staff-toggle,
+    .top-shortcuts-toggle {
       min-height: 23px;
       padding: 1px 7px;
       border-radius: 6px;
@@ -439,6 +440,22 @@
       gap: 8px;
     }
 
+    .keyboard-head-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+
+    .bridge-head-button {
+      min-height: 24px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
     .add-hid-button,
     .pedal-mirror-toggle {
       width: 26px;
@@ -669,12 +686,160 @@
 
     .keyboard-section {
       grid-area: keyboard;
+      grid-template-rows: auto minmax(0, auto);
+      align-content: start;
       background: #ffffff;
     }
 
     .keyboard-layout {
       display: block;
       min-width: 0;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+    }
+
+    .keyboard-layout.has-fixed-profile-height {
+      height: var(--keyboard-settings-height);
+    }
+
+    .keyboard-section-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 5px;
+      min-width: 0;
+      align-items: start;
+    }
+
+    .keyboard-section-body.is-bridge-open {
+      grid-template-columns: 92px minmax(0, 1fr);
+    }
+
+    .bridge-panel {
+      display: grid;
+      grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+      gap: 6px;
+      width: 92px;
+      height: var(--keyboard-settings-height, auto);
+      min-height: 0;
+      padding: 6px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #f7f9fc;
+      text-align: center;
+    }
+
+    .bridge-panel[hidden] {
+      display: none;
+    }
+
+    .bridge-panel-title {
+      overflow: hidden;
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bridge-panel-status {
+      display: grid;
+      justify-items: center;
+      gap: 3px;
+      font-size: 0.63rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .bridge-status-dot {
+      width: 9px;
+      height: 9px;
+      border: 1px solid #a6afbd;
+      border-radius: 50%;
+      background: #d8dde6;
+    }
+
+    .bridge-panel.is-connected .bridge-status-dot {
+      border-color: #278a59;
+      background: #43bc78;
+    }
+
+    .bridge-panel-clients,
+    .bridge-panel-path {
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 0.57rem;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .bridge-panel-path {
+      align-self: start;
+      max-height: 100%;
+    }
+
+    .bridge-panel-button {
+      width: 100%;
+      min-height: 28px;
+      padding: 2px;
+      font-size: 0.64rem;
+    }
+
+    .bridge-directory-dialog {
+      width: min(520px, calc(100vw - 24px));
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      box-shadow: 0 18px 54px rgba(23, 25, 31, 0.24);
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    .bridge-directory-dialog::backdrop {
+      background: rgba(23, 25, 31, 0.3);
+    }
+
+    .bridge-directory-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 11px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 900;
+    }
+
+    .bridge-directory-body {
+      display: grid;
+      gap: 9px;
+      padding: 11px;
+    }
+
+    .bridge-directory-body label {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .bridge-directory-body input[type="text"] {
+      width: 100%;
+      min-height: 34px;
+    }
+
+    .bridge-directory-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .bass-base-button {
+      white-space: normal;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
     }
 
     .profile-rows {
@@ -683,6 +848,7 @@
     }
 
     .profile-row {
+      --profile-hue: 5;
       display: grid;
       grid-template-columns:
         minmax(78px, 0.56fr)
@@ -702,9 +868,8 @@
       background: #f7f9fc;
     }
 
-    .profile-row.is-active {
-      border-color: rgba(0, 127, 120, 0.42);
-      background: #edf8f6;
+    .profile-row[data-profile-color] {
+      border-left: 4px solid hsl(var(--profile-hue) 62% 46%);
     }
 
     .profile-row.is-pointer {
@@ -714,7 +879,11 @@
 
     .profile-row.is-bass {
       border-style: dashed;
-      background: #fffaf2;
+      background: hsl(var(--profile-hue) 46% 97%);
+    }
+
+    .profile-row.is-external-bass {
+      border-style: dashed;
     }
 
     .profile-row.is-disabled {
@@ -727,6 +896,70 @@
       gap: 4px;
       align-items: stretch;
       min-width: 0;
+    }
+
+    .profile-title.has-color {
+      position: relative;
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .profile-title.has-color .profile-name {
+      padding-inline-end: 26px;
+    }
+
+    .profile-color-button {
+      width: 18px;
+      min-width: 18px;
+      height: 24px;
+      padding: 0;
+      border: 1px solid hsl(var(--profile-hue) 48% 54%);
+      border-radius: 6px;
+      background: hsl(var(--profile-hue) 62% 46%);
+      box-shadow: inset 0 0 0 3px hsl(var(--profile-hue) 72% 86%);
+      cursor: pointer;
+    }
+
+    .profile-title.has-color > .profile-color-button {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      inset-inline-end: 4px;
+      transform: translateY(-50%);
+    }
+
+    .profile-action-dialog {
+      width: min(360px, calc(100vw - 28px));
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 18px 48px rgba(22, 31, 45, 0.28);
+    }
+
+    .profile-action-dialog::backdrop {
+      background: rgba(22, 31, 45, 0.35);
+    }
+
+    .profile-action-dialog-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 800;
+    }
+
+    .profile-action-dialog-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 14px;
+    }
+
+    .profile-action-dialog-body .command {
+      min-height: 38px;
     }
 
     .profile-enable-switch {
@@ -1014,18 +1247,52 @@
       bottom: max(12px, env(safe-area-inset-bottom));
       z-index: 32;
       display: grid;
-      grid-template-columns: auto minmax(142px, 1fr) auto minmax(142px, 1fr) auto;
-      gap: 14px;
+      gap: 6px;
       align-items: center;
       justify-content: center;
       width: min(calc(100vw - 24px), 1120px);
-      padding: 8px 24px;
+      padding: 7px 14px;
       border: 1px solid rgba(216, 221, 232, 0.48);
-      border-radius: 999px;
+      border-radius: 14px;
       background: rgba(251, 252, 255, 0.92);
       box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
       transform: translateX(-50%);
       backdrop-filter: blur(10px);
+    }
+
+    .bass-dock-row {
+      display: grid;
+      grid-template-columns: auto minmax(142px, 1fr) auto minmax(142px, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .bass-source-frame {
+      --profile-hue: 5;
+      position: relative;
+      display: block;
+      min-width: 0;
+      padding: 9px 9px 5px;
+      border: 2px solid hsl(var(--profile-hue) 52% 48%);
+      border-radius: 9px;
+      background: hsl(var(--profile-hue) 68% 94% / 0.96);
+    }
+
+    .bass-source-label {
+      position: absolute;
+      top: -0.62rem;
+      left: 9px;
+      max-width: 86px;
+      padding: 0 4px;
+      background: hsl(var(--profile-hue) 68% 94% / 0.98);
+      color: #303643;
+      font-size: 0.62rem;
+      font-weight: 900;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .bass-dock[hidden] {
@@ -1380,6 +1647,30 @@
       font-weight: 900;
     }
 
+    .bass-config-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .bass-config-source {
+      width: min(210px, 34vw);
+      min-height: 28px;
+    }
+
+    .bass-config-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .bass-config-source {
+      width: min(210px, 34vw);
+      min-height: 28px;
+    }
+
     .bass-config-actions {
       display: flex;
       align-items: center;
@@ -1592,9 +1883,13 @@
 
     @media (max-width: 760px) {
       .bass-dock {
-        grid-template-columns: auto minmax(86px, 1fr) auto minmax(86px, 1fr) auto;
         gap: 8px;
         padding-inline: 12px;
+      }
+
+      .bass-dock-row {
+        grid-template-columns: auto minmax(86px, 1fr) auto minmax(86px, 1fr) auto;
+        gap: 8px;
       }
 
       .bass-dock-hint {
@@ -1608,9 +1903,17 @@
 
     @media (max-width: 560px) {
       .bass-dock {
-        grid-template-columns: auto;
         justify-items: center;
         border-radius: 20px;
+      }
+
+      .bass-dock-row {
+        grid-template-columns: auto;
+        justify-items: center;
+      }
+
+      .bass-source-frame {
+        grid-column: 1;
       }
 
       .bass-dock-hint {
@@ -1900,24 +2203,43 @@
       z-index: 1;
     }
 
-    .key-map {
+    .key-maps {
       position: absolute;
       left: 50%;
-      bottom: calc((var(--key-step-y) - var(--key-size)) * 0.5 + 5px);
+      bottom: calc((var(--key-step-y) - var(--key-size)) * 0.5 + 4px);
       transform: translateX(-50%);
-      max-width: 52px;
-      padding: 1px 5px 2px;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 1px;
+      width: calc(var(--key-size) - 8px);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .key-map {
+      --profile-hue: 5;
+      display: block;
+      max-width: 100%;
+      padding: 1px 4px;
       border-radius: 999px;
-      background: rgba(23, 25, 31, 0.82);
+      border: 1px solid hsl(var(--profile-hue) 54% 38%);
+      background: hsl(var(--profile-hue) 58% 40% / 0.92);
       color: #fff;
-      font-size: 0.64rem;
+      font-size: 0.56rem;
       font-weight: 800;
-      line-height: 1.1;
+      line-height: 1;
       letter-spacing: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      z-index: 2;
+    }
+
+    .key-maps.is-multi .key-map {
+      max-width: calc(50% - 1px);
+      font-size: 0.5rem;
+      padding-block: 0;
     }
 
     .key.is-active .key-map {
@@ -2014,6 +2336,26 @@
       grid-template-areas:
         "global shortcuts"
         "keyboard shortcuts";
+    }
+
+    @media (min-width: 901px) {
+      .controls[data-active-panel="settings"].is-shortcuts-hidden {
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 0.36fr);
+        grid-template-areas:
+          "global staff"
+          "keyboard staff";
+      }
+
+      .controls[data-active-panel="settings"].is-shortcuts-hidden .shortcut-section {
+        display: none;
+      }
+
+      .controls[data-active-panel="settings"].is-shortcuts-hidden.is-staff-hidden {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+          "global"
+          "keyboard";
+      }
     }
 
     .controls[data-active-panel="manual"] .manual-section {
@@ -2278,7 +2620,8 @@
       #menuManual,
       .app-tagline,
       .readout,
-      .top-staff-toggle {
+      .top-staff-toggle,
+      .top-shortcuts-toggle {
         display: none;
       }
 
@@ -2473,6 +2816,10 @@
           <input id="showStaff" type="checkbox" checked>
           <span>谱表</span>
         </label>
+        <label class="toggle top-shortcuts-toggle">
+          <input id="showShortcuts" type="checkbox" checked aria-controls="shortcutSection">
+          <span>快捷键</span>
+        </label>
         <div class="language-picker" id="languagePicker" title="语言">
           <label class="sr-only" for="languageSelect">语言</label>
           <span class="flag-badge" id="languageFlag" data-flag="cn" aria-hidden="true"></span>
@@ -2501,7 +2848,7 @@
     </header>
 
     <section class="controls" id="controlsPanel" data-active-panel="settings" data-mobile-panel="global" aria-label="设置">
-      <div class="control-section shortcut-section">
+      <div class="control-section shortcut-section" id="shortcutSection">
         <div class="section-heading" data-i18n="shortcutList">快捷键</div>
         <dl class="shortcut-list">
           <div class="shortcut-item">
@@ -2751,10 +3098,26 @@
       <div class="control-section keyboard-section">
         <div class="keyboard-section-head">
           <div class="section-heading">键盘设置</div>
-          <button class="command add-hid-button" id="addHidButton" type="button" aria-label="添加 HID 键盘">+</button>
+          <div class="keyboard-head-actions">
+            <button class="command bridge-head-button" id="bridgeDirectoryButton" type="button">本地连接</button>
+            <button class="command bridge-head-button" id="openBridgeButton" type="button">打开</button>
+            <button class="command add-hid-button" id="addKeyboardButton" type="button" aria-label="添加外接键盘">+</button>
+          </div>
         </div>
-        <div class="keyboard-layout" id="keyboardLayout">
-          <div class="profile-rows" id="profileRows"></div>
+        <div class="keyboard-section-body" id="keyboardSectionBody">
+          <aside class="bridge-panel" id="bridgePanel" hidden>
+            <div class="bridge-panel-title" id="bridgePanelTitle">桥接器</div>
+            <div class="bridge-panel-status">
+              <span class="bridge-status-dot" aria-hidden="true"></span>
+              <span id="bridgePanelStatus">未连接</span>
+            </div>
+            <div class="bridge-panel-clients" id="bridgePanelClients">0</div>
+            <div class="bridge-panel-path" id="bridgePanelPath"></div>
+            <button class="command primary bridge-panel-button" id="bridgePanelButton" type="button">连接</button>
+          </aside>
+          <div class="keyboard-layout" id="keyboardLayout">
+            <div class="profile-rows" id="profileRows"></div>
+          </div>
         </div>
       </div>
 
@@ -2780,6 +3143,25 @@
       </div>
     </section>
 
+    <dialog class="bridge-directory-dialog" id="bridgeDirectoryDialog">
+      <div class="bridge-directory-head">
+        <span id="bridgeDirectoryTitle">本地桥接器连接</span>
+        <button class="command" id="bridgeDirectoryClose" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="bridge-directory-body">
+        <label for="bridgePathInput">
+          <span id="bridgePathLabel">安装目录</span>
+          <input id="bridgePathInput" type="text" autocomplete="off" placeholder="粘贴安装器复制的路径">
+        </label>
+        <div class="bridge-directory-actions">
+          <button class="command" id="bridgeBrowseButton" type="button">浏览目录</button>
+          <button class="command primary" id="bridgeConnectButton" type="button">连接</button>
+          <button class="command" id="bridgeInstallerButton" type="button">下载安装器</button>
+        </div>
+      </div>
+    </dialog>
+    <input id="bridgeDirectoryFallback" type="file" webkitdirectory multiple hidden>
+
     <main class="stage-wrap">
       <div class="keyboard-scroll" id="keyboardScroll">
         <div class="keyboard" id="keyboard" aria-label="Q-board button keyboard"></div>
@@ -2791,7 +3173,10 @@
       </div>
       <div class="bass-config-popover" id="bassConfigPopover" hidden>
         <div class="bass-config-head">
-          <div class="bass-config-title" id="bassConfigTitle">贝司详细设置</div>
+          <div class="bass-config-title-group">
+            <div class="bass-config-title" id="bassConfigTitle">贝司详细设置</div>
+            <select class="bass-config-source" id="bassConfigSource" aria-label="贝司输入源"></select>
+          </div>
           <div class="bass-config-actions">
             <button class="bass-config-reset" id="bassConfigReset" type="button">恢复默认</button>
             <button class="bass-config-close" id="bassConfigClose" type="button" aria-label="关闭贝司详细设置">×</button>
@@ -2976,6 +3361,10 @@
     const BASS_MODIFIER_CODES = new Set(["Backquote"]);
     const BASS_SEVENTH_CODE = "KeyQ";
     const BASS_FUNCTION_SEVENTH_CODE = "Escape";
+    const HID_FUNCTION_BASS_CODES = new Set([
+      ...bassFunctionKeyDefs.map(def => def.code),
+      BASS_FUNCTION_SEVENTH_CODE
+    ]);
     const codeToHardwarePosition = new Map(
       hardwareRows.flatMap(row => row.codes.map((code, index) => [code, {
         rowDelta: row.rowDelta,
@@ -3077,6 +3466,7 @@
         leftEdgePedal: false,
         rightEdgePedal: false,
         source: "browser",
+        colorIndex: 0,
         pressedCodes: new Set()
       }
     ];
@@ -3094,7 +3484,7 @@
       source: "pointer",
       monophonic: true
     };
-    const bassProfile = {
+    const mainBassProfile = {
       id: "bass",
       label: "贝司声部",
       short: "贝",
@@ -3115,8 +3505,26 @@
       modifier: false,
       seventhMode: false,
       activePointerCodes: new Map(),
-      activePointerSevenths: new Map()
+      activePointerSevenths: new Map(),
+      chordOverrides: {},
+      inputProfileId: "main",
+      twoKeySeventhStartedAt: 0,
+      twoKeySeventhSignature: "",
+      voiceUpdateTimer: 0,
+      pendingReleaseTime: null
     };
+    let bassContext = mainBassProfile;
+    const bassProfile = new Proxy(mainBassProfile, {
+      get(_target, property) {
+        return bassContext[property];
+      },
+      set(_target, property, value) {
+        bassContext[property] = value;
+        return true;
+      }
+    });
+    const externalBassLayers = new Map();
+    let activeBassConfigLayerId = mainBassProfile.id;
     const bassChordTypes = [
       { id: "maj", family: "triad", label: "大三", suffix: "", formula: "1-3-5", intervals: [0, 4, 7], roles: { third: 4, fifth: 7 } },
       { id: "min", family: "triad", label: "小三", suffix: "m", formula: "1-b3-5", intervals: [0, 3, 7], roles: { third: 3, fifth: 7 } },
@@ -3150,15 +3558,244 @@
       outside: [
         { id: "normal", labelKey: "bassStateNormal" },
         { id: "modifier", labelKey: "bassStateModifier" }
+      ],
+      external: [
+        { id: "normal", labelKey: "bassStateNormal" },
+        { id: "modifier", labelKey: "bassStateModifier" },
+        { id: "seventh", labelKey: "bassStateSeventh" },
+        { id: "seventhModifier", labelKey: "bassStateSeventhModifier" }
       ]
     };
-    const bassChordOverrides = {};
+    const bassChordOverrides = new Proxy({}, {
+      get(_target, property) {
+        return bassContext.chordOverrides[property];
+      },
+      set(_target, property, value) {
+        bassContext.chordOverrides[property] = value;
+        return true;
+      },
+      deleteProperty(_target, property) {
+        return delete bassContext.chordOverrides[property];
+      },
+      ownKeys() {
+        return Reflect.ownKeys(bassContext.chordOverrides);
+      },
+      getOwnPropertyDescriptor(_target, property) {
+        if (!Object.prototype.hasOwnProperty.call(bassContext.chordOverrides, property)) return undefined;
+        return { configurable: true, enumerable: true, writable: true, value: bassContext.chordOverrides[property] };
+      }
+    });
+
+    function actualBassLayer(layer = bassProfile) {
+      return layer === bassProfile ? bassContext : layer;
+    }
+
+    function withBassLayer(layer, callback) {
+      const previous = bassContext;
+      bassContext = actualBassLayer(layer);
+      try {
+        return callback();
+      } finally {
+        bassContext = previous;
+      }
+    }
+
+    function createExternalBassLayer(profile, seed = {}) {
+      const template = mainBassProfile;
+      return {
+        id: `bass-${profile.id}`,
+        label: seed.label || profile.label,
+        short: seed.short || profile.short,
+        enabled: seed.enabled !== false,
+        keyMode: seed.keyMode || template.keyMode,
+        instrument: seed.instrument || template.instrument,
+        outputShift: Number.isFinite(seed.outputShift) ? seed.outputShift : template.outputShift,
+        volume: Number.isFinite(seed.volume) ? seed.volume : template.volume,
+        longVibrato: typeof seed.longVibrato === "boolean" ? seed.longVibrato : template.longVibrato,
+        outHarmony: typeof seed.outHarmony === "boolean" ? seed.outHarmony : template.outHarmony,
+        edgeMirror: typeof seed.edgeMirror === "boolean" ? seed.edgeMirror : template.edgeMirror,
+        fadeTime: Number.isFinite(seed.fadeTime) ? seed.fadeTime : template.fadeTime,
+        source: "bass",
+        inputProfileId: profile.id,
+        baseCoord: seed.baseCoord ? { ...seed.baseCoord } : { ...template.baseCoord },
+        pressedCodes: new Set(),
+        pressedSevenths: new Set(),
+        suppressedTriadCodes: new Set(),
+        modifier: false,
+        seventhMode: false,
+        activePointerCodes: new Map(),
+        activePointerSevenths: new Map(),
+        chordOverrides: { ...(seed.chordOverrides || {}) },
+        twoKeySeventhStartedAt: 0,
+        twoKeySeventhSignature: "",
+        voiceUpdateTimer: 0,
+        pendingReleaseTime: null
+      };
+    }
+
+    function ensureExternalBassLayer(profile, seed = {}) {
+      if (!profile || profile.source === "browser" || profile.source === "pointer") return mainBassProfile;
+      let layer = externalBassLayers.get(profile.id);
+      if (!layer) {
+        layer = createExternalBassLayer(profile, seed);
+        externalBassLayers.set(profile.id, layer);
+      }
+      layer.label = profile.label;
+      layer.short = profile.short;
+      return layer;
+    }
+
+    function bassLayerForInputProfile(profile) {
+      if (!profile || profile.source === "browser") return mainBassProfile;
+      return ensureExternalBassLayer(profile);
+    }
+
+    function externalBassLayerList() {
+      return mappingProfiles
+        .filter(profile => profile.source !== "browser")
+        .map(profile => ensureExternalBassLayer(profile));
+    }
+
+    function allBassLayers() {
+      return [mainBassProfile, ...externalBassLayerList()];
+    }
+
+    function profileHasIndependentBass(profile) {
+      if (!profile || profile.source === "browser" || profile.source === "pointer") return false;
+      if (profile.source === "bridge") return Boolean(profile.bridgeDeviceId);
+      if (profile.source === "hid") return Boolean(profile.device || profile.hidReady);
+      return false;
+    }
+
+    function configurableBassLayers() {
+      return [
+        mainBassProfile,
+        ...externalBassLayerList().filter(layer => profileHasIndependentBass(bassLayerInputProfile(layer)))
+      ];
+    }
+
+    function bassLayerById(id) {
+      if (!id || id === mainBassProfile.id) return mainBassProfile;
+      return [...externalBassLayers.values()].find(layer => layer.id === id) || mainBassProfile;
+    }
+
+    function bassLayerInputProfile(layer) {
+      const actual = actualBassLayer(layer);
+      return mappingProfiles.find(profile => profile.id === actual.inputProfileId) || browserProfile();
+    }
     const qboardMusicData = window.QBOARD_MUSIC_DATA || {};
     const instrumentOptions = qboardMusicData.instrumentOptions || [];
     const instrumentTranspositions = qboardMusicData.instrumentTranspositions || {};
 
     const languageMeta = qboardLanguageData.languageMeta || { zh: { lang: "zh-CN", dir: "ltr" } };
     const translations = qboardLanguageData.translations || { zh: {}, en: {} };
+    const localTranslationFallbacks = {
+      zh: {
+        addKeyboard: "添加外接键盘",
+        mainBassPart: "主贝司声部",
+        bassStateSeventh: "七和弦",
+        bassStateSeventhModifier: "七和弦变异",
+        profileColor: "声部颜色：{note}（点击切换）",
+        bassInputSource: "贝司输入源",
+        bassHarmonySettings: "和声设置",
+        resetRebind: "重置/重绑",
+        resetQMapping: "重置 Q 映射",
+        resetRebindTitle: "选择重置或重新绑定",
+        externalBassPart: "{name} 贝司",
+        sourceBridge: "桥接",
+        addBridge: "添加桥接键盘",
+        bridgeKeyboardName: "桥接键盘 {index}",
+        bridgeKeyboardHelp: "来自本地 Raw Input 桥接器的独立实体键盘。",
+        bridgeBind: "绑定设备",
+        bridgeRebind: "重绑",
+        bridgeWaiting: "等待桥接器按键",
+        bridgeConnected: "桥接器已连接",
+        bridgeDisconnected: "桥接器已断开",
+        bridgeConnectFailed: "无法连接桥接器，请先安装并打开本地桥接器",
+        bridgeUnavailable: "当前浏览器不支持 WebSocket",
+        bridgeBound: "已绑定 {name}",
+        bridgeDownload: "下载桥接器安装器",
+        bridgeDirectory: "本地桥接器连接",
+        bridgeOpen: "打开桥接器",
+        bridgePanelTitle: "桥接器",
+        bridgeDirectoryTitle: "本地桥接器连接",
+        bridgePath: "安装目录",
+        bridgePathPlaceholder: "粘贴安装器复制的路径",
+        bridgeBrowse: "浏览目录",
+        bridgeConnect: "连接",
+        bridgeReconnectAction: "重连",
+        bridgeInstallerMissing: "所选目录中没有 QBoardBridge.exe",
+        bridgeFolderSelected: "已选择桥接器目录",
+        bridgePathUnset: "未选择目录",
+        bridgeClients: "{count} 个网页",
+        bridgeClose: "关闭",
+        bridgePromptTitle: "外接键盘独立映射需要本地桥接器",
+        bridgePromptText: "普通浏览器按键事件不能区分不同实体键盘。点击确定下载单文件安装器，选择安装目录并完成安装；随后点击“打开桥接器”，再添加桥接键盘并按一下外接键盘完成绑定。",
+        bridgeManualTitle: "外接键盘桥接器",
+        bridgeManualIntro: "如果普通 HID 键盘不能被 WebHID 独立识别，请使用本地 Raw Input 桥接器。",
+        bridgeManual1: "点击“下载桥接器安装器”，下载 QBoardBridgeInstaller.exe。",
+        bridgeManual2: "运行安装器并选择目录。安装完成后路径会自动复制；把它粘贴到“本地桥接器连接”，也可以直接浏览安装目录。",
+        bridgeManual3: "点击“打开桥接器”。网页左侧面板显示已连接后，再点击“+”添加键盘；首次启动若出现 Windows 或浏览器本地网络提示，请选择允许。",
+        bridgeManual4: "按一下外接键盘任意键绑定实体设备；之后这把键盘使用该行的音色、音量、偏移和揉弦设置。",
+        bridgeManual5: "键盘设置标题中的“+”统一添加桥接键盘；每点一次会新增一个独立声部并等待下一把实体键盘。"
+      },
+      en: {
+        addKeyboard: "Add external keyboard",
+        mainBassPart: "Main bass part",
+        bassStateSeventh: "Seventh chord",
+        bassStateSeventhModifier: "Mutated seventh",
+        profileColor: "Part color: {note} (click to change)",
+        bassInputSource: "Bass input source",
+        bassHarmonySettings: "Harmony settings",
+        resetRebind: "Reset / rebind",
+        resetQMapping: "Reset Q mapping",
+        resetRebindTitle: "Choose reset or rebind",
+        externalBassPart: "{name} bass",
+        sourceBridge: "Bridge",
+        addBridge: "Add bridge keyboard",
+        bridgeKeyboardName: "Bridge keyboard {index}",
+        bridgeKeyboardHelp: "Independent physical keyboard from the local Raw Input bridge.",
+        bridgeBind: "Bind device",
+        bridgeRebind: "Rebind",
+        bridgeWaiting: "Waiting for bridge key",
+        bridgeConnected: "Bridge connected",
+        bridgeDisconnected: "Bridge disconnected",
+        bridgeConnectFailed: "Cannot connect to the bridge. Install and open the local bridge first.",
+        bridgeUnavailable: "This browser does not support WebSocket.",
+        bridgeBound: "Bound {name}",
+        bridgeDownload: "Download bridge installer",
+        bridgeDirectory: "Local bridge connection",
+        bridgeOpen: "Open bridge",
+        bridgePanelTitle: "Bridge",
+        bridgeDirectoryTitle: "Local bridge connection",
+        bridgePath: "Install folder",
+        bridgePathPlaceholder: "Paste the path copied by the installer",
+        bridgeBrowse: "Browse folder",
+        bridgeConnect: "Connect",
+        bridgeReconnectAction: "Reconnect",
+        bridgeInstallerMissing: "QBoardBridge.exe was not found in the selected folder.",
+        bridgeFolderSelected: "Bridge folder selected",
+        bridgePathUnset: "No folder selected",
+        bridgeClients: "{count} web clients",
+        bridgeClose: "Close",
+        bridgePromptTitle: "Independent external keyboards need the local bridge",
+        bridgePromptText: "Normal browser key events cannot identify the physical keyboard. Press OK to download the single-file installer, choose an install folder, then use Open bridge before adding and binding a physical keyboard.",
+        bridgeManualTitle: "External keyboard bridge",
+        bridgeManualIntro: "Use the local Raw Input bridge when a normal HID keyboard is not independently visible through WebHID.",
+        bridgeManual1: "Click Download bridge installer to get QBoardBridgeInstaller.exe.",
+        bridgeManual2: "Run the installer and choose a folder. It copies the path when installation finishes; paste it into Local bridge connection or browse to that folder.",
+        bridgeManual3: "Click Open bridge. Once the narrow panel shows Connected, press + to add a keyboard. Allow Windows and browser local-network prompts if shown.",
+        bridgeManual4: "Press any key on the external keyboard to bind that physical device; it then uses that row's instrument, volume, shift, and vibrato settings.",
+        bridgeManual5: "The + button in Keyboard settings now adds one independent bridge part and waits for the next physical keyboard."
+      },
+      fr: { mainBassPart: "Partie de basse principale", bassStateSeventh: "Accord de septième", bassStateSeventhModifier: "Septième mutée" },
+      de: { mainBassPart: "Hauptbassstimme", bassStateSeventh: "Septakkord", bassStateSeventhModifier: "Mutierter Septakkord" },
+      es: { mainBassPart: "Parte de bajo principal", bassStateSeventh: "Acorde de séptima", bassStateSeventhModifier: "Séptima mutada" },
+      pt: { mainBassPart: "Parte de baixo principal", bassStateSeventh: "Acorde de sétima", bassStateSeventhModifier: "Sétima mutada" },
+      ja: { mainBassPart: "メインベースパート", bassStateSeventh: "七和音", bassStateSeventhModifier: "変異七和音" },
+      ar: { mainBassPart: "قسم الباص الرئيسي", bassStateSeventh: "وتر سابع", bassStateSeventhModifier: "وتر سابع متغير" },
+      ru: { mainBassPart: "Основная басовая партия", bassStateSeventh: "Септаккорд", bassStateSeventhModifier: "Изменённый септаккорд" }
+    };
 
     const manualCopies = qboardLanguageData.manualCopies || {};
 
@@ -3173,7 +3810,25 @@
       menuCollapse: document.querySelector("#menuCollapse"),
       menuSettings: document.querySelector("#menuSettings"),
       menuManual: document.querySelector("#menuManual"),
-      addHidButton: document.querySelector("#addHidButton"),
+      addKeyboardButton: document.querySelector("#addKeyboardButton"),
+      bridgeDirectoryButton: document.querySelector("#bridgeDirectoryButton"),
+      openBridgeButton: document.querySelector("#openBridgeButton"),
+      keyboardSectionBody: document.querySelector("#keyboardSectionBody"),
+      bridgePanel: document.querySelector("#bridgePanel"),
+      bridgePanelTitle: document.querySelector("#bridgePanelTitle"),
+      bridgePanelStatus: document.querySelector("#bridgePanelStatus"),
+      bridgePanelClients: document.querySelector("#bridgePanelClients"),
+      bridgePanelPath: document.querySelector("#bridgePanelPath"),
+      bridgePanelButton: document.querySelector("#bridgePanelButton"),
+      bridgeDirectoryDialog: document.querySelector("#bridgeDirectoryDialog"),
+      bridgeDirectoryTitle: document.querySelector("#bridgeDirectoryTitle"),
+      bridgeDirectoryClose: document.querySelector("#bridgeDirectoryClose"),
+      bridgePathLabel: document.querySelector("#bridgePathLabel"),
+      bridgePathInput: document.querySelector("#bridgePathInput"),
+      bridgeBrowseButton: document.querySelector("#bridgeBrowseButton"),
+      bridgeConnectButton: document.querySelector("#bridgeConnectButton"),
+      bridgeInstallerButton: document.querySelector("#bridgeInstallerButton"),
+      bridgeDirectoryFallback: document.querySelector("#bridgeDirectoryFallback"),
       languagePicker: document.querySelector("#languagePicker"),
       languageSelect: document.querySelector("#languageSelect"),
       languageFlag: document.querySelector("#languageFlag"),
@@ -3209,12 +3864,16 @@
       metronomeBpm: document.querySelector("#metronomeBpm"),
       metronomeStepButtons: [...document.querySelectorAll("[data-metronome-step]")],
       showStaff: document.querySelector("#showStaff"),
+      showShortcuts: document.querySelector("#showShortcuts"),
+      shortcutSection: document.querySelector("#shortcutSection"),
       centerView: document.querySelector("#centerView"),
       resetView: document.querySelector("#resetView"),
+      keyboardLayout: document.querySelector("#keyboardLayout"),
       profileRows: document.querySelector("#profileRows"),
       bassDock: document.querySelector("#bassDock"),
       bassConfigPopover: document.querySelector("#bassConfigPopover"),
       bassConfigTitle: document.querySelector("#bassConfigTitle"),
+      bassConfigSource: document.querySelector("#bassConfigSource"),
       bassConfigReset: document.querySelector("#bassConfigReset"),
       bassConfigBody: document.querySelector("#bassConfigBody"),
       bassConfigClose: document.querySelector("#bassConfigClose"),
@@ -3246,17 +3905,25 @@
     let qAnchor = { ...DEFAULT_Q_ANCHOR };
     let manualBendCents = 0;
     let longVibratoState = null;
-    const activeShiftPedalSides = new Set();
+    const browserShiftDownSides = new Set();
     const longVibratoHolds = new Map();
     let autoVibratoFrame = 0;
     let staffZoom = 1;
     const voices = new Map();
     const codeToCoord = new Map();
     const coordToLabels = new Map();
-    const coordToReservedLabels = new Map();
     const heldBrowserCodes = new Set();
     const hidSuppressedCodeUntil = new Map();
+    const hidActiveCodeCounts = new Map();
     const pendingBrowserStarts = new Map();
+    const pendingBrowserBassStarts = new Map();
+    const activeBrowserBassCodes = new Set();
+    const HID_BROWSER_SUPPRESS_MS = 20;
+    const HID_BROWSER_START_GRACE_MS = 16;
+    const BRIDGE_WS_URL = "ws://127.0.0.1:8765/qboard";
+    const BRIDGE_BROWSER_START_GRACE_MS = 16;
+    const MAIN_PIANO_START_GRACE_MS = 8;
+    const BASS_INPUT_SETTLE_MS = 16;
     let metronomeBpm = DEFAULT_METRONOME_BPM;
     let metronomeActive = false;
     let metronomeTimerId = null;
@@ -3265,10 +3932,20 @@
     let touchVibratoLocked = false;
     let touchVibratoLockedScroll = null;
     let edgeOctaveCombo = null;
+    let bridgeSocket = null;
+    let bridgeReconnectTimer = 0;
+    let bridgeConnected = false;
+    let bridgeClientCount = 0;
+    let bridgeInstallPath = "";
+    let bridgeDirectoryVerified = false;
+    let bridgeCaptureProfileId = null;
+    let bridgeInstallHintShown = false;
+    const bridgeDevices = new Map();
+    try { bridgeInstallPath = localStorage.getItem("qboard-bridge-install-path") || ""; } catch (error) {}
 
     function tr(key, values = {}) {
       const dictionary = translations[currentLanguage] || translations.zh;
-      const template = dictionary[key] ?? translations.en[key] ?? translations.zh[key] ?? key;
+      const template = dictionary[key] ?? localTranslationFallbacks[currentLanguage]?.[key] ?? translations.en[key] ?? localTranslationFallbacks.en[key] ?? translations.zh[key] ?? localTranslationFallbacks.zh[key] ?? key;
       return String(template).replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
     }
 
@@ -3414,7 +4091,7 @@
     }
 
     function usesKeyboardFade(profile) {
-      return profile?.source === "browser" || profile?.source === "hid";
+      return profile?.source === "browser" || profile?.source === "hid" || profile?.source === "bridge";
     }
 
     function keyboardFadeTimeForVoice(voice) {
@@ -3551,6 +4228,12 @@
       if (visible) renderScaleStaff();
     }
 
+    function syncShortcutVisibility() {
+      const visible = els.showShortcuts?.checked !== false;
+      els.controls.classList.toggle("is-shortcuts-hidden", !visible);
+      els.showShortcuts?.setAttribute("aria-expanded", String(visible));
+    }
+
     function renderManual() {
       if (!els.manualBody) return;
       const copy = manualCopies[currentLanguage] || manualCopies.en;
@@ -3560,7 +4243,11 @@
           .join("");
         return `<section><h3>${escapeSvg(section.title)}</h3><ul>${items}</ul></section>`;
       }).join("");
-      els.manualBody.innerHTML = `<p>${escapeSvg(copy.intro)}</p>${sections}`;
+      const bridgeItems = ["bridgeManual1", "bridgeManual2", "bridgeManual3", "bridgeManual4", "bridgeManual5"]
+        .map(key => `<li>${escapeSvg(tr(key))}</li>`)
+        .join("");
+      const bridgeSection = `<section><h3>${escapeSvg(tr("bridgeManualTitle"))}</h3><p>${escapeSvg(tr("bridgeManualIntro"))}</p><button class="command primary" type="button" data-bridge-download>${escapeSvg(tr("bridgeDownload"))}</button><ul>${bridgeItems}</ul></section>`;
+      els.manualBody.innerHTML = `<p>${escapeSvg(copy.intro)}</p>${bridgeSection}${sections}`;
     }
 
     function compactForeignControlLabels(root = document) {
@@ -3608,7 +4295,7 @@
       }
       pointerProfile.label = tr("mouseTouch");
       pointerProfile.short = tr("mouseShort");
-      bassProfile.label = tr("bassPart");
+      bassProfile.label = tr("mainBassPart");
       bassProfile.short = tr("bassShort");
 
       setText(els.appTitle, "appTitle");
@@ -3628,7 +4315,21 @@
       setHelp(document.querySelector("#menuStaff"), "open", "staff");
       setHelp(document.querySelector("#menuShortcuts"), "open", "shortcutList");
       setHelp(els.menuCollapse, "command", els.controls.classList.contains("is-collapsed") ? "showOptions" : "collapseOptions");
-      setHelp(els.addHidButton, "command", "addHid");
+      setHelp(els.addKeyboardButton, "command", "addKeyboard");
+      setText(els.bridgeDirectoryButton, "bridgeDirectory");
+      setText(els.openBridgeButton, "bridgeOpen");
+      setText(els.bridgePanelTitle, "bridgePanelTitle");
+      setText(els.bridgeDirectoryTitle, "bridgeDirectoryTitle");
+      setText(els.bridgePathLabel, "bridgePath");
+      setText(els.bridgeBrowseButton, "bridgeBrowse");
+      setText(els.bridgeConnectButton, "bridgeConnect");
+      setText(els.bridgeInstallerButton, "bridgeDownload");
+      setText(els.bridgePanelButton, "bridgeReconnectAction");
+      els.bridgePathInput.placeholder = tr("bridgePathPlaceholder");
+      els.bridgeDirectoryClose.title = tr("bridgeClose");
+      els.bridgeDirectoryClose.setAttribute("aria-label", tr("bridgeClose"));
+      els.bridgeDirectoryButton.title = tr("bridgeDirectory");
+      els.openBridgeButton.title = tr("bridgeOpen");
       setText(".global-section .section-heading", "globalSettings");
       setText(".keyboard-section .section-heading", "keyboardSettings");
       setText(".manual-section .section-heading", "manualSettings");
@@ -3673,6 +4374,7 @@
       setHelp(els.colorPrev, "command", "prevC");
       setHelp(els.colorNext, "command", "nextC");
       setHelp(els.showStaff, "toggle", "showStaff");
+      setHelp(els.showShortcuts, "toggle", "shortcutList");
       if (els.staffTransposeLabel) {
         els.staffTransposeLabel.title = tr("staffTransposeHelp");
       }
@@ -3697,6 +4399,7 @@
       setText(".pedal-state-control .group-label", "pedalStatusTitle");
       setText(".metronome-control .group-label", "metronome");
       setText("#showStaff + span", "showStaff");
+      setText("#showShortcuts + span", "shortcutList");
       setText("#vibratoPad span:last-child", "vibrato");
 
       setOptionText(els.keyShape, { hex: "hex", round: "round" });
@@ -3727,8 +4430,10 @@
       updatePedalOptionOutputs();
       updatePedalSwitches();
       updateMetronomeDisplay();
+      updateBridgePanel();
       renderManual();
       syncStaffVisibility();
+      syncShortcutVisibility();
       syncMenuTabs();
       if (els.bassConfigPopover && !els.bassConfigPopover.hidden) renderBassConfigPopover();
       compactForeignControlLabels();
@@ -3776,7 +4481,10 @@
       els.controls.dataset.activePanel = panel;
       els.controls.classList.remove("is-collapsed");
       syncMenuTabs();
-      if (panel === "settings") renderScaleStaff();
+      if (panel === "settings") {
+        renderScaleStaff();
+        requestAnimationFrame(() => syncKeyboardSettingsViewport(els.keyboardLayout?.scrollTop || 0));
+      }
     }
 
     function showMobilePanel(panel) {
@@ -3785,6 +4493,9 @@
       els.controls.classList.remove("is-collapsed");
       syncMenuTabs();
       if (panel === "staff") renderScaleStaff();
+      if (panel === "keyboard") {
+        requestAnimationFrame(() => syncKeyboardSettingsViewport(els.keyboardLayout?.scrollTop || 0));
+      }
     }
 
     function toggleMenuCollapse() {
@@ -3845,17 +4556,6 @@
       return null;
     }
 
-    function isPhysicalShiftEvent(event) {
-      return event?.key === "Shift" || event?.code === SOFT_PEDAL_CODE || event?.code === HARMONIC_PEDAL_CODE;
-    }
-
-    function shiftPhysicalSideFromEvent(event) {
-      if (!isPhysicalShiftEvent(event)) return null;
-      if (event.location === 1) return "left";
-      if (event.location === 2) return "right";
-      return shiftPhysicalSideFromCode(event.code);
-    }
-
     function shiftPedalRoleForSide(side) {
       const logicalSide = mirroredSide(side);
       if (logicalSide === "left") return "soft";
@@ -3865,10 +4565,6 @@
 
     function shiftPedalRoleForCode(code) {
       return shiftPedalRoleForSide(shiftPhysicalSideFromCode(code));
-    }
-
-    function shiftPedalRoleForEvent(event) {
-      return shiftPedalRoleForSide(shiftPhysicalSideFromEvent(event));
     }
 
     function isSustainCode(code) {
@@ -3991,24 +4687,8 @@
       });
     }
 
-    function isRightShiftEvent(event) {
-      return shiftPhysicalSideFromEvent(event) === "right";
-    }
-
-    function isLeftShiftEvent(event) {
-      return shiftPhysicalSideFromEvent(event) === "left";
-    }
-
     function isSustainEvent(event) {
       return event.code === "Space";
-    }
-
-    function isSoftPedalEvent(event) {
-      return shiftPedalRoleForEvent(event) === "soft";
-    }
-
-    function isHarmonicPedalEvent(event) {
-      return shiftPedalRoleForEvent(event) === "harmonic";
     }
 
     function isEdgePedalEvent(event) {
@@ -4054,6 +4734,8 @@
     function profileById(id) {
       if (id === pointerProfile.id) return pointerProfile;
       if (id === bassProfile.id) return bassProfile;
+      const bassLayer = [...externalBassLayers.values()].find(layer => layer.id === id);
+      if (bassLayer) return bassLayer;
       return mappingProfiles.find(profile => profile.id === id);
     }
 
@@ -4077,9 +4759,24 @@
 
     function profileFeatureHelp(profile) {
       if (profile === pointerProfile) return tr("mouseTouchHelp");
-      if (profile === bassProfile) return tr("bassPartHelp");
+      if (profile?.source === "bass") return tr("bassPartHelp");
       if (profile?.id === "main") return tr("mainKeyboardHelp");
+      if (profile?.source === "bridge") return tr("bridgeKeyboardHelp");
       return tr("hidKeyboardHelp");
+    }
+
+    function bridgeProfileStatus(profile) {
+      if (profile?.source !== "bridge") return "";
+      if (bridgeCaptureProfileId === profile.id) return tr("bridgeWaiting");
+      if (profile.bridgeDeviceName) return `${tr("sourceBridge")} · ${profile.bridgeDeviceName}`;
+      if (profile.bridgeDeviceId) return `${tr("sourceBridge")} · ${profile.bridgeDeviceId.slice(-10)}`;
+      return bridgeConnected ? tr("bridgeWaiting") : tr("bridgeDisconnected");
+    }
+
+    function profileSourceText(profile) {
+      if (profile?.source === "bridge") return bridgeProfileStatus(profile);
+      if (profile?.source === "hid") return tr("sourceHid");
+      return tr("computerKeyboard");
     }
 
     function effectiveSoftPedal(profile) {
@@ -4098,8 +4795,9 @@
       if (!audioContext || !profile) return;
       const now = audioContext.currentTime;
       const gain = profileOutputGain(profile);
+      const targetProfile = profile === bassProfile ? mainBassProfile : profile;
       for (const voice of voices.values()) {
-        if (voice.profile !== profile || !voice.profileGain) continue;
+        if (voice.profile !== targetProfile || !voice.profileGain) continue;
         voice.profileGain.gain.cancelScheduledValues(now);
         voice.profileGain.gain.setTargetAtTime(gain, now, Math.max(0.01, timeConstant));
       }
@@ -4124,6 +4822,7 @@
     }
 
     function renderMappingProfileOptions() {
+      const previousScrollTop = els.keyboardLayout?.scrollTop || 0;
       const fragment = document.createDocumentFragment();
 
       function createInstrumentControl(profile) {
@@ -4239,7 +4938,7 @@
         return fadeControl;
       }
 
-      function createBassFadeControl() {
+      function createBassFadeControl(profile = bassProfile) {
         const fadeControl = document.createElement("div");
         fadeControl.className = "control";
         const fadeLabel = document.createElement("label");
@@ -4251,7 +4950,7 @@
         fadeInput.min = "0";
         fadeInput.max = String(MAX_BASS_FADE_TIME);
         fadeInput.step = "0.05";
-        fadeInput.value = String(bassFadeTime());
+        fadeInput.value = String(clampFloat(actualBassLayer(profile).fadeTime, DEFAULT_BASS_FADE_TIME, 0, MAX_BASS_FADE_TIME));
         fadeInput.dataset.profileField = "bassFadeTime";
         const help = helpForLabel("adjust", tr("bassFade"));
         fadeLabel.title = help;
@@ -4355,6 +5054,19 @@
         enableInput.setAttribute("aria-label", helpForLabel("toggle", profile.label));
         enableLabel.append(enableInput);
         header.append(enableLabel, titleElement);
+        if (profile?.source !== "pointer" && profile?.source !== "bass") {
+          const colorButton = document.createElement("button");
+          colorButton.type = "button";
+          colorButton.className = "profile-color-button";
+          colorButton.dataset.profileAction = "cycleProfileColor";
+          const colorIndex = mod(Number(profile.colorIndex) || 0, 12);
+          const pitchName = noteNameForPcInKey(colorIndex);
+          colorButton.style.setProperty("--profile-hue", String(hueForPitchClass(colorIndex)));
+          colorButton.title = tr("profileColor", { note: pitchName });
+          colorButton.setAttribute("aria-label", colorButton.title);
+          header.classList.add("has-color");
+          header.append(colorButton);
+        }
         return header;
       }
 
@@ -4420,60 +5132,89 @@
       );
       fragment.append(pointerRow);
 
-      const bassRow = document.createElement("div");
-      bassRow.className = "profile-row is-bass";
-      if (!profileIsEnabled(bassProfile)) bassRow.classList.add("is-disabled");
-      bassRow.dataset.profileId = bassProfile.id;
-      const bassName = document.createElement("div");
-      bassName.className = "command profile-name profile-static-name";
-      bassName.title = tr("bassPartHelp");
-      bassName.setAttribute("aria-label", tr("bassPartHelp"));
-      const bassNameText = document.createElement("span");
-      bassNameText.textContent = tr("bassPart");
-      const bassSource = document.createElement("small");
-      bassSource.className = "bass-source-line";
-      const bassSourceText = document.createElement("span");
-      bassSourceText.textContent = bassKeyModeLabel();
-      const bassModeButton = document.createElement("button");
-      bassModeButton.type = "button";
-      bassModeButton.className = "bass-key-mode-button";
-      bassModeButton.dataset.profileAction = "toggleBassKeyMode";
-      bassModeButton.textContent = "↔";
-      bassModeButton.title = tr("bassKeyModeSwitch");
-      bassModeButton.setAttribute("aria-label", tr("bassKeyModeSwitch"));
-      bassSource.append(bassSourceText, bassModeButton);
-      bassName.append(bassNameText, bassSource);
-      const bassBaseButton = document.createElement("button");
-      bassBaseButton.type = "button";
-      bassBaseButton.className = "command primary";
-      bassBaseButton.dataset.profileAction = "bindBassBase";
-      bassBaseButton.textContent = tr("bassBase");
-      bassBaseButton.title = tr("bassBaseHelp");
-      bassBaseButton.setAttribute("aria-label", tr("bassBaseHelp"));
-      bassRow.append(
-        createProfileHeader(bassProfile, bassName),
-        createInstrumentControl(bassProfile),
-        createShiftControl(bassProfile),
-        createVolumeControl(bassProfile),
-        createLongVibratoControl(bassProfile),
-        createBassFadeControl(),
-        createCheckboxControl(bassProfile, "outHarmony", "bassOutHarmony"),
-        bassBaseButton
-      );
-      fragment.append(bassRow);
+      function createBassSettingsRow(layerProfile, inputProfile = null) {
+        const actualLayer = actualBassLayer(layerProfile);
+        return withBassLayer(actualLayer, () => {
+          const bassRow = document.createElement("div");
+          bassRow.className = inputProfile
+            ? "profile-row is-bass is-external-bass"
+            : "profile-row is-bass";
+          if (!profileIsEnabled(layerProfile)) bassRow.classList.add("is-disabled");
+          bassRow.dataset.profileId = layerProfile.id;
+          const colorProfile = inputProfile || browserProfile();
+          if (colorProfile) {
+            bassRow.dataset.profileColor = "";
+            bassRow.style.setProperty("--profile-hue", String(hueForPitchClass(mod(Number(colorProfile.colorIndex) || 0, 12))));
+          }
+
+          const bassName = document.createElement("div");
+          bassName.className = "command profile-name profile-static-name";
+          bassName.title = tr("bassPartHelp");
+          bassName.setAttribute("aria-label", tr("bassPartHelp"));
+          const bassNameText = document.createElement("span");
+          bassNameText.textContent = inputProfile
+            ? tr("externalBassPart", { name: inputProfile.short || inputProfile.label })
+            : tr("mainBassPart");
+          const bassSource = document.createElement("small");
+          bassSource.className = "bass-source-line";
+          const bassSourceText = document.createElement("span");
+          bassSourceText.textContent = inputProfile
+            ? "1-=/F1-F12"
+            : bassKeyModeLabel();
+          const bassModeButton = document.createElement("button");
+          bassModeButton.type = "button";
+          bassModeButton.className = "bass-key-mode-button";
+          bassModeButton.dataset.profileAction = "toggleBassKeyMode";
+          bassModeButton.textContent = "↔";
+          bassModeButton.title = tr("bassKeyModeSwitch");
+          bassModeButton.setAttribute("aria-label", tr("bassKeyModeSwitch"));
+          bassSource.append(bassSourceText, bassModeButton);
+          bassName.append(bassNameText, bassSource);
+
+          const bassBaseButton = document.createElement("button");
+          bassBaseButton.type = "button";
+          bassBaseButton.className = "command primary bass-base-button";
+          bassBaseButton.dataset.profileAction = "bindBassBase";
+          const bassBaseName = scaleRelativeNamesForMidi(bassBaseMidi());
+          const bassBaseSeparator = ["zh", "ja"].includes(currentLanguage) ? "：" : ": ";
+          bassBaseButton.textContent = `${tr("bassBase")}${bassBaseSeparator}${bassBaseName}`;
+          bassBaseButton.title = tr("bassBaseHelp");
+          bassBaseButton.setAttribute("aria-label", tr("bassBaseHelp"));
+
+          const harmonyButton = document.createElement("button");
+          harmonyButton.type = "button";
+          harmonyButton.className = "command";
+          harmonyButton.dataset.profileAction = "openBassConfig";
+          harmonyButton.textContent = tr("bassHarmonySettings");
+          harmonyButton.title = tr("bassPopupHelp");
+          harmonyButton.setAttribute("aria-label", tr("bassPopupHelp"));
+
+          bassRow.append(
+            createProfileHeader(layerProfile, bassName),
+            createInstrumentControl(layerProfile),
+            createShiftControl(layerProfile),
+            createVolumeControl(layerProfile),
+            createLongVibratoControl(layerProfile),
+            createBassFadeControl(layerProfile),
+            createCheckboxControl(layerProfile, "outHarmony", "bassOutHarmony"),
+            bassBaseButton,
+            harmonyButton
+          );
+          return bassRow;
+        });
+      }
 
       for (const profile of mappingProfiles) {
         const row = document.createElement("div");
         row.className = "profile-row";
-        if (profile.id === activeProfileId) row.classList.add("is-active");
         if (!profileIsEnabled(profile)) row.classList.add("is-disabled");
         row.dataset.profileId = profile.id;
+        row.dataset.profileColor = "";
+        row.style.setProperty("--profile-hue", String(hueForPitchClass(mod(Number(profile.colorIndex) || 0, 12))));
 
-        const sourceText = profile.source === "hid" ? tr("sourceHid") : tr("computerKeyboard");
-        const nameButton = document.createElement("button");
-        nameButton.type = "button";
-        nameButton.className = profile.id === activeProfileId ? "command primary profile-name" : "command profile-name";
-        nameButton.dataset.profileAction = "activate";
+        const sourceText = profileSourceText(profile);
+        const nameButton = document.createElement("div");
+        nameButton.className = "command profile-name profile-static-name";
         nameButton.title = profileFeatureHelp(profile);
         nameButton.setAttribute("aria-label", profileFeatureHelp(profile));
         const nameText = document.createElement("span");
@@ -4527,9 +5268,14 @@
         const resetButton = document.createElement("button");
         resetButton.type = "button";
         resetButton.className = "command";
-        resetButton.dataset.profileAction = "resetQ";
-        resetButton.textContent = tr("reset");
-        setHelp(resetButton, "command", "reset");
+        resetButton.dataset.profileAction = profile.source === "bridge" ? "openResetRebind" : "resetQ";
+        resetButton.textContent = profile.source === "bridge" ? tr("resetRebind") : tr("reset");
+        if (profile.source === "bridge") {
+          resetButton.title = tr("resetRebindTitle");
+          resetButton.setAttribute("aria-label", tr("resetRebindTitle"));
+        } else {
+          setHelp(resetButton, "command", "reset");
+        }
         qGroup.append(bindButton, resetButton);
         row.append(qGroup);
 
@@ -4546,10 +5292,32 @@
         }
 
         fragment.append(row);
+        if (profile.id === "main") {
+          fragment.append(createBassSettingsRow(bassProfile));
+        } else if (profileHasIndependentBass(profile)) {
+          fragment.append(createBassSettingsRow(ensureExternalBassLayer(profile), profile));
+        }
       }
 
       els.profileRows.replaceChildren(fragment);
       compactForeignControlLabels(els.profileRows);
+      syncKeyboardSettingsViewport(previousScrollTop);
+    }
+
+    function syncKeyboardSettingsViewport(scrollTop = 0) {
+      if (!els.keyboardLayout || !els.profileRows) return;
+      const baselineIds = new Set([pointerProfile.id, "main", mainBassProfile.id]);
+      const baselineRows = [...els.profileRows.children]
+        .filter(row => baselineIds.has(row.dataset.profileId));
+      if (!baselineRows.length) return;
+      const rowGap = parseFloat(getComputedStyle(els.profileRows).rowGap) || 0;
+      const height = baselineRows.reduce((sum, row) => sum + row.getBoundingClientRect().height, 0)
+        + rowGap * Math.max(0, baselineRows.length - 1);
+      if (height <= 0) return;
+      els.keyboardSectionBody?.style.setProperty("--keyboard-settings-height", `${Math.ceil(height)}px`);
+      els.keyboardLayout.style.setProperty("--keyboard-settings-height", `${Math.ceil(height)}px`);
+      els.keyboardLayout.classList.add("has-fixed-profile-height");
+      els.keyboardLayout.scrollTop = Math.min(scrollTop, Math.max(0, els.keyboardLayout.scrollHeight - height));
     }
 
     function syncProfileControls() {
@@ -4579,6 +5347,9 @@
         edgeMirror: profile.edgeMirror,
         fadeTime: profile.fadeTime,
         baseCoord: profile.baseCoord ? { ...profile.baseCoord } : null,
+        bridgeDeviceId: profile.bridgeDeviceId || "",
+        bridgeDeviceName: profile.bridgeDeviceName || "",
+        colorIndex: profile.colorIndex,
         source: profile.source
       };
     }
@@ -4602,11 +5373,14 @@
       if (data.edgeMirror === null) profile.edgeMirror = null;
       if (Number.isFinite(data.fadeTime)) profile.fadeTime = data.fadeTime;
       if (data.baseCoord) profile.baseCoord = { ...data.baseCoord };
+      if (typeof data.bridgeDeviceId === "string") profile.bridgeDeviceId = data.bridgeDeviceId;
+      if (typeof data.bridgeDeviceName === "string") profile.bridgeDeviceName = data.bridgeDeviceName;
+      if (Number.isFinite(data.colorIndex)) profile.colorIndex = mod(data.colorIndex, 12);
     }
 
     function bassChordOverrideIsSupported(key) {
       const state = String(key).split(":")[2];
-      return state === "normal" || state === "modifier" || state === "diatonicSeventhModifier";
+      return ["normal", "modifier", "seventh", "seventhModifier", "diatonicSeventhModifier"].includes(state);
     }
 
     function cleanedBassChordOverrides() {
@@ -4615,9 +5389,17 @@
       );
     }
 
+    function bassLayerSettingsSnapshot(layer) {
+      return withBassLayer(layer, () => ({
+        ...profileSettingsSnapshot(actualBassLayer()),
+        inputProfileId: bassProfile.inputProfileId,
+        chordOverrides: cleanedBassChordOverrides()
+      }));
+    }
+
     function collectQBoardSettings() {
       return {
-        version: 10,
+        version: 14,
         language: currentLanguage,
         controls: {
           keySystem: els.keySystem.value,
@@ -4633,6 +5415,7 @@
           scaleMode: els.scaleMode.value,
           vibratoSensitivity: els.vibratoSensitivity.value,
           showStaff: els.showStaff.checked,
+          showShortcuts: els.showShortcuts.checked,
           pedalTime: els.pedalTime.value,
           sustainTime: els.sustainTime.value,
           softPedalRatio: els.softPedalRatio.value,
@@ -4651,7 +5434,8 @@
         profiles: mappingProfiles.map(profileSettingsSnapshot),
         pointerProfile: profileSettingsSnapshot(pointerProfile),
         bassProfile: profileSettingsSnapshot(bassProfile),
-        bassChordOverrides: cleanedBassChordOverrides()
+        bassChordOverrides: cleanedBassChordOverrides(),
+        bassLayers: externalBassLayerList().map(bassLayerSettingsSnapshot)
       };
     }
 
@@ -4693,11 +5477,17 @@
           if (value !== undefined && els[id]) els[id].value = value;
         }
         if (typeof controls.showStaff === "boolean") els.showStaff.checked = controls.showStaff;
+        if (typeof controls.showShortcuts === "boolean") els.showShortcuts.checked = controls.showShortcuts;
         if (Number.isFinite(settings.color?.cColorIndex)) cColorIndex = mod(settings.color.cColorIndex, 12);
         if (Number.isFinite(settings.staff?.staffZoom)) staffZoom = Math.max(0.5, Math.min(2.4, settings.staff.staffZoom));
         if (typeof settings.staff?.transpose === "boolean" && els.staffTranspose) els.staffTranspose.checked = settings.staff.transpose;
         if (Number.isFinite(settings.metronome?.bpm)) metronomeBpm = clampNumber(settings.metronome.bpm, DEFAULT_METRONOME_BPM, MIN_METRONOME_BPM, MAX_METRONOME_BPM);
         const profileSettings = Array.isArray(settings.profiles) ? settings.profiles : [];
+        for (const savedProfile of profileSettings) {
+          if (savedProfile?.source === "bridge" && typeof savedProfile.id === "string" && !profileById(savedProfile.id)) {
+            mappingProfiles.push(createBridgeKeyboardProfile(savedProfile));
+          }
+        }
         const profileSettingsById = new Map(
           profileSettings
             .filter(profile => profile && typeof profile.id === "string")
@@ -4707,6 +5497,12 @@
         if (!profileSettingsById.has("main") && profileSettings[0]) applyProfileSettings(mappingProfiles[0], profileSettings[0]);
         applyProfileSettings(pointerProfile, settings.pointerProfile);
         applyProfileSettings(bassProfile, settings.bassProfile);
+        const savedBassLayers = Array.isArray(settings.bassLayers) ? settings.bassLayers : [];
+        const savedBassLayerByInput = new Map(savedBassLayers.map(layer => [layer?.inputProfileId, layer]));
+        for (const profile of mappingProfiles) {
+          if (profile.source === "browser") continue;
+          ensureExternalBassLayer(profile, savedBassLayerByInput.get(profile.id) || {});
+        }
         if (savedVersion < 8) {
           const savedBassFade = Number(settings.bassProfile?.fadeTime);
           if (!Number.isFinite(savedBassFade) || PREVIOUS_DEFAULT_BASS_FADE_TIMES.some(value => Math.abs(savedBassFade - value) < 0.0001)) {
@@ -4874,6 +5670,7 @@
       updatePedalOptionOutputs();
       updateMetronomeDisplay();
       syncStaffVisibility();
+      syncShortcutVisibility();
       renderKeyboard({ keepScroll: false });
       renderScaleStaff();
       renderBassDock();
@@ -4902,6 +5699,7 @@
 
     function primeAudioFromGesture(event) {
       if (event?.target.closest('[data-profile-action="addHid"]')) return;
+      if (event?.target.closest("#addKeyboardButton, [data-bridge-download]")) return;
       try {
         ensureAudio();
       } catch (error) {
@@ -4909,21 +5707,42 @@
       }
     }
 
-    function scaleRelativeNameForPc(pc, direction, spellings = scaleSpellings()) {
+    function scaleRelativeSpellingForPc(pc, direction, spellings = scaleSpellings()) {
       const normalizedPc = mod(pc, 12);
       let best = null;
       for (const spelling of spellings) {
         const distance = direction === "sharp"
           ? mod(normalizedPc - spelling.pc, 12)
           : mod(spelling.pc - normalizedPc, 12);
-        if (distance === 0) return noteNameFromSpelling(spelling);
+        if (distance === 0) return { ...spelling, pc: normalizedPc };
         if (distance > 0 && (!best || distance < best.distance)) {
           best = { spelling, distance };
         }
       }
-      if (!best) return sharpNames[normalizedPc];
+      if (!best) return null;
       const accidental = best.spelling.accidental + (direction === "sharp" ? best.distance : -best.distance);
-      return `${best.spelling.letter}${accidentalText(accidental)}`;
+      return { ...best.spelling, accidental, pc: normalizedPc };
+    }
+
+    function scaleRelativeNameForPc(pc, direction, spellings = scaleSpellings()) {
+      const spelling = scaleRelativeSpellingForPc(pc, direction, spellings);
+      return spelling ? noteNameFromSpelling(spelling) : sharpNames[mod(pc, 12)];
+    }
+
+    function scaleRelativeNamesForMidi(midi, spellings = scaleSpellings()) {
+      const pc = mod(midi, 12);
+      const inScale = spellings.find(spelling => spelling.pc === pc);
+      const candidates = inScale
+        ? [inScale]
+        : [
+            scaleRelativeSpellingForPc(pc, "sharp", spellings),
+            scaleRelativeSpellingForPc(pc, "flat", spellings)
+          ].filter(Boolean);
+      const names = candidates.map(spelling => {
+        const octave = octaveForSpelling(midi, spelling);
+        return `${noteNameFromSpelling(spelling)}${octave}`;
+      });
+      return [...new Set(names)].join("/") || `${sharpNames[pc]}${midiToInfo(midi).octave}`;
     }
 
     function scaleRelativeNamesForMode(mode) {
@@ -5225,7 +6044,7 @@
 
       for (const rowDef of hardwareRows) {
         for (let index = 0; index < rowDef.codes.length; index += 1) {
-          if (profile.source === "browser" && bassClaimsBrowserCode(rowDef.codes[index])) continue;
+          if (bassClaimsProfileCode(profile, rowDef.codes[index])) continue;
           const coord = coordForProfileCode(profile, rowDef.codes[index], options);
           if (!coord) continue;
           const midi = buttonMidi(coord.row, coord.col);
@@ -5513,29 +6332,41 @@
     function buildHardwareMap() {
       codeToCoord.clear();
       coordToLabels.clear();
-      coordToReservedLabels.clear();
 
-      for (const rowDef of hardwareRows) {
-        for (let index = 0; index < rowDef.codes.length; index += 1) {
-          const code = rowDef.codes[index];
-          const coord = coordForProfileCode(activeProfile(), code);
-          if (!coord) continue;
-          const key = coordKey(coord.row, coord.col);
-          if (activeProfile().source === "browser" && bassClaimsBrowserCode(code)) {
-            if (isBassSeventhCode(code)) {
-              const labels = coordToLabels.get(key) || [];
-              labels.push(edgePedalDisplayLabel(code, rowDef.labels[index]));
-              coordToLabels.set(key, labels);
-              const reservedLabels = coordToReservedLabels.get(key) || [];
-              reservedLabels.push(edgePedalDisplayLabel(code, rowDef.labels[index]));
-              coordToReservedLabels.set(key, reservedLabels);
+      const currentProfile = activeProfile();
+      const labelProfiles = mappingProfiles.filter(profile =>
+        profileIsEnabled(profile) && (profile.source === "browser" || profileHasIndependentBass(profile))
+      );
+      for (const inputProfile of labelProfiles) {
+        for (const rowDef of hardwareRows) {
+          for (let index = 0; index < rowDef.codes.length; index += 1) {
+            const code = rowDef.codes[index];
+            const coord = coordForProfileCode(inputProfile, code);
+            if (!coord) continue;
+            const key = coordKey(coord.row, coord.col);
+            const bassReserved = bassClaimsProfileCode(inputProfile, code);
+            if (bassReserved) {
+              const inputBassLayer = bassLayerForInputProfile(inputProfile);
+              if (!withBassLayer(inputBassLayer, () => isBassSeventhCode(code))) continue;
             }
-            continue;
+
+            const mappings = coordToLabels.get(key) || [];
+            let mapping = mappings.find(item => item.profileId === inputProfile.id);
+            if (!mapping) {
+              mapping = {
+                profileId: inputProfile.id,
+                colorIndex: mod(Number(inputProfile.colorIndex) || 0, 12),
+                labels: [],
+                bassReserved: false
+              };
+              mappings.push(mapping);
+            }
+            const displayLabel = edgePedalDisplayLabel(code, rowDef.labels[index]);
+            if (!mapping.labels.includes(displayLabel)) mapping.labels.push(displayLabel);
+            mapping.bassReserved ||= bassReserved;
+            coordToLabels.set(key, mappings);
+            if (inputProfile === currentProfile && !bassReserved) codeToCoord.set(code, coord);
           }
-          const labels = coordToLabels.get(key) || [];
-          labels.push(edgePedalDisplayLabel(code, rowDef.labels[index]));
-          coordToLabels.set(key, labels);
-          codeToCoord.set(code, coord);
         }
       }
     }
@@ -5595,8 +6426,6 @@
 
     let bassVoiceSerial = 0;
     let bassDockRenderFrame = 0;
-    let bassTwoKeySeventhStartedAt = 0;
-    let bassTwoKeySeventhSignature = "";
 
     function bassBaseMidi() {
       return buttonMidi(bassProfile.baseCoord.row, bassProfile.baseCoord.col);
@@ -5660,6 +6489,31 @@
 
     function bassClaimsBrowserCode(code) {
       return bassProfile.enabled && (activeBassKeyCodes().has(code) || isBassModifierCode(code) || isBassSeventhCode(code));
+    }
+
+    function bassClaimsProfileCode(profile, code) {
+      if (profile?.source !== "browser" && !profileHasIndependentBass(profile)) return false;
+      const layer = bassLayerForInputProfile(profile);
+      return withBassLayer(layer, () => bassClaimsBrowserCode(code));
+    }
+
+    function externalFunctionBassMayOwnCode(code) {
+      if (!HID_FUNCTION_BASS_CODES.has(code)) return false;
+      return mappingProfiles.some(profile => {
+        if (!["hid", "bridge"].includes(profile.source) || !profileIsEnabled(profile)) return false;
+        const layer = ensureExternalBassLayer(profile);
+        return withBassLayer(layer, () => bassProfile.enabled && bassUsesFunctionKeys());
+      });
+    }
+
+    function handleBassCodeDownForProfile(profile, code) {
+      const layer = bassLayerForInputProfile(profile);
+      return withBassLayer(layer, () => handleBassCodeDown(code));
+    }
+
+    function handleBassCodeUpForProfile(profile, code) {
+      const layer = bassLayerForInputProfile(profile);
+      return withBassLayer(layer, () => handleBassCodeUp(code));
     }
 
     function edgeOctaveComboMarksCoord(row, col) {
@@ -5863,6 +6717,36 @@
       );
     }
 
+    function externalBassContextActive() {
+      return actualBassLayer() !== mainBassProfile;
+    }
+
+    function bassConfigFallbackIntervalsForState(spec, state, mode = bassMode()) {
+      if (state === "normal") return intervalsForBassSpec(spec, false);
+      if (state === "modifier") return intervalsForBassSpec(spec, true);
+      if (state === "diatonicSeventhModifier") {
+        return defaultDiatonicSeventhIntervalsForSpec(spec, spec.index, mode, true);
+      }
+      if (state === "seventh" || state === "seventhModifier") {
+        if (spec.index < 7) {
+          return defaultDiatonicSeventhIntervalsForSpec(spec, spec.index, mode, state === "seventhModifier");
+        }
+        return intervalsForBassSpec(spec, true);
+      }
+      return intervalsForBassSpec(spec, false);
+    }
+
+    function externalBassConfigState(forceSeventh = false) {
+      if (forceSeventh || bassProfile.seventhMode) {
+        return bassProfile.modifier ? "seventhModifier" : "seventh";
+      }
+      return bassProfile.modifier ? "modifier" : "normal";
+    }
+
+    function externalBassConfiguredChord(spec, state = externalBassConfigState()) {
+      return bassConfiguredChordForSpec(spec, state, bassConfigFallbackIntervalsForState(spec, state));
+    }
+
     function bassDiatonicSevenths(modifier = bassProfile.modifier) {
       const specs = bassSpecs().slice(0, 7);
       const mode = els.scaleMode.value === "minor" ? "minor" : "major";
@@ -5872,6 +6756,21 @@
 
       return specs.map((spec, index) => {
         const partner = specs[pairIndices[index]];
+        if (externalBassContextActive()) {
+          const configured = externalBassConfiguredChord(spec, modifier ? "seventhModifier" : "seventh");
+          return {
+            index,
+            spec,
+            partner,
+            intervals: configured.intervals,
+            label: configured.label,
+            tonePcs: configured.tonePcs,
+            isNinth: configured.isNinth,
+            midis: midisForBassChordType(spec, configured),
+            keyA: spec.key,
+            keyB: partner.key
+          };
+        }
         const intervals = defaultDiatonicSeventhIntervalsForSpec(spec, index, mode, modifier);
         const configured = modifier
           ? bassChordFromType(spec, bassConfiguredTypeId(mode, spec, "diatonicSeventhModifier", intervals))
@@ -5896,6 +6795,7 @@
     }
 
     function bassDockChordForSpec(spec, diatonicSevenths) {
+      if (externalBassContextActive()) return externalBassConfiguredChord(spec);
       if (bassProfile.seventhMode) {
         if (spec.index < 7) {
           const seventh = diatonicSevenths[spec.index];
@@ -5952,6 +6852,13 @@
     }
 
     function bassChordPlaybackForSpec(spec) {
+      if (externalBassContextActive()) {
+        const chord = externalBassConfiguredChord(spec);
+        return {
+          label: chord.label,
+          midis: midisForBassChordType(spec, chord)
+        };
+      }
       if (spec.index >= 7) {
         const modifier = outsideBassModifierActive();
         const chord = bassConfiguredChordForSpec(spec, modifier ? "modifier" : "normal", intervalsForBassSpec(spec, modifier));
@@ -5982,6 +6889,15 @@
       const combined = specs.flatMap(spec => bassChordMidisForSpec(spec, false));
       const seventhRootPc = detectedSeventhRootPc(combined);
       if (seventhRootPc === null) return null;
+      if (externalBassContextActive()) {
+        const rootSpec = specs.find(spec => spec.rootPc === seventhRootPc);
+        if (!rootSpec) return null;
+        const configured = externalBassConfiguredChord(rootSpec, externalBassConfigState(true));
+        return {
+          label: configured.label,
+          midis: midisForBassChordType(rootSpec, configured)
+        };
+      }
       const midis = adjustedSeventhChordMidis(specs, combined, bassProfile.modifier, seventhRootPc);
       const intervals = [...new Set(midis.map(midi => mod(mod(midi, 12) - seventhRootPc, 12)))];
       const rootSpec = specs.find(spec => spec.rootPc === seventhRootPc);
@@ -6000,8 +6916,8 @@
     }
 
     function clearBassTwoKeySeventhTimer() {
-      bassTwoKeySeventhStartedAt = 0;
-      bassTwoKeySeventhSignature = "";
+      bassProfile.twoKeySeventhStartedAt = 0;
+      bassProfile.twoKeySeventhSignature = "";
     }
 
     function activeDiatonicTwoKeySeventhSpecs() {
@@ -6020,16 +6936,16 @@
         return;
       }
       const signature = bassTwoKeySeventhSignatureForSpecs(specs);
-      if (signature !== bassTwoKeySeventhSignature) {
-        bassTwoKeySeventhSignature = signature;
-        bassTwoKeySeventhStartedAt = performance.now();
+      if (signature !== bassProfile.twoKeySeventhSignature) {
+        bassProfile.twoKeySeventhSignature = signature;
+        bassProfile.twoKeySeventhStartedAt = performance.now();
       }
     }
 
     function bassTwoKeySeventhDurationMs(specs) {
       const signature = bassTwoKeySeventhSignatureForSpecs(specs);
-      if (!signature || signature !== bassTwoKeySeventhSignature || !bassTwoKeySeventhStartedAt) return Number.POSITIVE_INFINITY;
-      return performance.now() - bassTwoKeySeventhStartedAt;
+      if (!signature || signature !== bassProfile.twoKeySeventhSignature || !bassProfile.twoKeySeventhStartedAt) return Number.POSITIVE_INFINITY;
+      return performance.now() - bassProfile.twoKeySeventhStartedAt;
     }
 
     function shouldSuppressRemainingTriadAfterTwoKeySeventh(durationMs) {
@@ -6055,6 +6971,13 @@
       if (bassProfile.seventhMode) {
         const spec = pressedSpecs[0];
         if (!spec) return null;
+        if (externalBassContextActive()) {
+          const chord = externalBassConfiguredChord(spec, externalBassConfigState(true));
+          return {
+            label: chord.label,
+            midis: midisForBassChordType(spec, chord)
+          };
+        }
         if (spec.index >= 7) {
           const chord = bassConfiguredChordForSpec(spec, "modifier", intervalsForBassSpec(spec, true));
           return {
@@ -6076,11 +6999,23 @@
         || combinedBassPlayback(specs.map(bassChordPlaybackForSpec));
     }
 
+    function bassDockLayerButtons(layer, selector) {
+      return [...els.bassDock.querySelectorAll(selector)]
+        .filter(button => button.dataset.bassLayerId === layer.id);
+    }
+
     function stopBassVoices(releaseOverride = null) {
-      for (const id of [...voices.keys()]) {
-        if (id.startsWith("bass-")) stopVoice(id, releaseOverride);
+      if (bassProfile.voiceUpdateTimer) {
+        window.clearTimeout(bassProfile.voiceUpdateTimer);
+        bassProfile.voiceUpdateTimer = 0;
+        bassProfile.pendingReleaseTime = null;
       }
-      els.bassDock.querySelectorAll(".bass-button.is-active, .bass-seventh-button.is-active").forEach(button => button.classList.remove("is-active"));
+      const layer = actualBassLayer();
+      for (const [id, voice] of [...voices.entries()]) {
+        if (voice.profile === layer) stopVoice(id, releaseOverride);
+      }
+      bassDockLayerButtons(layer, ".bass-button.is-active, .bass-seventh-button.is-active")
+        .forEach(button => button.classList.remove("is-active"));
     }
 
     function stopVoicesForProfile(profile, releaseOverride = 0.08) {
@@ -6089,27 +7024,60 @@
       }
     }
 
-    function updateBassVoices(releaseOverride = bassFadeTime()) {
+    function performBassVoiceUpdate(releaseOverride = bassFadeTime()) {
       const releaseTime = Math.max(0, Number(releaseOverride ?? bassFadeTime()) || 0);
-      stopBassVoices(releaseTime);
-      if (!bassProfile.enabled) return;
-      const chord = currentBassChord();
-      if (!chord) return;
-      bassVoiceSerial += 1;
-      chord.midis.forEach((midi, index) => {
-        startVoice(sourceFromMidi(midi, chord.label), `bass-${bassVoiceSerial}-${index}`, 0, bassProfile);
-      });
-      setReadout(chord.label, `${tr("bassPart")} · ${chord.midis.map(midi => noteNameForPcInKey(midi)).join(" ")}`);
+      const layer = actualBassLayer();
+      const chord = bassProfile.enabled ? currentBassChord() : null;
+      const desiredMidis = new Set(chord?.midis || []);
+      for (const [id, voice] of [...voices.entries()]) {
+        if (voice.profile !== layer) continue;
+        const midi = Number(voice.target?.dataset?.midi);
+        if (!desiredMidis.has(midi)) stopVoice(id, releaseTime);
+      }
+      bassDockLayerButtons(layer, ".bass-button.is-active, .bass-seventh-button.is-active")
+        .forEach(button => button.classList.remove("is-active"));
       for (const code of bassProfile.pressedCodes) {
-        els.bassDock.querySelector(`[data-bass-code="${code}"]`)?.classList.add("is-active");
+        bassDockLayerButtons(layer, `[data-bass-code="${code}"]`)
+          .forEach(button => button.classList.add("is-active"));
       }
       for (const index of bassProfile.pressedSevenths) {
-        els.bassDock.querySelector(`[data-bass-seventh-index="${index}"]`)?.classList.add("is-active");
+        bassDockLayerButtons(layer, `[data-bass-seventh-index="${index}"]`)
+          .forEach(button => button.classList.add("is-active"));
       }
       if (bassProfile.seventhMode) {
         const spec = [...bassProfile.pressedCodes].map(code => bassSpecByCode(code)).find(Boolean);
-        if (spec?.index < 7) els.bassDock.querySelector(`[data-bass-seventh-index="${spec.index}"]`)?.classList.add("is-active");
+        if (spec?.index < 7) {
+          bassDockLayerButtons(layer, `[data-bass-seventh-index="${spec.index}"]`)
+          .forEach(button => button.classList.add("is-active"));
+        }
       }
+      if (!chord) return;
+      for (const midi of chord.midis) {
+        const voiceId = `bass-${layer.id}-${midi}`;
+        const target = sourceFromMidi(midi, chord.label);
+        const id = voiceKey(target, voiceId);
+        if (!voices.has(id)) startVoice(target, voiceId, 0, layer);
+      }
+      setReadout(chord.label, `${tr("bassPart")} · ${chord.midis.map(midi => noteNameForPcInKey(midi)).join(" ")}`);
+    }
+
+    function updateBassVoices(releaseOverride = bassFadeTime(), { immediate = false } = {}) {
+      const nextRelease = Math.max(0, Number(releaseOverride ?? bassFadeTime()) || 0);
+      bassProfile.pendingReleaseTime = bassProfile.pendingReleaseTime === null
+        ? nextRelease
+        : Math.min(bassProfile.pendingReleaseTime, nextRelease);
+      if (bassProfile.voiceUpdateTimer) window.clearTimeout(bassProfile.voiceUpdateTimer);
+      const layer = actualBassLayer();
+      const flush = () => {
+        withBassLayer(layer, () => {
+          bassProfile.voiceUpdateTimer = 0;
+          const release = bassProfile.pendingReleaseTime;
+          bassProfile.pendingReleaseTime = null;
+          performBassVoiceUpdate(release);
+        });
+      };
+      if (immediate) flush();
+      else bassProfile.voiceUpdateTimer = window.setTimeout(flush, BASS_INPUT_SETTLE_MS);
     }
 
     function isBassSeventhActive() {
@@ -6130,21 +7098,27 @@
     }
 
     function updateBassVoicesForRecognition(wasSeventhActive = false) {
-      updateBassVoices(bassFadeTime());
+      updateBassVoices(wasSeventhActive ? bassFadeTime() : 0.03);
+    }
+
+    function resetBassLayerState(releaseOverride = bassFadeTime()) {
+      bassProfile.pressedCodes.clear();
+      bassProfile.pressedSevenths.clear();
+      bassProfile.suppressedTriadCodes.clear();
+      bassProfile.activePointerCodes.clear();
+      bassProfile.activePointerSevenths.clear();
+      bassProfile.modifier = false;
+      bassProfile.seventhMode = false;
+      clearBassTwoKeySeventhTimer();
+      stopBassVoices(releaseOverride);
     }
 
     function setBassEnabled(enabled) {
-      bassProfile.enabled = Boolean(enabled);
-      if (!bassProfile.enabled) {
-        if (els.bassConfigPopover) els.bassConfigPopover.hidden = true;
-        bassProfile.pressedCodes.clear();
-        bassProfile.pressedSevenths.clear();
-        bassProfile.suppressedTriadCodes.clear();
-        bassProfile.activePointerCodes.clear();
-        bassProfile.activePointerSevenths.clear();
-        bassProfile.modifier = false;
-        bassProfile.seventhMode = false;
-        stopBassVoices(bassFadeTime());
+      const nextEnabled = Boolean(enabled);
+      bassProfile.enabled = nextEnabled;
+      if (!nextEnabled) resetBassLayerState(bassFadeTime());
+      if (!nextEnabled && activeBassConfigLayerId === actualBassLayer().id && els.bassConfigPopover) {
+        els.bassConfigPopover.hidden = true;
       }
       const viewAnchor = captureViewAnchor();
       renderBassDock();
@@ -6156,14 +7130,7 @@
     function setBassKeyMode(mode) {
       if (!bassKeyModeValues.has(mode) || mode === bassKeyMode()) return;
       bassProfile.keyMode = mode;
-      bassProfile.pressedCodes.clear();
-      bassProfile.pressedSevenths.clear();
-      bassProfile.suppressedTriadCodes.clear();
-      bassProfile.activePointerCodes.clear();
-      bassProfile.activePointerSevenths.clear();
-      bassProfile.modifier = false;
-      bassProfile.seventhMode = false;
-      stopBassVoices(bassFadeTime());
+      resetBassLayerState(bassFadeTime());
       const viewAnchor = captureViewAnchor();
       renderMappingProfileOptions();
       renderBassDock();
@@ -6184,16 +7151,12 @@
       if (tonePcs.ninth !== null) element.style.setProperty("--bass-ninth-hue", String(hueForPitchClass(tonePcs.ninth)));
     }
 
-    function createBassChordSelect(mode, spec, state, explicitFallbackId = null) {
+    function createBassChordSelect(mode, spec, state) {
       const wrap = document.createElement("span");
       wrap.className = "bass-chord-select-wrap";
       const select = document.createElement("select");
-      const fallback = state === "normal"
-        ? intervalsForBassSpec(spec, false)
-        : state === "diatonicSeventhModifier"
-          ? null
-          : intervalsForBassSpec(spec, true);
-      const fallbackId = explicitFallbackId || defaultBassChordTypeId(spec, state, fallback);
+      const fallback = bassConfigFallbackIntervalsForState(spec, state, mode);
+      const fallbackId = defaultBassChordTypeId(spec, state, fallback);
       const key = bassChordOverrideKey(mode, spec.index, state);
       select.dataset.bassMode = mode;
       select.dataset.bassIndex = String(spec.index);
@@ -6216,7 +7179,7 @@
       return wrap;
     }
 
-    function renderBassConfigPopover() {
+    function renderBassConfigPopoverForCurrentLayer() {
       const body = els.bassConfigBody;
       if (!body) return;
       const fragment = document.createDocumentFragment();
@@ -6235,14 +7198,16 @@
         for (const spec of specs) {
           const card = document.createElement("article");
           card.className = "bass-config-card";
-          const states = spec.index < 7 ? bassChordConfigStates.inside : bassChordConfigStates.outside;
+          const states = externalBassContextActive()
+            ? bassChordConfigStates.external
+            : spec.index < 7 ? bassChordConfigStates.inside : bassChordConfigStates.outside;
           const firstState = states[0].id;
-          const diatonicFallbackId = firstState === "diatonicSeventhModifier"
-            ? chordTypeIdForIntervals(defaultDiatonicSeventhIntervalsForSpec(spec, spec.index, mode, true), "7")
-            : null;
-          const previewTypeId = bassChordOverrides[bassChordOverrideKey(mode, spec.index, firstState)]
-            || diatonicFallbackId
-            || bassConfiguredTypeId(mode, spec, firstState, firstState === "normal" ? intervalsForBassSpec(spec, false) : intervalsForBassSpec(spec, true));
+          const previewTypeId = bassConfiguredTypeId(
+            mode,
+            spec,
+            firstState,
+            bassConfigFallbackIntervalsForState(spec, firstState, mode)
+          );
           const preview = document.createElement("div");
           preview.className = "bass-config-preview";
           preview.dataset.bassPreview = "";
@@ -6264,10 +7229,7 @@
             const stateLabel = tr(state.labelKey);
             label.textContent = stateLabel;
             row.title = helpForLabel("choose", stateLabel);
-            const explicitFallbackId = state.id === "diatonicSeventhModifier"
-              ? chordTypeIdForIntervals(defaultDiatonicSeventhIntervalsForSpec(spec, spec.index, mode, true), "7")
-              : null;
-            const select = createBassChordSelect(mode, spec, state.id, explicitFallbackId);
+            const select = createBassChordSelect(mode, spec, state.id);
             row.append(label, select);
             fields.append(row);
           }
@@ -6279,6 +7241,26 @@
       }
       els.scaleMode.value = originalModeValue || currentMode;
       body.replaceChildren(fragment);
+    }
+
+    function renderBassConfigPopover() {
+      const layers = configurableBassLayers();
+      let layer = bassLayerById(activeBassConfigLayerId);
+      if (!layers.some(item => item.id === layer.id)) layer = mainBassProfile;
+      activeBassConfigLayerId = layer.id;
+      if (els.bassConfigSource) {
+        const options = layers.map(item => {
+          const option = document.createElement("option");
+          option.value = item.id;
+          option.textContent = item === mainBassProfile ? tr("mainKeyboard") : bassLayerInputProfile(item).label;
+          option.selected = item.id === layer.id;
+          return option;
+        });
+        els.bassConfigSource.replaceChildren(...options);
+        els.bassConfigSource.title = tr("bassInputSource");
+        els.bassConfigSource.setAttribute("aria-label", tr("bassInputSource"));
+      }
+      return withBassLayer(layer, renderBassConfigPopoverForCurrentLayer);
     }
 
     function setBassConfigOpen(open) {
@@ -6293,17 +7275,20 @@
     }
 
     function resetBassChordConfigDefaults() {
-      for (const key of Object.keys(bassChordOverrides)) delete bassChordOverrides[key];
+      const layer = bassLayerById(activeBassConfigLayerId);
+      withBassLayer(layer, () => {
+        for (const key of Object.keys(bassChordOverrides)) delete bassChordOverrides[key];
+        updateBassVoices();
+      });
       renderBassDock();
-      updateBassVoices();
       renderBassConfigPopover();
       scheduleSaveSettings();
       setReadout(tr("bassPart"), tr("bassConfigResetDone"));
     }
 
     function setProfileEnabled(profile, enabled) {
-      if (profile === bassProfile) {
-        setBassEnabled(enabled);
+      if (profile?.source === "bass") {
+        withBassLayer(profile, () => setBassEnabled(enabled));
         return;
       }
 
@@ -6317,12 +7302,17 @@
         if (profile === pointerProfile) clearGlissandoStates();
         releaseProfilePressedCodes(profile);
         stopVoicesForProfile(profile, 0.08);
+        const layer = externalBassLayers.get(profile.id);
+        if (layer) withBassLayer(layer, () => resetBassLayerState(bassFadeTime()));
       }
 
       const viewAnchor = captureViewAnchor();
       renderMappingProfileOptions();
+      renderBassDock();
+      refreshBassConfigIfOpen();
       renderKeyboard({ viewAnchor });
       renderScaleStaff();
+      scheduleSaveSettings();
     }
 
     function isTouchVibratoLocked() {
@@ -6385,48 +7375,20 @@
       return button;
     }
 
-    function renderBassDock() {
-      const fragment = document.createDocumentFragment();
-      const lockButton = createTouchVibratoLockButton();
-      if (!bassProfile.enabled) {
-        els.bassDock.classList.add("is-touch-lock-only");
-        fragment.append(lockButton);
-        els.bassDock.replaceChildren(fragment);
-        els.bassDock.hidden = false;
-        syncTouchVibratoLockButtons();
-        return;
-      }
-
-      els.bassDock.classList.remove("is-touch-lock-only");
-      const leftHint = document.createElement("div");
-      leftHint.className = "bass-dock-hint is-left";
-      leftHint.textContent = tr("bassDockSeventhHint", { key: activeBassSeventhKeyLabel() });
-      leftHint.title = tr("bassDockSeventhHelp");
-      leftHint.setAttribute("aria-label", tr("bassDockSeventhHelp"));
+    function createBassDockKeys(showDiatonicSevenths = true) {
       const keysWrap = document.createElement("div");
       keysWrap.className = "bass-dock-keys";
-      const rightHint = document.createElement("div");
-      rightHint.className = "bass-dock-hint is-right";
-      rightHint.textContent = tr("bassDockModifierHint");
-      rightHint.title = tr("bassDockModifierHelp");
-      rightHint.setAttribute("aria-label", tr("bassDockModifierHelp"));
-      const settingsButton = document.createElement("button");
-      settingsButton.type = "button";
-      settingsButton.className = "bass-settings-button";
-      settingsButton.dataset.bassSettings = "";
-      settingsButton.textContent = "⚙";
-      settingsButton.title = tr("bassPopupHelp");
-      settingsButton.setAttribute("aria-label", tr("bassPopupHelp"));
-      if (els.bassConfigPopover && !els.bassConfigPopover.hidden) settingsButton.classList.add("is-open");
+      const layerId = actualBassLayer().id;
       const diatonicSevenths = bassDiatonicSevenths();
       for (const spec of bassSpecs()) {
         const wrap = document.createElement("div");
         wrap.className = "bass-button-wrap";
-        if (!bassProfile.seventhMode && spec.index < 7) {
+        if (showDiatonicSevenths && !bassProfile.seventhMode && spec.index < 7) {
           const seventh = diatonicSevenths[spec.index];
           const seventhButton = document.createElement("button");
           seventhButton.type = "button";
           seventhButton.className = "bass-seventh-button";
+          seventhButton.dataset.bassLayerId = layerId;
           seventhButton.dataset.bassSeventhIndex = String(seventh.index);
           if (seventh.isNinth) {
             seventhButton.classList.add("is-ninth");
@@ -6454,10 +7416,7 @@
           seventhButton.append(leftKey, rightKey);
           seventhButton.title = `${seventh.keyA}+${seventh.keyB} · ${seventh.label}`;
           seventhButton.setAttribute("aria-label", seventhButton.title);
-          if (
-            bassProfile.pressedSevenths.has(seventh.index) ||
-            (bassProfile.seventhMode && bassProfile.pressedCodes.has(spec.code))
-          ) seventhButton.classList.add("is-active");
+          if (bassProfile.pressedSevenths.has(seventh.index)) seventhButton.classList.add("is-active");
           const seventhName = document.createElement("span");
           seventhName.className = "bass-chord-name bass-seventh-name";
           seventhName.textContent = seventh.label;
@@ -6466,11 +7425,11 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "bass-button";
+        button.dataset.bassLayerId = layerId;
         button.dataset.bassCode = spec.code;
         const displayChord = bassDockChordForSpec(spec, diatonicSevenths);
-        const specIntervals = displayChord.intervals;
         const tonePcs = displayChord.tonePcs;
-        if (normalizedIntervals(specIntervals).length >= 4) button.classList.add("is-seventh");
+        if (normalizedIntervals(displayChord.intervals).length >= 4) button.classList.add("is-seventh");
         if (displayChord.isNinth) button.classList.add("is-ninth");
         button.style.setProperty("--bass-root-hue", String(hueForPitchClass(tonePcs.root)));
         button.style.setProperty("--bass-third-hue", String(hueForPitchClass(tonePcs.third)));
@@ -6491,7 +7450,61 @@
         wrap.append(button, name);
         keysWrap.append(wrap);
       }
-      fragment.append(lockButton, leftHint, keysWrap, rightHint, settingsButton);
+      return keysWrap;
+    }
+
+    function renderBassDock() {
+      const fragment = document.createDocumentFragment();
+      const externalLayers = externalBassLayerList().filter(layer => {
+        const inputProfile = bassLayerInputProfile(layer);
+        return layer.enabled && profileIsEnabled(inputProfile) && profileHasIndependentBass(inputProfile);
+      });
+      if (mainBassProfile.enabled) {
+        const row = document.createElement("div");
+        row.className = "bass-dock-row is-main";
+        const leftHint = document.createElement("div");
+        leftHint.className = "bass-dock-hint is-left";
+        leftHint.textContent = tr("bassDockSeventhHint", { key: withBassLayer(mainBassProfile, () => activeBassSeventhKeyLabel()) });
+        const rightHint = document.createElement("div");
+        rightHint.className = "bass-dock-hint is-right";
+        rightHint.textContent = tr("bassDockModifierHint");
+        const settingsButton = document.createElement("button");
+        settingsButton.type = "button";
+        settingsButton.className = "bass-settings-button";
+        settingsButton.dataset.bassSettings = "";
+        settingsButton.textContent = "⚙";
+        settingsButton.title = tr("bassPopupHelp");
+        settingsButton.setAttribute("aria-label", tr("bassPopupHelp"));
+        if (els.bassConfigPopover && !els.bassConfigPopover.hidden) settingsButton.classList.add("is-open");
+        row.append(
+          createTouchVibratoLockButton(),
+          leftHint,
+          withBassLayer(mainBassProfile, () => createBassDockKeys(true)),
+          rightHint,
+          settingsButton
+        );
+        fragment.append(row);
+      }
+      for (const layer of externalLayers) {
+        const row = document.createElement("div");
+        row.className = "bass-dock-row is-external";
+        const frame = document.createElement("div");
+        frame.className = "bass-source-frame";
+        const inputProfile = bassLayerInputProfile(layer);
+        frame.style.setProperty("--profile-hue", String(hueForPitchClass(mod(Number(inputProfile.colorIndex) || 0, 12))));
+        const label = document.createElement("span");
+        label.className = "bass-source-label";
+        label.textContent = inputProfile.label;
+        frame.append(label, withBassLayer(layer, () => createBassDockKeys(false)));
+        row.append(document.createElement("span"), document.createElement("span"), frame, document.createElement("span"), document.createElement("span"));
+        fragment.append(row);
+      }
+      if (!fragment.childNodes.length) {
+        els.bassDock.classList.add("is-touch-lock-only");
+        fragment.append(createTouchVibratoLockButton());
+      } else {
+        els.bassDock.classList.remove("is-touch-lock-only");
+      }
       els.bassDock.replaceChildren(fragment);
       els.bassDock.hidden = false;
       syncTouchVibratoLockButtons();
@@ -6625,6 +7638,468 @@
       pendingBrowserStarts.delete(code);
     }
 
+    function bridgeComponentUrl() {
+      return new URL("tools/QBoardBridgeInstaller.exe", document.baseURI).href;
+    }
+
+    function downloadBridgeComponent() {
+      const link = document.createElement("a");
+      link.href = bridgeComponentUrl();
+      link.download = "QBoardBridgeInstaller.exe";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setReadout(tr("sourceBridge"), tr("bridgeDownload"));
+    }
+
+    function rememberBridgeInstallPath(path, { verified = false } = {}) {
+      const normalized = String(path || "").trim();
+      if (normalized) {
+        bridgeInstallPath = normalized;
+        try { localStorage.setItem("qboard-bridge-install-path", bridgeInstallPath); } catch (error) {}
+      }
+      bridgeDirectoryVerified ||= verified;
+      if (els.bridgePathInput && document.activeElement !== els.bridgePathInput) {
+        els.bridgePathInput.value = bridgeInstallPath;
+      }
+      updateBridgePanel();
+    }
+
+    function setBridgePanelOpen(open = true) {
+      const next = Boolean(open);
+      els.bridgePanel.hidden = !next;
+      els.keyboardSectionBody.classList.toggle("is-bridge-open", next);
+      updateBridgePanel();
+      requestAnimationFrame(() => syncKeyboardSettingsViewport(els.keyboardLayout?.scrollTop || 0));
+    }
+
+    function updateBridgePanel() {
+      if (!els.bridgePanel) return;
+      els.bridgePanel.classList.toggle("is-connected", bridgeConnected);
+      els.bridgePanelStatus.textContent = tr(bridgeConnected ? "bridgeConnected" : "bridgeDisconnected");
+      els.bridgePanelClients.textContent = tr("bridgeClients", { count: bridgeConnected ? bridgeClientCount : 0 });
+      els.bridgePanelPath.textContent = bridgeInstallPath || tr("bridgePathUnset");
+      els.bridgePanelPath.title = bridgeInstallPath || tr("bridgePathUnset");
+      els.bridgePanelButton.textContent = tr(bridgeConnected ? "bridgeReconnectAction" : "bridgeConnect");
+    }
+
+    function showBridgeDirectoryDialog() {
+      els.bridgePathInput.value = bridgeInstallPath;
+      if (typeof els.bridgeDirectoryDialog.showModal === "function") els.bridgeDirectoryDialog.showModal();
+      else els.bridgeDirectoryDialog.setAttribute("open", "");
+    }
+
+    async function chooseBridgeDirectory() {
+      if (!("showDirectoryPicker" in window)) {
+        els.bridgeDirectoryFallback.value = "";
+        els.bridgeDirectoryFallback.click();
+        return;
+      }
+      try {
+        const directory = await window.showDirectoryPicker({ mode: "read" });
+        await directory.getFileHandle("QBoardBridge.exe");
+        const pastedPath = els.bridgePathInput.value.trim();
+        rememberBridgeInstallPath(pastedPath || directory.name, { verified: true });
+        els.bridgePathInput.value = bridgeInstallPath;
+        setReadout(tr("sourceBridge"), tr("bridgeFolderSelected"));
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+        setReadout(tr("sourceBridge"), tr("bridgeInstallerMissing"));
+      }
+    }
+
+    function connectSelectedBridgeDirectory() {
+      rememberBridgeInstallPath(els.bridgePathInput.value, { verified: bridgeDirectoryVerified });
+      els.bridgeDirectoryDialog.close?.();
+      setBridgePanelOpen(true);
+      ensureBridgeSocket();
+    }
+
+    function reconnectBridgeSocket() {
+      const previousSocket = bridgeSocket;
+      bridgeSocket = null;
+      if (previousSocket) try { previousSocket.close(); } catch (error) {}
+      bridgeConnected = false;
+      bridgeClientCount = 0;
+      updateBridgePanel();
+      ensureBridgeSocket();
+    }
+
+    function openBridgeApplication() {
+      setBridgePanelOpen(true);
+      const launcher = document.createElement("iframe");
+      launcher.hidden = true;
+      launcher.src = "qboardbridge://open";
+      document.body.append(launcher);
+      window.setTimeout(() => launcher.remove(), 1800);
+      window.setTimeout(() => ensureBridgeSocket(), 350);
+      window.setTimeout(() => {
+        if (!bridgeConnected) reconnectBridgeSocket();
+      }, 1500);
+    }
+
+    function bridgePromptMessage() {
+      return `${tr("bridgePromptTitle")}\n\n${tr("bridgePromptText")}\n\n${tr("bridgeManual2")}`;
+    }
+
+    function showBridgeInstallPrompt({ force = false } = {}) {
+      if (!force && bridgeInstallHintShown) return;
+      bridgeInstallHintShown = true;
+      if (window.confirm(bridgePromptMessage())) downloadBridgeComponent();
+    }
+
+    function createBridgeKeyboardProfile(seed = {}) {
+      const bridgeIndex = mappingProfiles.filter(profile => profile.source === "bridge").length + 1;
+      const template = activeProfile() || browserProfile();
+      return {
+        id: seed.id || `bridge-${Date.now()}-${bridgeIndex}`,
+        label: seed.label || seed.bridgeDeviceName || tr("bridgeKeyboardName", { index: bridgeIndex }),
+        short: seed.short || `R${bridgeIndex}`,
+        anchor: seed.anchor ? { ...seed.anchor } : { row: 1, col: 0 },
+        instrument: seed.instrument || template.instrument || "accordion",
+        outputShift: Number.isFinite(seed.outputShift) ? seed.outputShift : 0,
+        volume: Number.isFinite(seed.volume) ? seed.volume : profileVolume(template),
+        enabled: seed.enabled !== false,
+        longVibrato: typeof seed.longVibrato === "boolean" ? seed.longVibrato : profileAllowsLongVibrato(template),
+        fadeSustainTime: Number.isFinite(seed.fadeSustainTime) ? seed.fadeSustainTime : keyboardFadeTime(template),
+        sustainEnabled: seed.sustainEnabled !== false,
+        sustainPedal: false,
+        softPedal: false,
+        harmonicPedal: false,
+        leftEdgePedal: false,
+        rightEdgePedal: false,
+        source: "bridge",
+        bridgeDeviceId: seed.bridgeDeviceId || "",
+        bridgeDeviceName: seed.bridgeDeviceName || "",
+        colorIndex: Number.isFinite(seed.colorIndex)
+          ? mod(seed.colorIndex, 12)
+          : mod(mappingProfiles.filter(profile => profile.source !== "browser").length, 12),
+        pressedCodes: new Set()
+      };
+    }
+
+    function enabledBridgeProfiles() {
+      return mappingProfiles.filter(profile => profile.source === "bridge" && profileIsEnabled(profile));
+    }
+
+    function bridgeDeviceIdFromMessage(message) {
+      return String(message.deviceId || message.device || message.name || "unknown");
+    }
+
+    function bridgeDeviceNameFromMessage(message) {
+      return String(message.deviceName || message.name || bridgeDeviceIdFromMessage(message));
+    }
+
+    function rememberBridgeDevice(message) {
+      const id = bridgeDeviceIdFromMessage(message);
+      const name = bridgeDeviceNameFromMessage(message);
+      bridgeDevices.set(id, { id, name, lastSeen: performance.now() });
+      return { id, name };
+    }
+
+    function bindBridgeProfile(profile, deviceId, deviceName) {
+      if (!profile || profile.source !== "bridge") return;
+      const viewAnchor = captureViewAnchor();
+      if (profile.bridgeDeviceId && profile.bridgeDeviceId !== deviceId) releaseProfilePressedCodes(profile);
+      profile.bridgeDeviceId = deviceId;
+      profile.bridgeDeviceName = deviceName || deviceId;
+      profile.bridgeReady = true;
+      if (!profile.label || /^Bridge keyboard|^桥接键盘/.test(profile.label)) profile.label = profile.bridgeDeviceName;
+      bridgeCaptureProfileId = bridgeCaptureProfileId === profile.id ? null : bridgeCaptureProfileId;
+      renderMappingProfileOptions();
+      renderBassDock();
+      refreshBassConfigIfOpen();
+      renderKeyboard({ viewAnchor });
+      renderScaleStaff();
+      scheduleSaveSettings();
+      setReadout(tr("sourceBridge"), tr("bridgeBound", { name: profile.bridgeDeviceName }));
+    }
+
+    function bridgeProfileForDevice(message) {
+      const { id, name } = rememberBridgeDevice(message);
+      const bound = enabledBridgeProfiles().find(profile => profile.bridgeDeviceId === id);
+      if (bound) return bound;
+
+      const capture = profileById(bridgeCaptureProfileId);
+      if (capture?.source === "bridge" && profileIsEnabled(capture)) {
+        bindBridgeProfile(capture, id, name);
+        return capture;
+      }
+
+      const unbound = enabledBridgeProfiles().find(profile => !profile.bridgeDeviceId);
+      if (unbound) {
+        bindBridgeProfile(unbound, id, name);
+        return unbound;
+      }
+
+      return null;
+    }
+
+    function handleBridgeKeyEvent(message) {
+      const code = String(message.code || "");
+      const profile = bridgeProfileForDevice(message);
+      if (!profile || !code) return;
+      if (!codeToHardwarePosition.has(code) && !isSustainCode(code) && !isSoftPedalCode(code) && !isHarmonicPedalCode(code) && !isEdgePedalCode(code) && !bassClaimsProfileCode(profile, code)) return;
+      profile.bridgeReady = true;
+      const isDown = message.down !== false && message.type !== "keyup" && message.event !== "up";
+      const previousCodes = profile.pressedCodes || new Set();
+
+      if (isDown) {
+        if (previousCodes.has(code)) {
+          suppressBrowserCodeOnce(code);
+          return;
+        }
+        previousCodes.add(code);
+        claimHidBrowserCode(profile, code);
+        handleProfileCodeDown(profile, code);
+      } else {
+        if (previousCodes.has(code)) {
+          previousCodes.delete(code);
+          handleProfileCodeUp(profile, code);
+          releaseHidBrowserCode(profile, code);
+        } else {
+          suppressBrowserCodeOnce(code);
+        }
+      }
+
+      profile.pressedCodes = previousCodes;
+    }
+
+    function scheduleBridgeReconnect() {
+      if (bridgeReconnectTimer) return;
+      bridgeReconnectTimer = window.setTimeout(() => {
+        bridgeReconnectTimer = 0;
+        if (enabledBridgeProfiles().length) ensureBridgeSocket();
+      }, 1200);
+    }
+
+    function ensureBridgeSocket({ prompt = false } = {}) {
+      if (!("WebSocket" in window)) {
+        setReadout(tr("sourceBridge"), tr("bridgeUnavailable"));
+        return;
+      }
+      if (prompt) showBridgeInstallPrompt();
+      if (bridgeSocket && (bridgeSocket.readyState === WebSocket.OPEN || bridgeSocket.readyState === WebSocket.CONNECTING)) return;
+
+      try {
+        bridgeSocket = new WebSocket(BRIDGE_WS_URL);
+      } catch (error) {
+        bridgeConnected = false;
+        setReadout(tr("sourceBridge"), tr("bridgeConnectFailed"));
+        scheduleBridgeReconnect();
+        return;
+      }
+      const socket = bridgeSocket;
+
+      socket.addEventListener("open", () => {
+        if (bridgeSocket !== socket) return;
+        bridgeConnected = true;
+        bridgeClientCount = Math.max(1, bridgeClientCount);
+        updateBridgePanel();
+        renderMappingProfileOptions();
+        setReadout(tr("sourceBridge"), tr("bridgeConnected"));
+      });
+
+      socket.addEventListener("message", event => {
+        if (bridgeSocket !== socket) return;
+        let message = null;
+        try {
+          message = JSON.parse(event.data);
+        } catch (error) {
+          return;
+        }
+        if (message.type === "hello" || message.type === "status") {
+          bridgeConnected = true;
+          bridgeClientCount = Math.max(1, Number(message.clients) || 1);
+          if (message.installPath) rememberBridgeInstallPath(message.installPath, { verified: true });
+          updateBridgePanel();
+          renderMappingProfileOptions();
+          return;
+        }
+        if (message.type === "key" || message.type === "keydown" || message.type === "keyup") {
+          handleBridgeKeyEvent(message);
+        }
+      });
+
+      socket.addEventListener("close", () => {
+        if (bridgeSocket !== socket) return;
+        bridgeConnected = false;
+        bridgeClientCount = 0;
+        updateBridgePanel();
+        renderMappingProfileOptions();
+        scheduleBridgeReconnect();
+      });
+
+      socket.addEventListener("error", () => {
+        if (bridgeSocket !== socket) return;
+        bridgeConnected = false;
+        bridgeClientCount = 0;
+        updateBridgePanel();
+        setReadout(tr("sourceBridge"), tr("bridgeConnectFailed"));
+      });
+    }
+
+    function addBridgeKeyboard() {
+      const profile = createBridgeKeyboardProfile();
+      mappingProfiles.push(profile);
+      ensureExternalBassLayer(profile);
+      bridgeCaptureProfileId = profile.id;
+      ensureBridgeSocket({ prompt: true });
+      activateProfile(profile);
+      setReadout(tr("sourceBridge"), tr("bridgeWaiting"));
+      scheduleSaveSettings();
+    }
+
+    function rebindBridgeKeyboard(profile) {
+      if (!profile || profile.source !== "bridge") return;
+      const viewAnchor = captureViewAnchor();
+      releaseProfilePressedCodes(profile);
+      profile.bridgeDeviceId = "";
+      profile.bridgeDeviceName = "";
+      profile.bridgeReady = false;
+      const layer = externalBassLayers.get(profile.id);
+      if (layer && activeBassConfigLayerId === layer.id) activeBassConfigLayerId = mainBassProfile.id;
+      bridgeCaptureProfileId = profile.id;
+      ensureBridgeSocket({ prompt: true });
+      renderMappingProfileOptions();
+      renderBassDock();
+      refreshBassConfigIfOpen();
+      renderKeyboard({ viewAnchor });
+      renderScaleStaff();
+      setReadout(tr("sourceBridge"), tr("bridgeWaiting"));
+      scheduleSaveSettings();
+    }
+
+    function resetProfileQ(profile, viewAnchor = captureViewAnchor()) {
+      activeProfileId = profile.id;
+      setActiveAnchor({ row: 1, col: 0 });
+      selectedCoord = { ...qAnchor };
+      includeProfileHardwareRange(profile);
+      renderMappingProfileOptions();
+      renderKeyboard({ viewAnchor });
+      renderScaleStaff();
+      updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
+      scheduleSaveSettings();
+    }
+
+    function openResetRebindDialog(profile) {
+      if (!profile || profile.source !== "bridge") return;
+      document.querySelector(".profile-action-dialog")?.remove();
+      const dialog = document.createElement("dialog");
+      dialog.className = "profile-action-dialog";
+
+      const head = document.createElement("div");
+      head.className = "profile-action-dialog-head";
+      const title = document.createElement("span");
+      title.textContent = tr("resetRebindTitle");
+      const closeButton = document.createElement("button");
+      closeButton.type = "button";
+      closeButton.className = "bass-config-close";
+      closeButton.dataset.profileDialogChoice = "close";
+      closeButton.textContent = "×";
+      closeButton.setAttribute("aria-label", tr("bassConfigClose"));
+      head.append(title, closeButton);
+
+      const body = document.createElement("div");
+      body.className = "profile-action-dialog-body";
+      const resetButton = document.createElement("button");
+      resetButton.type = "button";
+      resetButton.className = "command primary";
+      resetButton.dataset.profileDialogChoice = "reset";
+      resetButton.textContent = tr("resetQMapping");
+      const rebindButton = document.createElement("button");
+      rebindButton.type = "button";
+      rebindButton.className = "command";
+      rebindButton.dataset.profileDialogChoice = "rebind";
+      rebindButton.textContent = tr("bridgeRebind");
+      body.append(resetButton, rebindButton);
+      dialog.append(head, body);
+
+      dialog.addEventListener("click", event => {
+        const choice = event.target.closest("[data-profile-dialog-choice]")?.dataset.profileDialogChoice;
+        if (!choice) return;
+        dialog.close();
+        if (choice === "reset") resetProfileQ(profile);
+        if (choice === "rebind") rebindBridgeKeyboard(profile);
+      });
+      dialog.addEventListener("close", () => dialog.remove(), { once: true });
+      document.body.append(dialog);
+      dialog.showModal();
+    }
+
+    function enabledHidProfiles() {
+      return mappingProfiles.filter(profile => profile.source === "hid" && profile.device && profileIsEnabled(profile));
+    }
+
+    function reportingHidProfiles() {
+      return enabledHidProfiles().filter(profile => profile.hidReady);
+    }
+
+    function hidProfileCanOwnCode(profile, code) {
+      return Boolean(
+        bassClaimsProfileCode(profile, code) ||
+        isSustainCode(code) ||
+        isSoftPedalCode(code) ||
+        isHarmonicPedalCode(code) ||
+        isEdgePedalCode(code) ||
+        coordForProfileCode(profile, code)
+      );
+    }
+
+    function hidOwnedBrowserCode(code) {
+      return reportingHidProfiles().some(profile => hidProfileCanOwnCode(profile, code));
+    }
+
+    function potentialHidBrowserCode(code) {
+      return enabledHidProfiles().some(profile => hidProfileCanOwnCode(profile, code));
+    }
+
+    function bridgeProfileCanOwnCode(profile, code) {
+      return hidProfileCanOwnCode(profile, code);
+    }
+
+    function potentialBridgeBrowserCode(code) {
+      return enabledBridgeProfiles().some(profile => bridgeProfileCanOwnCode(profile, code));
+    }
+
+    function browserStartDelayForCode(code, profile = browserProfile()) {
+      if (potentialBridgeBrowserCode(code)) {
+        return profile?.id === "main" && profile.instrument === "piano"
+          ? MAIN_PIANO_START_GRACE_MS
+          : BRIDGE_BROWSER_START_GRACE_MS;
+      }
+      return potentialHidBrowserCode(code) ? HID_BROWSER_START_GRACE_MS : 0;
+    }
+
+    function claimHidBrowserCode(profile, code) {
+      if (!["hid", "bridge"].includes(profile?.source) || !profileIsEnabled(profile)) return;
+      clearBrowserCollisionForHidCode(code);
+      hidActiveCodeCounts.set(code, (hidActiveCodeCounts.get(code) || 0) + 1);
+    }
+
+    function releaseHidBrowserCode(profile, code) {
+      if (!["hid", "bridge"].includes(profile?.source)) return;
+      const count = hidActiveCodeCounts.get(code) || 0;
+      if (count <= 1) hidActiveCodeCounts.delete(code);
+      else hidActiveCodeCounts.set(code, count - 1);
+    }
+
+    function clearBrowserCollisionForHidCode(code) {
+      const profile = browserProfile();
+      profile.pressedCodes?.delete(code);
+      heldBrowserCodes.delete(code);
+      if (edgeOctaveCombo?.triggerCodes.includes(code)) stopEdgeOctaveCombo(profile);
+      cancelPendingBrowserCode(code);
+      releaseBrowserBassCode(code);
+      stopVoiceByPrefix(`computer-${profile.id}-${code}`, 0.03);
+      if (isSustainCode(code) && profile.sustainPedal) setSustainPedal(profile, false);
+      if (isSoftPedalCode(code) && profile.softPedal) setSoftPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
+      if (isHarmonicPedalCode(code) && profile.harmonicPedal) setHarmonicPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
+      const shiftSide = shiftPhysicalSideFromCode(code);
+      if (shiftSide) browserShiftDownSides.delete(shiftSide);
+      if (isEdgePedalCode(code)) setEdgePedal(profile, edgePedalSide(code), false);
+    }
+
     function scheduleBrowserCodeStart(code, profile) {
       cancelPendingBrowserCode(code);
       const source = sourceForProfileCode(profile, code);
@@ -6634,11 +8109,162 @@
         if (!profileIsEnabled(profile)) return;
         if (shouldSuppressBrowserCode(code)) return;
         startVoice(source, `computer-${profile.id}-${code}`, 0, profile);
-      }, 0);
+      }, browserStartDelayForCode(code, profile));
       pendingBrowserStarts.set(code, { timer, profileId: profile.id });
     }
 
-    function pressedCodesFromHidReport(dataView) {
+    function cancelPendingBrowserBassCode(code) {
+      const pending = pendingBrowserBassStarts.get(code);
+      if (!pending) return false;
+      window.clearTimeout(pending.timer);
+      pendingBrowserBassStarts.delete(code);
+      return true;
+    }
+
+    function browserBassStartDelay(code) {
+      return potentialBridgeBrowserCode(code) || potentialHidBrowserCode(code)
+        ? Math.max(BRIDGE_BROWSER_START_GRACE_MS, HID_BROWSER_START_GRACE_MS)
+        : 0;
+    }
+
+    function scheduleBrowserBassCodeDown(code) {
+      if (pendingBrowserBassStarts.has(code) || activeBrowserBassCodes.has(code)) return;
+      const start = () => {
+        pendingBrowserBassStarts.delete(code);
+        if (shouldSuppressBrowserCode(code)) return;
+        activeBrowserBassCodes.add(code);
+        withBassLayer(mainBassProfile, () => handleBassCodeDown(code));
+      };
+      const delay = browserBassStartDelay(code);
+      if (delay <= 0) {
+        start();
+        return;
+      }
+      const timer = window.setTimeout(start, delay);
+      pendingBrowserBassStarts.set(code, { timer });
+    }
+
+    function releaseBrowserBassCode(code) {
+      const hadPending = cancelPendingBrowserBassCode(code);
+      const wasActive = activeBrowserBassCodes.delete(code);
+      if (wasActive) withBassLayer(mainBassProfile, () => handleBassCodeUp(code));
+      return hadPending || wasActive;
+    }
+
+    function hidUsageValue(value) {
+      const number = Number(value);
+      return Number.isFinite(number) ? number >>> 0 : null;
+    }
+
+    function hidUsageId(value) {
+      const usage = hidUsageValue(value);
+      return usage === null ? null : usage & 0xFFFF;
+    }
+
+    function hidUsagePage(value) {
+      const usage = hidUsageValue(value);
+      return usage !== null && usage > 0xFFFF ? (usage >>> 16) & 0xFFFF : null;
+    }
+
+    function hidReportItemPages(item) {
+      return [
+        ...Array.from(item?.usages || []),
+        item?.usageMinimum,
+        item?.usageMaximum
+      ]
+        .map(hidUsagePage)
+        .filter(page => page !== null);
+    }
+
+    function hidKeyboardReportCandidates(profile, reportId) {
+      const candidates = [];
+      const targetReportId = Number(reportId) || 0;
+      const visit = (collections, keyboardContext = false) => {
+        for (const collection of collections || []) {
+          const usagePage = Number(collection.usagePage);
+          const usage = Number(collection.usage);
+          const isKeyboardContext = keyboardContext
+            || usagePage === 0x07
+            || (usagePage === 0x01 && usage === 0x06);
+          for (const report of collection.inputReports || []) {
+            if ((Number(report.reportId) || 0) !== targetReportId) continue;
+            const items = Array.from(report.items || []);
+            const hasKeyboardItem = items.some(item => hidReportItemPages(item).includes(0x07));
+            if (isKeyboardContext || hasKeyboardItem) candidates.push({ items, isKeyboardContext, hasKeyboardItem });
+          }
+          visit(collection.children, isKeyboardContext);
+        }
+      };
+      visit(profile?.device?.collections);
+      return candidates.sort((a, b) =>
+        Number(b.hasKeyboardItem) - Number(a.hasKeyboardItem)
+        || Number(b.isKeyboardContext) - Number(a.isKeyboardContext)
+        || b.items.length - a.items.length
+      );
+    }
+
+    function readHidReportBits(dataView, bitOffset, bitLength) {
+      if (bitLength <= 0 || bitLength > 32) return 0;
+      let value = 0;
+      for (let bit = 0; bit < bitLength; bit += 1) {
+        const absoluteBit = bitOffset + bit;
+        const byteIndex = Math.floor(absoluteBit / 8);
+        if (byteIndex >= dataView.byteLength) break;
+        if ((dataView.getUint8(byteIndex) & (1 << (absoluteBit % 8))) !== 0) {
+          value += 2 ** bit;
+        }
+      }
+      return value >>> 0;
+    }
+
+    function hidVariableItemUsages(item, count) {
+      const explicit = Array.from(item?.usages || [])
+        .map(hidUsageId)
+        .filter(usage => usage !== null);
+      if (explicit.length >= count) return explicit;
+      const minimum = hidUsageId(item?.usageMinimum);
+      const maximum = hidUsageId(item?.usageMaximum);
+      if (minimum === null || maximum === null || maximum < minimum) return explicit;
+      const range = Array.from(
+        { length: Math.min(count, maximum - minimum + 1) },
+        (_, index) => minimum + index
+      );
+      return explicit.length ? [...explicit, ...range.slice(explicit.length)] : range;
+    }
+
+    function pressedCodesFromHidDescriptor(profile, event) {
+      const candidate = hidKeyboardReportCandidates(profile, event.reportId)[0];
+      if (!candidate) return null;
+      const dataView = event.data;
+      const codes = new Set();
+      let bitOffset = 0;
+      let parsedKeyboardData = false;
+      for (const item of candidate.items) {
+        const reportSize = Math.max(0, Number(item.reportSize) || 0);
+        const reportCount = Math.max(0, Number(item.reportCount) || 0);
+        const pages = hidReportItemPages(item);
+        const isKeyboardItem = pages.length ? pages.includes(0x07) : candidate.isKeyboardContext;
+        const usages = item.isArray ? [] : hidVariableItemUsages(item, reportCount);
+        for (let index = 0; index < reportCount; index += 1) {
+          const value = readHidReportBits(dataView, bitOffset + index * reportSize, reportSize);
+          if (!item.isConstant && isKeyboardItem) {
+            parsedKeyboardData = true;
+            const usage = item.isArray ? value : usages[index];
+            if (value !== 0) {
+              const code = hidUsageToCode.get(usage);
+              if (code) codes.add(code);
+            }
+          }
+        }
+        bitOffset += reportSize * reportCount;
+      }
+      return parsedKeyboardData ? codes : null;
+    }
+
+    function pressedCodesFromHidReport(profile, event) {
+      const descriptorCodes = pressedCodesFromHidDescriptor(profile, event);
+      if (descriptorCodes) return descriptorCodes;
+      const dataView = event.data;
       const bytes = Array.from({ length: dataView.byteLength }, (_, index) => dataView.getUint8(index));
       const bootUsages = bytes.length >= 8 ? bytes.slice(2, 8) : bytes;
       let codes = bootUsages
@@ -6674,9 +8300,8 @@
 
     function suppressBrowserCodeOnce(code) {
       cancelPendingBrowserCode(code);
-      hidSuppressedCodeUntil.set(code, performance.now() + 180);
-      const profile = browserProfile();
-      stopVoiceByPrefix(`computer-${profile.id}-${code}`);
+      cancelPendingBrowserBassCode(code);
+      hidSuppressedCodeUntil.set(code, performance.now() + HID_BROWSER_SUPPRESS_MS);
     }
 
     function shouldSuppressBrowserCode(code) {
@@ -6689,9 +8314,9 @@
     }
 
     function handleProfileCodeDown(profile, code) {
-      if (bassClaimsBrowserCode(code)) {
+      if (bassClaimsProfileCode(profile, code)) {
         suppressBrowserCodeOnce(code);
-        handleBassCodeDown(code);
+        handleBassCodeDownForProfile(profile, code);
         return;
       }
       if (!profileIsEnabled(profile)) return;
@@ -6722,9 +8347,9 @@
     }
 
     function handleProfileCodeUp(profile, code) {
-      if (bassClaimsBrowserCode(code)) {
+      if (bassClaimsProfileCode(profile, code)) {
         suppressBrowserCodeOnce(code);
-        handleBassCodeUp(code);
+        handleBassCodeUpForProfile(profile, code);
         return;
       }
       if (!profileIsEnabled(profile)) return;
@@ -6754,7 +8379,8 @@
 
     function releaseProfilePressedCodes(profile) {
       for (const code of profile.pressedCodes || []) {
-        if (bassClaimsBrowserCode(code)) handleBassCodeUp(code);
+        if (bassClaimsProfileCode(profile, code)) handleBassCodeUpForProfile(profile, code);
+        releaseHidBrowserCode(profile, code);
         stopVoiceByPrefix(voicePrefixForProfileCode(profile, code));
       }
       setSustainPedal(profile, false);
@@ -6767,15 +8393,29 @@
     }
 
     function handleHidInputReport(profile, event) {
-      const nextCodes = pressedCodesFromHidReport(event.data);
+      profile.hidReady = true;
+      profile.lastHidReportAt = performance.now();
+      const nextCodes = pressedCodesFromHidReport(profile, event);
       const previousCodes = profile.pressedCodes || new Set();
 
+      if (!profileIsEnabled(profile)) {
+        for (const code of previousCodes) releaseHidBrowserCode(profile, code);
+        profile.pressedCodes = new Set();
+        return;
+      }
+
       for (const code of nextCodes) {
-        if (!previousCodes.has(code)) handleProfileCodeDown(profile, code);
+        if (!previousCodes.has(code)) {
+          claimHidBrowserCode(profile, code);
+          handleProfileCodeDown(profile, code);
+        }
       }
 
       for (const code of previousCodes) {
-        if (!nextCodes.has(code)) handleProfileCodeUp(profile, code);
+        if (!nextCodes.has(code)) {
+          handleProfileCodeUp(profile, code);
+          releaseHidBrowserCode(profile, code);
+        }
       }
 
       profile.pressedCodes = nextCodes;
@@ -6855,6 +8495,8 @@
           leftEdgePedal: false,
           rightEdgePedal: false,
           source: "hid",
+          colorIndex: mod(mappingProfiles.filter(item => item.source !== "browser").length, 12),
+          hidReady: false,
           device,
           pressedCodes: new Set()
         };
@@ -6862,6 +8504,7 @@
         profile.reportHandler = event => handleHidInputReport(profile, event);
         device.addEventListener("inputreport", profile.reportHandler);
         mappingProfiles.push(profile);
+        ensureExternalBassLayer(profile);
         activateProfile(profile);
       } catch (error) {
         const message = error.name === "NotAllowedError"
@@ -6878,6 +8521,7 @@
       }
 
       releaseProfilePressedCodes(profile);
+      if (bridgeCaptureProfileId === profile.id) bridgeCaptureProfileId = null;
 
       if (profile.device && profile.reportHandler) {
         profile.device.removeEventListener("inputreport", profile.reportHandler);
@@ -6885,6 +8529,11 @@
 
       const wasActive = profile.id === activeProfileId;
       mappingProfiles = mappingProfiles.filter(item => item.id !== profile.id);
+      const removedBassLayer = externalBassLayers.get(profile.id);
+      if (removedBassLayer) {
+        withBassLayer(removedBassLayer, () => stopBassVoices(bassFadeTime()));
+        externalBassLayers.delete(profile.id);
+      }
       if (wasActive) activeProfileId = "main";
       syncQAnchorFromActiveProfile();
       selectedCoord = { ...qAnchor };
@@ -6902,6 +8551,11 @@
         } catch (error) {
           // The OS/browser may already have closed a disconnected HID device.
         }
+      }
+
+      if (profile.source === "bridge" && !enabledBridgeProfiles().length && bridgeSocket) {
+        bridgeSocket.close();
+        bridgeSocket = null;
       }
     }
 
@@ -6997,8 +8651,7 @@
           const info = midiToInfo(midi);
           const display = displayNoteForMidi(midi, info, spellingByPc);
           const key = document.createElement("button");
-          const hardwareLabels = coordToLabels.get(coordKey(row, col));
-          const reservedLabels = coordToReservedLabels.get(coordKey(row, col)) || [];
+          const hardwareMappings = coordToLabels.get(coordKey(row, col)) || [];
 
           key.type = "button";
           key.className = "key";
@@ -7016,13 +8669,20 @@
           key.setAttribute("aria-label", key.title);
           key.innerHTML = `<span class="note">${display.note}</span><span class="octave">${display.octave}</span>`;
 
-          if (hardwareLabels) {
-            const map = document.createElement("span");
-            map.className = "key-map";
-            if (hardwareLabels.some(label => reservedLabels.includes(label))) map.classList.add("is-bass-reserved");
-            if (edgeOctaveComboMarksCoord(row, col)) map.classList.add("is-edge-octave-trigger");
-            map.textContent = hardwareLabels.join("/");
-            key.append(map);
+          if (hardwareMappings.length) {
+            const maps = document.createElement("span");
+            maps.className = "key-maps";
+            if (hardwareMappings.length > 1) maps.classList.add("is-multi");
+            for (const mapping of hardwareMappings) {
+              const map = document.createElement("span");
+              map.className = "key-map";
+              map.style.setProperty("--profile-hue", String(hueForPitchClass(mapping.colorIndex)));
+              if (mapping.bassReserved) map.classList.add("is-bass-reserved");
+              if (mapping.profileId === activeProfileId && edgeOctaveComboMarksCoord(row, col)) map.classList.add("is-edge-octave-trigger");
+              map.textContent = mapping.labels.join("/");
+              maps.append(map);
+            }
+            key.append(maps);
           }
 
           if (sameCoord(selectedCoord, { row, col })) key.classList.add("is-selected");
@@ -7065,6 +8725,7 @@
       cColorIndex = mod(cColorIndex + step, 12);
       const viewAnchor = captureViewAnchor();
       updateColorControl();
+      renderMappingProfileOptions();
       renderKeyboard({ viewAnchor });
       renderBassDock();
       refreshBassConfigIfOpen();
@@ -7388,7 +9049,7 @@
       const baseHz = Number(target.dataset.hz) * Math.pow(2, (outputShift + transientShift) / 12);
       const output = context.createGain();
       const profileGain = context.createGain();
-      const envelope = profile === bassProfile
+      const envelope = profile?.source === "bass"
         ? { ...preset.envelope, attack: Math.min(preset.envelope.attack, bassFadeTime() * BASS_ATTACK_FADE_RATIO) }
         : preset.envelope;
       const presetLevel = clampFloat(preset.level, 1, 0.35, 2.2);
@@ -7774,7 +9435,10 @@
     function setSoftPedal(profile, active, transitionTime = pedalTime()) {
       if (!profile || profile.source === "pointer") return;
       if (Boolean(profile.softPedal) === Boolean(active)) {
+        applyProfileOutputGain(profile, transitionTime);
+        applyMainPedalFollowers(profile, transitionTime);
         updatePedalSwitches(profile);
+        setReadout(tr("softPedal"), tr(profile.softPedal ? "softPedalOn" : "softPedalOff"));
         return;
       }
       profile.softPedal = Boolean(active);
@@ -7787,7 +9451,10 @@
     function setHarmonicPedal(profile, active, transitionTime = pedalTime()) {
       if (!profile || profile.source === "pointer") return;
       if (Boolean(profile.harmonicPedal) === Boolean(active)) {
+        applyHarmonicPedalForProfile(profile, transitionTime);
+        applyMainPedalFollowers(profile, transitionTime);
         updatePedalSwitches(profile);
+        setReadout(tr("harmonicPedal"), tr(profile.harmonicPedal ? "harmonicPedalOn" : "harmonicPedalOff"));
         return;
       }
       profile.harmonicPedal = Boolean(active);
@@ -7833,7 +9500,6 @@
       bassProfile.edgeMirror = Boolean(active);
       updateShortcutLegend();
       updatePedalSwitches();
-      if (activeShiftPedalSides.size) syncPhysicalShiftPedals(browserProfile());
       if (renderProfiles) renderMappingProfileOptions();
       renderKeyboard({ viewAnchor, preserveVoices: true });
       scheduleSaveSettings();
@@ -7879,6 +9545,11 @@
         window.clearTimeout(pending.timer);
         pendingBrowserStarts.delete(code);
       }
+      for (const [code, pending] of pendingBrowserBassStarts) {
+        window.clearTimeout(pending.timer);
+        pendingBrowserBassStarts.delete(code);
+      }
+      activeBrowserBassCodes.clear();
       clearGlissandoStates();
       for (const id of [...voices.keys()]) stopVoice(id);
       for (const profile of mappingProfiles) {
@@ -7889,14 +9560,9 @@
         profile.rightEdgePedal = false;
         profile.pressedCodes?.clear?.();
       }
-      bassProfile.pressedCodes.clear();
-      bassProfile.activePointerCodes.clear();
-      bassProfile.modifier = false;
-      bassProfile.seventhMode = false;
-      bassProfile.pressedSevenths.clear();
-      bassProfile.activePointerSevenths.clear();
-      bassProfile.suppressedTriadCodes.clear();
-      clearBassTwoKeySeventhTimer();
+      for (const layer of allBassLayers()) {
+        withBassLayer(layer, () => resetBassLayerState(0));
+      }
       els.keyboard.querySelectorAll(".is-active").forEach(key => key.classList.remove("is-active"));
       els.bassDock.querySelectorAll(".bass-button.is-active, .bass-seventh-button.is-active").forEach(button => button.classList.remove("is-active"));
       clearLongVibrato();
@@ -8011,6 +9677,7 @@
 
     function trackEdgeOctaveComboCode(event, active) {
       if (!event?.code || isTypingTarget(event.target)) return;
+      if (shouldSuppressBrowserCode(event.code)) return;
       if (!["Tab", "Backslash", "Digit1", "Backspace"].includes(event.code)) return;
       if (active) heldBrowserCodes.add(event.code);
       else heldBrowserCodes.delete(event.code);
@@ -8305,67 +9972,52 @@
     document.addEventListener("click", autoSaveSettingsFromEvent);
     window.addEventListener("beforeunload", saveQBoardSettings);
 
-    function applyShiftPedalRole(profile, role, active) {
-      if (role === "soft") {
-        setSoftPedal(profile, active, PHYSICAL_PEDAL_TRANSITION);
-        return true;
-      }
-      if (role === "harmonic") {
-        setHarmonicPedal(profile, active, PHYSICAL_PEDAL_TRANSITION);
-        return true;
-      }
-      return false;
-    }
-
-    function shiftStillHeld(event) {
-      return Boolean(event?.getModifierState?.("Shift") || event?.shiftKey);
-    }
-
-    function shiftSideFromEventWithFallback(event, active) {
-      const side = shiftPhysicalSideFromEvent(event);
-      if (side) return side;
-      if (!isPhysicalShiftEvent(event)) return null;
-      if (!active && activeShiftPedalSides.size === 1) {
-        return [...activeShiftPedalSides][0];
-      }
-      if (!active && !shiftStillHeld(event)) return "all";
+    function shiftPhysicalSideFromLocation(event) {
+      if (event?.location === 1) return "left";
+      if (event?.location === 2) return "right";
       return null;
     }
 
-    function syncPhysicalShiftPedals(profile) {
-      const activeRoles = new Set([...activeShiftPedalSides].map(shiftPedalRoleForSide).filter(Boolean));
-      setSoftPedal(profile, activeRoles.has("soft"), PHYSICAL_PEDAL_TRANSITION);
-      setHarmonicPedal(profile, activeRoles.has("harmonic"), PHYSICAL_PEDAL_TRANSITION);
+    function resolveBrowserShiftEventSide(event) {
+      return shiftPhysicalSideFromCode(event?.code) || shiftPhysicalSideFromLocation(event);
     }
 
-    function handlePhysicalShiftPedalEvent(event, active) {
-      const side = shiftSideFromEventWithFallback(event, active);
-      if (!side) return false;
+    function handlePhysicalShiftKeyEvent(event, active) {
+      const side = resolveBrowserShiftEventSide(event);
+      const role = shiftPedalRoleForSide(side);
+      if (!role) return false;
       const profile = browserProfile();
       if (!profileIsEnabled(profile)) return false;
-      if (side === "all") {
-        activeShiftPedalSides.clear();
-      } else if (active) {
-        activeShiftPedalSides.add(side);
+      if (active) {
+        if (event?.code && shouldSuppressBrowserCode(event.code)) return false;
+        browserShiftDownSides.add(side);
       } else {
-        activeShiftPedalSides.delete(side);
-        if (!shiftStillHeld(event)) activeShiftPedalSides.clear();
+        const pedalIsActive = role === "soft" ? profile.softPedal : profile.harmonicPedal;
+        if (!browserShiftDownSides.has(side) && !pedalIsActive) return false;
+        browserShiftDownSides.delete(side);
       }
-      syncPhysicalShiftPedals(profile);
+      if (role === "soft") setSoftPedal(profile, active, PHYSICAL_PEDAL_TRANSITION);
+      if (role === "harmonic") setHarmonicPedal(profile, active, PHYSICAL_PEDAL_TRANSITION);
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation?.();
       return true;
     }
 
-    function clearPhysicalShiftPedals() {
-      if (!activeShiftPedalSides.size) return;
-      activeShiftPedalSides.clear();
-      syncPhysicalShiftPedals(browserProfile());
+    function releasePhysicalShiftPedalsOnFocusLoss() {
+      const profile = browserProfile();
+      browserShiftDownSides.clear();
+      if (!profile) return;
+      if (profile.softPedal) setSoftPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
+      if (profile.harmonicPedal) setHarmonicPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
     }
 
     document.addEventListener("keydown", event => {
       trackEdgeOctaveComboCode(event, true);
+    }, { capture: true });
+
+    document.addEventListener("keydown", event => {
+      if (externalFunctionBassMayOwnCode(event.code)) event.preventDefault();
     }, { capture: true });
 
     document.addEventListener("keyup", event => {
@@ -8373,22 +10025,33 @@
     }, { capture: true });
 
     document.addEventListener("keydown", event => {
-      handlePhysicalShiftPedalEvent(event, true);
+      handlePhysicalShiftKeyEvent(event, true);
     }, { capture: true });
 
     document.addEventListener("keyup", event => {
-      handlePhysicalShiftPedalEvent(event, false);
+      handlePhysicalShiftKeyEvent(event, false);
     }, { capture: true });
 
+    let keyboardSettingsResizeFrame = 0;
+    window.addEventListener("resize", () => {
+      if (keyboardSettingsResizeFrame) cancelAnimationFrame(keyboardSettingsResizeFrame);
+      keyboardSettingsResizeFrame = requestAnimationFrame(() => {
+        keyboardSettingsResizeFrame = 0;
+        syncKeyboardSettingsViewport(els.keyboardLayout?.scrollTop || 0);
+      });
+    });
+
     window.addEventListener("blur", () => {
-      clearPhysicalShiftPedals();
+      releasePhysicalShiftPedalsOnFocusLoss();
       clearEdgeOctaveCombo();
+      stopAllVoices();
     });
 
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) return;
-      clearPhysicalShiftPedals();
+      releasePhysicalShiftPedalsOnFocusLoss();
       clearEdgeOctaveCombo();
+      stopAllVoices();
     });
 
     window.addEventListener("keydown", event => {
@@ -8400,16 +10063,6 @@
       if (profileIsEnabled(profile) && isSustainEvent(event)) {
         event.preventDefault();
         if (!event.repeat) setSustainPedal(profile, true);
-        return;
-      }
-      if (profileIsEnabled(profile) && isSoftPedalEvent(event)) {
-        event.preventDefault();
-        if (!event.repeat) setSoftPedal(profile, true, PHYSICAL_PEDAL_TRANSITION);
-        return;
-      }
-      if (profileIsEnabled(profile) && isHarmonicPedalEvent(event)) {
-        event.preventDefault();
-        if (!event.repeat) setHarmonicPedal(profile, true, PHYSICAL_PEDAL_TRANSITION);
         return;
       }
       if (profileIsEnabled(profile) && isEdgePedalEvent(event)) {
@@ -8448,7 +10101,7 @@
 
       if (bassClaimsBrowserCode(event.code)) {
         event.preventDefault();
-        if (!event.repeat) handleBassCodeDown(event.code);
+        if (!event.repeat) scheduleBrowserBassCodeDown(event.code);
         return;
       }
       if (event.repeat) return;
@@ -8473,16 +10126,6 @@
         setSustainPedal(profile, false);
         return;
       }
-      if (profileIsEnabled(profile) && isSoftPedalEvent(event)) {
-        event.preventDefault();
-        setSoftPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
-        return;
-      }
-      if (profileIsEnabled(profile) && isHarmonicPedalEvent(event)) {
-        event.preventDefault();
-        setHarmonicPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
-        return;
-      }
       if (profileIsEnabled(profile) && isEdgePedalEvent(event)) {
         event.preventDefault();
         if (comboUsedReleasedCode) stopEdgeOctaveCombo(profile);
@@ -8500,7 +10143,7 @@
         event.preventDefault();
         return;
       }
-      if (handleBassCodeUp(event.code)) {
+      if (releaseBrowserBassCode(event.code)) {
         event.preventDefault();
         return;
       }
@@ -8541,9 +10184,7 @@
       const action = actionTarget.dataset.profileAction;
       releaseControlFocus(event);
 
-      if (action === "activate") {
-        activateProfile(profile, { viewAnchor });
-      } else if (action === "exportSettings") {
+      if (action === "exportSettings") {
         exportQBoardSettings();
       } else if (action === "importSettings") {
         els.qboardImportInput.value = "";
@@ -8551,12 +10192,16 @@
       } else if (action === "resetSettings") {
         resetQBoardSettingsMemory();
       } else if (action === "bindBassBase") {
-        bassProfile.baseCoord = { ...selectedCoord };
-        const bassBaseSource = sourceFromCoord(bassProfile.baseCoord.row, bassProfile.baseCoord.col);
+        const layer = actualBassLayer(profile);
+        const bassBaseSource = withBassLayer(layer, () => {
+          bassProfile.baseCoord = { ...selectedCoord };
+          updateBassVoices();
+          return sourceFromCoord(bassProfile.baseCoord.row, bassProfile.baseCoord.col);
+        });
         renderMappingProfileOptions();
         renderBassDock();
-        updateBassVoices();
         setReadout(bassBaseSource.dataset.label, `${tr("bassBase")} · ${bassBaseSource.dataset.hz} Hz · MIDI ${bassBaseSource.dataset.midi}`);
+        scheduleSaveSettings();
       } else if (action === "bindQ") {
         activeProfileId = profile.id;
         setActiveAnchor(selectedCoord);
@@ -8565,19 +10210,27 @@
         renderKeyboard({ viewAnchor });
         updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
       } else if (action === "resetQ") {
-        activeProfileId = profile.id;
-        setActiveAnchor({ row: 1, col: 0 });
-        selectedCoord = { ...qAnchor };
-        includeProfileHardwareRange(profile);
-        renderMappingProfileOptions();
-        renderKeyboard({ viewAnchor });
-        updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
+        resetProfileQ(profile, viewAnchor);
       } else if (action === "remove") {
         removeActiveKeyboard(profile);
+      } else if (action === "bindBridgeDevice") {
+        rebindBridgeKeyboard(profile);
+      } else if (action === "openResetRebind") {
+        openResetRebindDialog(profile);
+      } else if (action === "openBassConfig") {
+        activeBassConfigLayerId = actualBassLayer(profile).id;
+        setBassConfigOpen(true);
+      } else if (action === "cycleProfileColor") {
+        profile.colorIndex = mod((Number(profile.colorIndex) || 0) + 1, 12);
+        renderMappingProfileOptions();
+        renderKeyboard({ viewAnchor, preserveVoices: true });
+        renderBassDock();
+        scheduleSaveSettings();
       } else if (action === "addHid") {
+        showBridgeInstallPrompt();
         addHidKeyboard();
       } else if (action === "toggleBassKeyMode") {
-        setBassKeyMode(bassUsesFunctionKeys() ? "digits" : "function");
+        withBassLayer(profile, () => setBassKeyMode(bassUsesFunctionKeys() ? "digits" : "function"));
       } else if (action === "toggleEdgeMirror") {
         setEdgeMirrorSetting(!edgeMirrorActive(), { viewAnchor });
       }
@@ -8594,16 +10247,18 @@
       if (field === "enabled") {
         setProfileEnabled(profile, event.target.checked);
       } else if (field === "outHarmony") {
-        bassProfile.outHarmony = event.target.checked;
-        const activeCodes = activeBassKeyCodes();
-        for (const code of [...bassProfile.pressedCodes]) {
-          if (!activeCodes.has(code)) bassProfile.pressedCodes.delete(code);
-        }
-        bassProfile.suppressedTriadCodes.clear();
-        const viewAnchor = captureViewAnchor();
-        renderBassDock();
-        renderKeyboard({ viewAnchor });
-        updateBassVoices();
+        withBassLayer(profile, () => {
+          bassProfile.outHarmony = event.target.checked;
+          const activeCodes = activeBassKeyCodes();
+          for (const code of [...bassProfile.pressedCodes]) {
+            if (!activeCodes.has(code)) bassProfile.pressedCodes.delete(code);
+          }
+          bassProfile.suppressedTriadCodes.clear();
+          const viewAnchor = captureViewAnchor();
+          renderBassDock();
+          renderKeyboard({ viewAnchor });
+          updateBassVoices();
+        });
       } else if (field === "instrument") {
         profile.instrument = event.target.value;
         stopAllVoices();
@@ -8620,7 +10275,7 @@
         applyProfileOutputGain(profile);
       } else if (field === "longVibrato") {
         profile.longVibrato = event.target.checked;
-        if (!profile.longVibrato) clearLongVibratoForProfile(profile);
+        if (!profile.longVibrato) clearLongVibratoForProfile(profile.source === "bass" ? actualBassLayer(profile) : profile);
       } else if (field === "sustainEnabled") {
         profile.sustainEnabled = event.target.checked;
         if (!profile.sustainEnabled) {
@@ -8638,9 +10293,10 @@
         event.target.value = profile.fadeSustainTime;
         event.target.closest(".profile-volume")?.querySelector("[data-profile-fade-output]")?.replaceChildren(formatSeconds(profile.fadeSustainTime));
       } else if (field === "bassFadeTime") {
-        bassProfile.fadeTime = clampFloat(event.target.value, DEFAULT_BASS_FADE_TIME, 0, MAX_BASS_FADE_TIME);
-        event.target.value = bassProfile.fadeTime;
-        event.target.closest(".profile-volume")?.querySelector("[data-profile-bass-fade-output]")?.replaceChildren(formatSeconds(bassProfile.fadeTime));
+        const layer = actualBassLayer(profile);
+        layer.fadeTime = clampFloat(event.target.value, DEFAULT_BASS_FADE_TIME, 0, MAX_BASS_FADE_TIME);
+        event.target.value = layer.fadeTime;
+        event.target.closest(".profile-volume")?.querySelector("[data-profile-bass-fade-output]")?.replaceChildren(formatSeconds(layer.fadeTime));
       } else if (field === "followSustainPedal") {
         pointerProfile.followSustainPedal = event.target.checked;
         refreshPointerFollowPedals();
@@ -8652,6 +10308,7 @@
       renderMappingProfileOptions();
       updatePedalSwitches();
       if (profile.id === activeProfileId) updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
+      scheduleSaveSettings();
     });
 
     els.profileRows.addEventListener("input", event => {
@@ -8673,9 +10330,11 @@
         profile.fadeSustainTime = clampFloat(event.target.value, fallback, min, max);
         event.target.closest(".profile-volume")?.querySelector("[data-profile-fade-output]")?.replaceChildren(formatSeconds(profile.fadeSustainTime));
       } else if (field === "bassFadeTime") {
-        bassProfile.fadeTime = clampFloat(event.target.value, DEFAULT_BASS_FADE_TIME, 0, MAX_BASS_FADE_TIME);
-        event.target.closest(".profile-volume")?.querySelector("[data-profile-bass-fade-output]")?.replaceChildren(formatSeconds(bassProfile.fadeTime));
+        const layer = actualBassLayer(profile);
+        layer.fadeTime = clampFloat(event.target.value, DEFAULT_BASS_FADE_TIME, 0, MAX_BASS_FADE_TIME);
+        event.target.closest(".profile-volume")?.querySelector("[data-profile-bass-fade-output]")?.replaceChildren(formatSeconds(layer.fadeTime));
       }
+      scheduleSaveSettings();
     });
 
     els.bassDock.addEventListener("pointerdown", event => {
@@ -8687,43 +10346,57 @@
       }
 
       const seventhButton = event.target.closest("[data-bass-seventh-index]");
-      if (seventhButton && bassProfile.enabled) {
+      if (seventhButton) {
         event.preventDefault();
-        const index = Number(seventhButton.dataset.bassSeventhIndex);
-        bassProfile.activePointerSevenths.set(event.pointerId, index);
-        seventhButton.setPointerCapture?.(event.pointerId);
-        const wasSeventhActive = isBassSeventhActive();
-        bassProfile.pressedSevenths.add(index);
-        clearBassTwoKeySeventhTimer();
-        updateBassVoicesForRecognition(wasSeventhActive);
+        const layer = bassLayerById(seventhButton.dataset.bassLayerId);
+        withBassLayer(layer, () => {
+          if (!bassProfile.enabled) return;
+          const index = Number(seventhButton.dataset.bassSeventhIndex);
+          bassProfile.activePointerSevenths.set(event.pointerId, index);
+          seventhButton.setPointerCapture?.(event.pointerId);
+          const wasSeventhActive = isBassSeventhActive();
+          bassProfile.pressedSevenths.add(index);
+          clearBassTwoKeySeventhTimer();
+          updateBassVoicesForRecognition(wasSeventhActive);
+        });
         return;
       }
 
       const button = event.target.closest("[data-bass-code]");
-      if (!button || !bassProfile.enabled) return;
+      if (!button) return;
       event.preventDefault();
       const code = button.dataset.bassCode;
-      bassProfile.activePointerCodes.set(event.pointerId, code);
-      button.setPointerCapture?.(event.pointerId);
-      handleBassCodeDown(code);
+      const layer = bassLayerById(button.dataset.bassLayerId);
+      withBassLayer(layer, () => {
+        if (!bassProfile.enabled) return;
+        bassProfile.activePointerCodes.set(event.pointerId, code);
+        button.setPointerCapture?.(event.pointerId);
+        handleBassCodeDown(code);
+      });
     });
 
     function releaseBassPointer(event) {
-      const seventhIndex = bassProfile.activePointerSevenths.get(event.pointerId);
-      if (seventhIndex !== undefined) {
-        event.preventDefault();
-        bassProfile.activePointerSevenths.delete(event.pointerId);
-        bassProfile.pressedSevenths.delete(seventhIndex);
-        clearBassTwoKeySeventhTimer();
-        updateBassVoices();
-        return;
+      for (const layer of allBassLayers()) {
+        const handled = withBassLayer(layer, () => {
+          const seventhIndex = bassProfile.activePointerSevenths.get(event.pointerId);
+          if (seventhIndex !== undefined) {
+            bassProfile.activePointerSevenths.delete(event.pointerId);
+            bassProfile.pressedSevenths.delete(seventhIndex);
+            clearBassTwoKeySeventhTimer();
+            updateBassVoices();
+            return true;
+          }
+          const code = bassProfile.activePointerCodes.get(event.pointerId);
+          if (!code) return false;
+          bassProfile.activePointerCodes.delete(event.pointerId);
+          handleBassCodeUp(code);
+          return true;
+        });
+        if (handled) {
+          event.preventDefault();
+          return;
+        }
       }
-
-      const code = bassProfile.activePointerCodes.get(event.pointerId);
-      if (!code) return;
-      event.preventDefault();
-      bassProfile.activePointerCodes.delete(event.pointerId);
-      handleBassCodeUp(code);
     }
 
     els.bassDock.addEventListener("pointerup", releaseBassPointer);
@@ -8779,14 +10452,23 @@
       resetBassChordConfigDefaults();
     });
 
+    els.bassConfigSource?.addEventListener("change", event => {
+      releaseControlFocus(event);
+      activeBassConfigLayerId = bassLayerById(event.target.value).id;
+      renderBassConfigPopover();
+    });
+
     els.bassConfigBody.addEventListener("change", event => {
       const select = event.target.closest("select[data-bass-state]");
       if (!select) return;
-      const key = bassChordOverrideKey(select.dataset.bassMode, Number(select.dataset.bassIndex), select.dataset.bassState);
-      if (select.value === select.dataset.bassFallback) delete bassChordOverrides[key];
-      else bassChordOverrides[key] = select.value;
+      const layer = bassLayerById(activeBassConfigLayerId);
+      withBassLayer(layer, () => {
+        const key = bassChordOverrideKey(select.dataset.bassMode, Number(select.dataset.bassIndex), select.dataset.bassState);
+        if (select.value === select.dataset.bassFallback) delete bassChordOverrides[key];
+        else bassChordOverrides[key] = select.value;
+        updateBassVoices();
+      });
       renderBassDock();
-      updateBassVoices();
       renderBassConfigPopover();
       scheduleSaveSettings();
     });
@@ -8892,9 +10574,41 @@
       setHarmonicPedal(profile, !profile.harmonicPedal);
     });
 
-    els.addHidButton.addEventListener("click", event => {
+    els.addKeyboardButton?.addEventListener("click", event => {
       releaseControlFocus(event);
-      addHidKeyboard();
+      addBridgeKeyboard();
+    });
+
+    els.bridgeDirectoryButton?.addEventListener("click", event => {
+      releaseControlFocus(event);
+      showBridgeDirectoryDialog();
+    });
+
+    els.openBridgeButton?.addEventListener("click", event => {
+      releaseControlFocus(event);
+      openBridgeApplication();
+    });
+
+    els.bridgePanelButton?.addEventListener("click", event => {
+      releaseControlFocus(event);
+      reconnectBridgeSocket();
+    });
+
+    els.bridgeDirectoryClose?.addEventListener("click", () => els.bridgeDirectoryDialog.close?.());
+    els.bridgeBrowseButton?.addEventListener("click", chooseBridgeDirectory);
+    els.bridgeConnectButton?.addEventListener("click", connectSelectedBridgeDirectory);
+    els.bridgeInstallerButton?.addEventListener("click", downloadBridgeComponent);
+    els.bridgeDirectoryFallback?.addEventListener("change", event => {
+      const files = [...(event.target.files || [])];
+      const bridgeFile = files.find(file => file.name.toLowerCase() === "qboardbridge.exe");
+      if (!bridgeFile) {
+        setReadout(tr("sourceBridge"), tr("bridgeInstallerMissing"));
+        return;
+      }
+      const rootName = bridgeFile.webkitRelativePath?.split("/")[0] || bridgeFile.name;
+      rememberBridgeInstallPath(els.bridgePathInput.value.trim() || rootName, { verified: true });
+      els.bridgePathInput.value = bridgeInstallPath;
+      setReadout(tr("sourceBridge"), tr("bridgeFolderSelected"));
     });
 
     els.pedalMirrorToggle.addEventListener("click", event => {
@@ -8919,6 +10633,11 @@
     els.showStaff.addEventListener("change", event => {
       releaseControlFocus(event);
       syncStaffVisibility();
+    });
+
+    els.showShortcuts.addEventListener("change", event => {
+      releaseControlFocus(event);
+      syncShortcutVisibility();
     });
 
     els.staffTranspose?.addEventListener("change", event => {
@@ -8952,6 +10671,12 @@
       }
     });
 
+    els.manualBody?.addEventListener("click", event => {
+      if (!event.target.closest("[data-bridge-download]")) return;
+      releaseControlFocus(event);
+      downloadBridgeComponent();
+    });
+
     els.scaleZoomOut.addEventListener("click", event => {
       releaseControlFocus(event);
       changeStaffZoom(-0.15);
@@ -8965,6 +10690,7 @@
     els.tonicSelect.addEventListener("change", event => {
       releaseControlFocus(event);
       scheduleRender();
+      renderMappingProfileOptions();
       renderScaleStaff();
       renderBassDock();
       refreshBassConfigIfOpen();
@@ -8973,6 +10699,7 @@
     els.scaleMode.addEventListener("change", event => {
       releaseControlFocus(event);
       scheduleRender();
+      renderMappingProfileOptions();
       renderScaleStaff();
       renderBassDock();
       refreshBassConfigIfOpen();
@@ -8999,6 +10726,7 @@
 
     populateTonicSelect();
     loadStoredQBoardSettings();
+    if (enabledBridgeProfiles().length) ensureBridgeSocket();
     populateLanguageSelect();
     applyTranslations();
     renderMappingProfileOptions();
@@ -9008,6 +10736,7 @@
     updatePedalOptionOutputs();
     updateMetronomeDisplay();
     syncStaffVisibility();
+    syncShortcutVisibility();
     renderKeyboard({ keepScroll: false });
     renderScaleStaff();
     renderBassDock();
