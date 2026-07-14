@@ -1224,6 +1224,16 @@
       scrollbar-color: #7b8290 var(--stage);
     }
 
+    .keyboard-scroll,
+    .keyboard,
+    .key,
+    .bass-dock,
+    .bass-button,
+    .bass-seventh-button,
+    .touch-vibrato-pan-overlay {
+      -webkit-touch-callout: none;
+    }
+
     .keyboard-scroll.is-touch-vibrato-locked {
       overflow: hidden;
       touch-action: none;
@@ -9952,6 +9962,12 @@
       clearFocusedControl(event);
       primeAudioFromGesture(event);
     }, { capture: true });
+
+    document.addEventListener("contextmenu", event => {
+      if (event.target.closest?.(".keyboard-scroll, #bassDock, .touch-vibrato-pan-overlay")) {
+        event.preventDefault();
+      }
+    });
 
     function shouldAutoSaveSettingsEvent(event) {
       const target = event.target;
