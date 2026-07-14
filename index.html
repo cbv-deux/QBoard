@@ -1561,7 +1561,20 @@
     const DEFAULT_METRONOME_BPM = 120;
     const MIN_METRONOME_BPM = 30;
     const MAX_METRONOME_BPM = 300;
+<<<<<<< Updated upstream
     const SUSTAIN_CODES = new Set(["Space", "ShiftRight"]);
+=======
+    const DEFAULT_GLISSANDO_DWELL_MS = 30;
+    const MIN_KEYBOARD_ZOOM = 0.5;
+    const MAX_KEYBOARD_ZOOM = 2;
+    const KEYBOARD_ZOOM_STEP = 0.1;
+    const DEFAULT_VIBRATO_SENSITIVITY_CENTS = 25;
+    const MAX_VIBRATO_CENTS = 100;
+    const SUSTAIN_CODES = new Set(["Space"]);
+    const Q_NAVIGATION_CODES = new Set([
+      "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "PageUp", "PageDown"
+    ]);
+>>>>>>> Stashed changes
     const SOFT_PEDAL_CODE = "ShiftLeft";
     const DEFAULT_SOFT_PEDAL_FACTOR = 0.5;
     let cColorIndex = 0;
@@ -1635,9 +1648,20 @@
       [0x16, "KeyS"], [0x17, "KeyT"], [0x18, "KeyU"], [0x19, "KeyV"], [0x1A, "KeyW"], [0x1B, "KeyX"],
       [0x1C, "KeyY"], [0x1D, "KeyZ"], [0x1E, "Digit1"], [0x1F, "Digit2"], [0x20, "Digit3"], [0x21, "Digit4"],
       [0x22, "Digit5"], [0x23, "Digit6"], [0x24, "Digit7"], [0x25, "Digit8"], [0x26, "Digit9"], [0x27, "Digit0"],
+<<<<<<< Updated upstream
       [0x2C, "Space"],
       [0x2D, "Minus"], [0x2E, "Equal"], [0x2F, "BracketLeft"], [0x30, "BracketRight"],
       [0x33, "Semicolon"], [0x34, "Quote"], [0x36, "Comma"], [0x37, "Period"], [0x38, "Slash"],
+=======
+      [0x29, "Escape"], [0x2A, "Backspace"],
+      [0x2B, "Tab"], [0x2C, "Space"],
+      [0x2D, "Minus"], [0x2E, "Equal"], [0x2F, "BracketLeft"], [0x30, "BracketRight"], [0x31, "Backslash"],
+      [0x33, "Semicolon"], [0x34, "Quote"], [0x35, "Backquote"], [0x36, "Comma"], [0x37, "Period"], [0x38, "Slash"],
+      [0x3A, "F1"], [0x3B, "F2"], [0x3C, "F3"], [0x3D, "F4"], [0x3E, "F5"], [0x3F, "F6"],
+      [0x40, "F7"], [0x41, "F8"], [0x42, "F9"], [0x43, "F10"], [0x44, "F11"], [0x45, "F12"],
+      [0x4B, "PageUp"], [0x4E, "PageDown"], [0x4F, "ArrowRight"],
+      [0x50, "ArrowLeft"], [0x51, "ArrowDown"], [0x52, "ArrowUp"],
+>>>>>>> Stashed changes
       [0xE1, "ShiftLeft"],
       [0xE5, "ShiftRight"]
     ]);
@@ -2977,6 +3001,11 @@
     let qAnchor = { row: 1, col: 0 };
     let manualBendCents = 0;
     let longVibratoState = null;
+<<<<<<< Updated upstream
+=======
+    const browserShiftPedalEdges = new Map();
+    const pendingBrowserShiftStarts = new Map();
+>>>>>>> Stashed changes
     const longVibratoHolds = new Map();
     let autoVibratoFrame = 0;
     let staffZoom = 1;
@@ -2984,7 +3013,25 @@
     const codeToCoord = new Map();
     const coordToLabels = new Map();
     const hidSuppressedCodeUntil = new Map();
+<<<<<<< Updated upstream
     const pendingBrowserStarts = new Map();
+=======
+    const hidActiveCodeCounts = new Map();
+    const recentDuplicateBrowserDownEvents = new Map();
+    const pendingBrowserStarts = new Map();
+    const pendingBrowserBassStarts = new Map();
+    const pendingBrowserPedalStarts = new Map();
+    const pendingBrowserQNavigation = new Map();
+    const pendingBrowserReleases = new Map();
+    const deferredBrowserCodeReleases = new Map();
+    const activeBrowserBassCodes = new Set();
+    const HID_BROWSER_SUPPRESS_MS = 20;
+    const HID_BROWSER_START_GRACE_MS = 16;
+    const BRIDGE_WS_URL = "ws://127.0.0.1:8765/qboard";
+    const BRIDGE_BROWSER_START_GRACE_MS = 16;
+    const MAIN_PIANO_START_GRACE_MS = 8;
+    const BASS_INPUT_SETTLE_MS = 16;
+>>>>>>> Stashed changes
     let metronomeBpm = DEFAULT_METRONOME_BPM;
     let metronomeActive = false;
     let metronomeTimerId = null;
@@ -3270,6 +3317,10 @@
 
     function isSustainCode(code) {
       return SUSTAIN_CODES.has(code);
+    }
+
+    function isQNavigationCode(code) {
+      return Q_NAVIGATION_CODES.has(code);
     }
 
     function isSoftPedalCode(code) {
@@ -4157,11 +4208,14 @@
 
     function cancelPendingBrowserCode(code) {
       const pending = pendingBrowserStarts.get(code);
-      if (!pending) return;
+      if (!pending) return false;
       window.clearTimeout(pending.timer);
+      window.clearTimeout(pending.claimTimer);
       pendingBrowserStarts.delete(code);
+      return true;
     }
 
+<<<<<<< Updated upstream
     function scheduleBrowserCodeStart(code, profile, coord) {
       cancelPendingBrowserCode(code);
       const timer = window.setTimeout(() => {
@@ -4174,6 +4228,761 @@
     }
 
     function pressedCodesFromHidReport(dataView) {
+=======
+    function bridgeComponentUrl() {
+      return new URL("tools/QBoardBridgeInstaller.exe", document.baseURI).href;
+    }
+
+    function downloadBridgeComponent() {
+      const link = document.createElement("a");
+      link.href = bridgeComponentUrl();
+      link.download = "QBoardBridgeInstaller.exe";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setReadout(tr("sourceBridge"), tr("bridgeDownload"));
+    }
+
+    function rememberBridgeInstallPath(path, { verified = false } = {}) {
+      const normalized = String(path || "").trim();
+      if (normalized) {
+        bridgeInstallPath = normalized;
+        try { localStorage.setItem("qboard-bridge-install-path", bridgeInstallPath); } catch (error) {}
+      }
+      bridgeDirectoryVerified ||= verified;
+      if (els.bridgePathInput && document.activeElement !== els.bridgePathInput) {
+        els.bridgePathInput.value = bridgeInstallPath;
+      }
+      updateBridgePanel();
+    }
+
+    function setBridgePanelOpen(open = true) {
+      const next = Boolean(open);
+      els.bridgePanel.hidden = !next;
+      els.keyboardSectionBody.classList.toggle("is-bridge-open", next);
+      updateBridgePanel();
+      requestAnimationFrame(() => syncKeyboardSettingsViewport(els.keyboardLayout?.scrollTop || 0));
+    }
+
+    function updateBridgePanel() {
+      if (!els.bridgePanel) return;
+      els.bridgePanel.classList.toggle("is-connected", bridgeConnected);
+      els.bridgePanelStatus.textContent = tr(bridgeConnected ? "bridgeConnected" : "bridgeDisconnected");
+      els.bridgePanelClients.textContent = tr("bridgeClients", { count: bridgeConnected ? bridgeClientCount : 0 });
+      els.bridgePanelPath.textContent = bridgeInstallPath || tr("bridgePathUnset");
+      els.bridgePanelPath.title = bridgeInstallPath || tr("bridgePathUnset");
+      els.bridgePanelButton.textContent = tr(bridgeConnected ? "bridgeReconnectAction" : "bridgeConnect");
+    }
+
+    function showBridgeDirectoryDialog() {
+      els.bridgePathInput.value = bridgeInstallPath;
+      if (typeof els.bridgeDirectoryDialog.showModal === "function") els.bridgeDirectoryDialog.showModal();
+      else els.bridgeDirectoryDialog.setAttribute("open", "");
+    }
+
+    async function chooseBridgeDirectory() {
+      if (!("showDirectoryPicker" in window)) {
+        els.bridgeDirectoryFallback.value = "";
+        els.bridgeDirectoryFallback.click();
+        return;
+      }
+      try {
+        const directory = await window.showDirectoryPicker({ mode: "read" });
+        await directory.getFileHandle("QBoardBridge.exe");
+        const pastedPath = els.bridgePathInput.value.trim();
+        rememberBridgeInstallPath(pastedPath || directory.name, { verified: true });
+        els.bridgePathInput.value = bridgeInstallPath;
+        setReadout(tr("sourceBridge"), tr("bridgeFolderSelected"));
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+        setReadout(tr("sourceBridge"), tr("bridgeInstallerMissing"));
+      }
+    }
+
+    function connectSelectedBridgeDirectory() {
+      rememberBridgeInstallPath(els.bridgePathInput.value, { verified: bridgeDirectoryVerified });
+      els.bridgeDirectoryDialog.close?.();
+      setBridgePanelOpen(true);
+      ensureBridgeSocket();
+    }
+
+    function reconnectBridgeSocket() {
+      const previousSocket = bridgeSocket;
+      bridgeSocket = null;
+      if (previousSocket) try { previousSocket.close(); } catch (error) {}
+      bridgeConnected = false;
+      bridgeClientCount = 0;
+      updateBridgePanel();
+      ensureBridgeSocket();
+    }
+
+    function openBridgeApplication() {
+      setBridgePanelOpen(true);
+      const launcher = document.createElement("iframe");
+      launcher.hidden = true;
+      launcher.src = "qboardbridge://open";
+      document.body.append(launcher);
+      window.setTimeout(() => launcher.remove(), 1800);
+      window.setTimeout(() => ensureBridgeSocket(), 350);
+      window.setTimeout(() => {
+        if (!bridgeConnected) reconnectBridgeSocket();
+      }, 1500);
+    }
+
+    function bridgePromptMessage() {
+      return `${tr("bridgePromptTitle")}\n\n${tr("bridgePromptText")}\n\n${tr("bridgeManual2")}`;
+    }
+
+    function showBridgeInstallPrompt({ force = false } = {}) {
+      if (!force && bridgeInstallHintShown) return;
+      bridgeInstallHintShown = true;
+      if (window.confirm(bridgePromptMessage())) downloadBridgeComponent();
+    }
+
+    function createBridgeKeyboardProfile(seed = {}) {
+      const bridgeIndex = mappingProfiles.filter(profile => profile.source === "bridge").length + 1;
+      const template = activeProfile() || browserProfile();
+      return {
+        id: seed.id || `bridge-${Date.now()}-${bridgeIndex}`,
+        label: seed.label || seed.bridgeDeviceName || tr("bridgeKeyboardName", { index: bridgeIndex }),
+        short: seed.short || `R${bridgeIndex}`,
+        anchor: seed.anchor ? { ...seed.anchor } : { row: 1, col: 0 },
+        instrument: seed.instrument || template.instrument || "accordion",
+        outputShift: Number.isFinite(seed.outputShift) ? seed.outputShift : 0,
+        volume: Number.isFinite(seed.volume) ? seed.volume : profileVolume(template),
+        enabled: seed.enabled !== false,
+        longVibrato: typeof seed.longVibrato === "boolean" ? seed.longVibrato : profileAllowsLongVibrato(template),
+        fadeSustainTime: Number.isFinite(seed.fadeSustainTime) ? seed.fadeSustainTime : keyboardFadeTime(template),
+        sustainEnabled: seed.sustainEnabled !== false,
+        sustainPedal: false,
+        softPedal: false,
+        harmonicPedal: false,
+        leftEdgePedal: false,
+        rightEdgePedal: false,
+        source: "bridge",
+        bridgeDeviceId: seed.bridgeDeviceId || "",
+        bridgeDeviceName: seed.bridgeDeviceName || "",
+        colorIndex: Number.isFinite(seed.colorIndex)
+          ? mod(seed.colorIndex, 12)
+          : mod(mappingProfiles.filter(profile => profile.source !== "browser").length, 12),
+        pressedCodes: new Set()
+      };
+    }
+
+    function enabledBridgeProfiles() {
+      return mappingProfiles.filter(profile => profile.source === "bridge" && profileIsEnabled(profile));
+    }
+
+    function bridgeDeviceIdFromMessage(message) {
+      return String(message.deviceId || message.device || message.name || "unknown");
+    }
+
+    function bridgeDeviceNameFromMessage(message) {
+      return String(message.deviceName || message.name || bridgeDeviceIdFromMessage(message));
+    }
+
+    function rememberBridgeDevice(message) {
+      const id = bridgeDeviceIdFromMessage(message);
+      const name = bridgeDeviceNameFromMessage(message);
+      bridgeDevices.set(id, { id, name, lastSeen: performance.now() });
+      return { id, name };
+    }
+
+    function bindBridgeProfile(profile, deviceId, deviceName) {
+      if (!profile || profile.source !== "bridge") return;
+      const viewAnchor = captureViewAnchor();
+      if (profile.bridgeDeviceId && profile.bridgeDeviceId !== deviceId) releaseProfilePressedCodes(profile);
+      profile.bridgeDeviceId = deviceId;
+      profile.bridgeDeviceName = deviceName || deviceId;
+      profile.bridgeReady = true;
+      if (!profile.label || /^Bridge keyboard|^桥接键盘/.test(profile.label)) profile.label = profile.bridgeDeviceName;
+      bridgeCaptureProfileId = bridgeCaptureProfileId === profile.id ? null : bridgeCaptureProfileId;
+      renderMappingProfileOptions();
+      renderBassDock();
+      refreshBassConfigIfOpen();
+      renderKeyboard({ viewAnchor });
+      renderScaleStaff();
+      scheduleSaveSettings();
+      setReadout(tr("sourceBridge"), tr("bridgeBound", { name: profile.bridgeDeviceName }));
+    }
+
+    function bridgeProfileForDevice(message) {
+      const { id, name } = rememberBridgeDevice(message);
+      const bound = enabledBridgeProfiles().find(profile => profile.bridgeDeviceId === id);
+      if (bound) return bound;
+
+      const capture = profileById(bridgeCaptureProfileId);
+      if (capture?.source === "bridge" && profileIsEnabled(capture)) {
+        bindBridgeProfile(capture, id, name);
+        return capture;
+      }
+
+      const unbound = enabledBridgeProfiles().find(profile => !profile.bridgeDeviceId);
+      if (unbound) {
+        bindBridgeProfile(unbound, id, name);
+        return unbound;
+      }
+
+      return null;
+    }
+
+    function handleBridgeKeyEvent(message) {
+      const code = String(message.code || "");
+      const profile = bridgeProfileForDevice(message);
+      if (!profile || !code) return;
+      if (!codeToHardwarePosition.has(code) && !isQNavigationCode(code) && !isSustainCode(code) && !isSoftPedalCode(code) && !isHarmonicPedalCode(code) && !isEdgePedalCode(code) && !bassClaimsProfileCode(profile, code)) return;
+      profile.bridgeReady = true;
+      const isDown = message.down !== false && message.type !== "keyup" && message.event !== "up";
+      const previousCodes = profile.pressedCodes || new Set();
+
+      if (isDown) {
+        if (previousCodes.has(code)) {
+          suppressBrowserCodeOnce(code);
+          return;
+        }
+        previousCodes.add(code);
+        const browserDuplicateMatched = claimHidBrowserCode(profile, code);
+        handleProfileCodeDown(profile, code, { browserDuplicateMatched });
+      } else {
+        if (previousCodes.has(code)) {
+          previousCodes.delete(code);
+          handleProfileCodeUp(profile, code);
+          releaseHidBrowserCode(profile, code);
+        } else {
+          cancelPendingBrowserCodeRelease(code);
+          suppressBrowserCodeOnce(code);
+        }
+      }
+
+      profile.pressedCodes = previousCodes;
+      if (!isDown) flushDeferredBrowserCodeRelease(code);
+    }
+
+    function scheduleBridgeReconnect() {
+      if (bridgeReconnectTimer) return;
+      bridgeReconnectTimer = window.setTimeout(() => {
+        bridgeReconnectTimer = 0;
+        if (enabledBridgeProfiles().length) ensureBridgeSocket();
+      }, 1200);
+    }
+
+    function ensureBridgeSocket({ prompt = false } = {}) {
+      if (!("WebSocket" in window)) {
+        setReadout(tr("sourceBridge"), tr("bridgeUnavailable"));
+        return;
+      }
+      if (prompt) showBridgeInstallPrompt();
+      if (bridgeSocket && (bridgeSocket.readyState === WebSocket.OPEN || bridgeSocket.readyState === WebSocket.CONNECTING)) return;
+
+      try {
+        bridgeSocket = new WebSocket(BRIDGE_WS_URL);
+      } catch (error) {
+        bridgeConnected = false;
+        setReadout(tr("sourceBridge"), tr("bridgeConnectFailed"));
+        scheduleBridgeReconnect();
+        return;
+      }
+      const socket = bridgeSocket;
+
+      socket.addEventListener("open", () => {
+        if (bridgeSocket !== socket) return;
+        bridgeConnected = true;
+        bridgeClientCount = Math.max(1, bridgeClientCount);
+        updateBridgePanel();
+        renderMappingProfileOptions();
+        setReadout(tr("sourceBridge"), tr("bridgeConnected"));
+      });
+
+      socket.addEventListener("message", event => {
+        if (bridgeSocket !== socket) return;
+        let message = null;
+        try {
+          message = JSON.parse(event.data);
+        } catch (error) {
+          return;
+        }
+        if (message.type === "hello" || message.type === "status") {
+          bridgeConnected = true;
+          bridgeClientCount = Math.max(1, Number(message.clients) || 1);
+          if (message.installPath) rememberBridgeInstallPath(message.installPath, { verified: true });
+          updateBridgePanel();
+          renderMappingProfileOptions();
+          return;
+        }
+        if (message.type === "key" || message.type === "keydown" || message.type === "keyup") {
+          handleBridgeKeyEvent(message);
+        }
+      });
+
+      socket.addEventListener("close", () => {
+        if (bridgeSocket !== socket) return;
+        bridgeConnected = false;
+        bridgeClientCount = 0;
+        updateBridgePanel();
+        renderMappingProfileOptions();
+        scheduleBridgeReconnect();
+      });
+
+      socket.addEventListener("error", () => {
+        if (bridgeSocket !== socket) return;
+        bridgeConnected = false;
+        bridgeClientCount = 0;
+        updateBridgePanel();
+        setReadout(tr("sourceBridge"), tr("bridgeConnectFailed"));
+      });
+    }
+
+    function addBridgeKeyboard() {
+      const profile = createBridgeKeyboardProfile();
+      mappingProfiles.push(profile);
+      ensureExternalBassLayer(profile);
+      bridgeCaptureProfileId = profile.id;
+      ensureBridgeSocket({ prompt: true });
+      activateProfile(profile);
+      setReadout(tr("sourceBridge"), tr("bridgeWaiting"));
+      scheduleSaveSettings();
+    }
+
+    function rebindBridgeKeyboard(profile) {
+      if (!profile || profile.source !== "bridge") return;
+      const viewAnchor = captureViewAnchor();
+      releaseProfilePressedCodes(profile);
+      profile.bridgeDeviceId = "";
+      profile.bridgeDeviceName = "";
+      profile.bridgeReady = false;
+      const layer = externalBassLayers.get(profile.id);
+      if (layer && activeBassConfigLayerId === layer.id) activeBassConfigLayerId = mainBassProfile.id;
+      bridgeCaptureProfileId = profile.id;
+      ensureBridgeSocket({ prompt: true });
+      renderMappingProfileOptions();
+      renderBassDock();
+      refreshBassConfigIfOpen();
+      renderKeyboard({ viewAnchor });
+      renderScaleStaff();
+      setReadout(tr("sourceBridge"), tr("bridgeWaiting"));
+      scheduleSaveSettings();
+    }
+
+    function resetProfileQ(profile, viewAnchor = captureViewAnchor()) {
+      activeProfileId = profile.id;
+      setActiveAnchor({ row: 1, col: 0 });
+      selectedCoord = { ...qAnchor };
+      includeProfileHardwareRange(profile);
+      renderMappingProfileOptions();
+      renderKeyboard({ viewAnchor });
+      renderScaleStaff();
+      updateReadoutForCoord(`${profile.short}:Q`, qAnchor.row, qAnchor.col);
+      scheduleSaveSettings();
+    }
+
+    function openResetRebindDialog(profile) {
+      if (!profile || profile.source !== "bridge") return;
+      document.querySelector(".profile-action-dialog")?.remove();
+      const dialog = document.createElement("dialog");
+      dialog.className = "profile-action-dialog";
+
+      const head = document.createElement("div");
+      head.className = "profile-action-dialog-head";
+      const title = document.createElement("span");
+      title.textContent = tr("resetRebindTitle");
+      const closeButton = document.createElement("button");
+      closeButton.type = "button";
+      closeButton.className = "bass-config-close";
+      closeButton.dataset.profileDialogChoice = "close";
+      closeButton.textContent = "×";
+      closeButton.setAttribute("aria-label", tr("bassConfigClose"));
+      head.append(title, closeButton);
+
+      const body = document.createElement("div");
+      body.className = "profile-action-dialog-body";
+      const resetButton = document.createElement("button");
+      resetButton.type = "button";
+      resetButton.className = "command primary";
+      resetButton.dataset.profileDialogChoice = "reset";
+      resetButton.textContent = tr("resetQMapping");
+      const rebindButton = document.createElement("button");
+      rebindButton.type = "button";
+      rebindButton.className = "command";
+      rebindButton.dataset.profileDialogChoice = "rebind";
+      rebindButton.textContent = tr("bridgeRebind");
+      body.append(resetButton, rebindButton);
+      dialog.append(head, body);
+
+      dialog.addEventListener("click", event => {
+        const choice = event.target.closest("[data-profile-dialog-choice]")?.dataset.profileDialogChoice;
+        if (!choice) return;
+        dialog.close();
+        if (choice === "reset") resetProfileQ(profile);
+        if (choice === "rebind") rebindBridgeKeyboard(profile);
+      });
+      dialog.addEventListener("close", () => dialog.remove(), { once: true });
+      document.body.append(dialog);
+      dialog.showModal();
+    }
+
+    function enabledHidProfiles() {
+      return mappingProfiles.filter(profile => profile.source === "hid" && profile.device && profileIsEnabled(profile));
+    }
+
+    function reportingHidProfiles() {
+      return enabledHidProfiles().filter(profile => profile.hidReady);
+    }
+
+    function hidProfileCanOwnCode(profile, code) {
+      return Boolean(
+        bassClaimsProfileCode(profile, code) ||
+        isQNavigationCode(code) ||
+        isSustainCode(code) ||
+        isSoftPedalCode(code) ||
+        isHarmonicPedalCode(code) ||
+        isEdgePedalCode(code) ||
+        coordForProfileCode(profile, code)
+      );
+    }
+
+    function hidOwnedBrowserCode(code) {
+      return reportingHidProfiles().some(profile => hidProfileCanOwnCode(profile, code));
+    }
+
+    function potentialHidBrowserCode(code) {
+      return enabledHidProfiles().some(profile => hidProfileCanOwnCode(profile, code));
+    }
+
+    function bridgeProfileCanOwnCode(profile, code) {
+      return hidProfileCanOwnCode(profile, code);
+    }
+
+    function potentialBridgeBrowserCode(code) {
+      return enabledBridgeProfiles().some(profile => bridgeProfileCanOwnCode(profile, code));
+    }
+
+    function browserStartDelayForCode(code, profile = browserProfile()) {
+      if (potentialBridgeBrowserCode(code) || potentialHidBrowserCode(code)) {
+        return HID_BROWSER_SUPPRESS_MS;
+      }
+      return 0;
+    }
+
+    function claimHidBrowserCode(profile, code) {
+      if (!["hid", "bridge"].includes(profile?.source) || !profileIsEnabled(profile)) return false;
+      const browserDuplicateMatched = clearBrowserCollisionForHidCode(code);
+      hidActiveCodeCounts.set(code, (hidActiveCodeCounts.get(code) || 0) + 1);
+      return browserDuplicateMatched;
+    }
+
+    function releaseHidBrowserCode(profile, code) {
+      if (!["hid", "bridge"].includes(profile?.source)) return;
+      const count = hidActiveCodeCounts.get(code) || 0;
+      if (count <= 1) hidActiveCodeCounts.delete(code);
+      else hidActiveCodeCounts.set(code, count - 1);
+    }
+
+    function clearBrowserCollisionForHidCode(code) {
+      const profile = browserProfile();
+      let browserDuplicateMatched = consumeRecentDuplicateBrowserDown(code);
+      browserDuplicateMatched = claimPendingBrowserShiftStart(code) || browserDuplicateMatched;
+      browserDuplicateMatched = claimPendingBrowserPedalStart(code) || browserDuplicateMatched;
+      const pendingBrowserStart = pendingBrowserStarts.get(code);
+      let canceledBrowserStart = false;
+      if (pendingBrowserStart && (pendingBrowserStart.browserDownCount || 1) > 1) {
+        pendingBrowserStart.browserDownCount -= 1;
+        browserDuplicateMatched = true;
+      } else {
+        canceledBrowserStart = cancelPendingBrowserCode(code);
+      }
+      browserDuplicateMatched = canceledBrowserStart || browserDuplicateMatched;
+      if (canceledBrowserStart) {
+        profile.pressedCodes?.delete(code);
+        if (pendingBrowserStart?.started) {
+          stopVoiceByPrefix(`computer-${profile.id}-${code}`, 0.03);
+        }
+      }
+      const pendingBrowserBassStart = pendingBrowserBassStarts.get(code);
+      const canceledBrowserBassStart = cancelPendingBrowserBassCode(code);
+      if (canceledBrowserBassStart && pendingBrowserBassStart?.started) {
+        const wasActive = activeBrowserBassCodes.delete(code);
+        if (wasActive) withBassLayer(mainBassProfile, () => handleBassCodeUp(code));
+      }
+      browserDuplicateMatched = canceledBrowserBassStart || browserDuplicateMatched;
+      browserDuplicateMatched = cancelPendingBrowserQNavigation(code) || browserDuplicateMatched;
+      return browserDuplicateMatched;
+    }
+
+    function cancelPendingBrowserPedalStart(code) {
+      const pending = pendingBrowserPedalStarts.get(code);
+      if (!pending) return false;
+      window.clearTimeout(pending.timer);
+      pendingBrowserPedalStarts.delete(code);
+      return true;
+    }
+
+    function claimPendingBrowserPedalStart(code) {
+      const pending = pendingBrowserPedalStarts.get(code);
+      if (!pending) return false;
+      if (pending.browserDownCount > 1) {
+        pending.browserDownCount -= 1;
+        return false;
+      }
+      return cancelPendingBrowserPedalStart(code);
+    }
+
+    function scheduleBrowserPedalStart(profile, code, callback) {
+      const pending = pendingBrowserPedalStarts.get(code);
+      if (pending) {
+        pending.browserDownCount += 1;
+        return;
+      }
+      if (!potentialBridgeBrowserCode(code) && !potentialHidBrowserCode(code)) {
+        callback();
+        return;
+      }
+      const entry = { timer: 0, browserDownCount: 1 };
+      entry.timer = window.setTimeout(() => {
+        if (pendingBrowserPedalStarts.get(code) !== entry) return;
+        pendingBrowserPedalStarts.delete(code);
+        if (!profileIsEnabled(profile) || shouldSuppressBrowserCode(code)) return;
+        callback();
+      }, HID_BROWSER_SUPPRESS_MS);
+      pendingBrowserPedalStarts.set(code, entry);
+    }
+
+    function scheduleBrowserCodeStart(code, profile) {
+      cancelPendingBrowserCode(code);
+      const source = sourceForProfileCode(profile, code);
+      if (!source) return;
+      const entry = { timer: 0, claimTimer: 0, profileId: profile.id, browserDownCount: 1, started: false };
+      entry.timer = window.setTimeout(() => {
+        if (pendingBrowserStarts.get(code) !== entry) return;
+        if (!profileIsEnabled(profile) || shouldSuppressBrowserCode(code)) {
+          window.clearTimeout(entry.claimTimer);
+          pendingBrowserStarts.delete(code);
+          profile.pressedCodes?.delete(code);
+          return;
+        }
+        entry.started = true;
+        startVoice(source, `computer-${profile.id}-${code}`, 0, profile);
+      }, browserStartDelayForCode(code, profile));
+      entry.claimTimer = window.setTimeout(() => {
+        if (pendingBrowserStarts.get(code) === entry) pendingBrowserStarts.delete(code);
+      }, HID_BROWSER_SUPPRESS_MS);
+      pendingBrowserStarts.set(code, entry);
+    }
+
+    function cancelPendingBrowserQNavigation(code) {
+      const timer = pendingBrowserQNavigation.get(code);
+      if (!timer) return false;
+      window.clearTimeout(timer);
+      pendingBrowserQNavigation.delete(code);
+      return true;
+    }
+
+    function scheduleBrowserCodeRelease(code, callback) {
+      const queue = pendingBrowserReleases.get(code) || [];
+      const entry = { timer: 0 };
+      entry.timer = window.setTimeout(() => {
+        const current = pendingBrowserReleases.get(code) || [];
+        const index = current.indexOf(entry);
+        if (index >= 0) current.splice(index, 1);
+        if (current.length) pendingBrowserReleases.set(code, current);
+        else pendingBrowserReleases.delete(code);
+        callback();
+      }, HID_BROWSER_SUPPRESS_MS);
+      queue.push(entry);
+      pendingBrowserReleases.set(code, queue);
+    }
+
+    function cancelPendingBrowserCodeRelease(code) {
+      const queue = pendingBrowserReleases.get(code);
+      if (!queue?.length) return false;
+      const entry = queue.pop();
+      window.clearTimeout(entry.timer);
+      if (queue.length) pendingBrowserReleases.set(code, queue);
+      else pendingBrowserReleases.delete(code);
+      return true;
+    }
+
+    function scheduleBrowserQNavigation(profile, code) {
+      cancelPendingBrowserQNavigation(code);
+      const delay = potentialBridgeBrowserCode(code) || potentialHidBrowserCode(code)
+        ? HID_BROWSER_SUPPRESS_MS
+        : 0;
+      if (delay <= 0) {
+        moveProfileQByNavigationCode(profile, code);
+        return;
+      }
+      const timer = window.setTimeout(() => {
+        pendingBrowserQNavigation.delete(code);
+        if (!profileIsEnabled(profile) || shouldSuppressBrowserCode(code)) return;
+        moveProfileQByNavigationCode(profile, code);
+      }, delay);
+      pendingBrowserQNavigation.set(code, timer);
+    }
+
+    function cancelPendingBrowserBassCode(code) {
+      const pending = pendingBrowserBassStarts.get(code);
+      if (!pending) return false;
+      window.clearTimeout(pending.timer);
+      window.clearTimeout(pending.claimTimer);
+      pendingBrowserBassStarts.delete(code);
+      return true;
+    }
+
+    function browserBassStartDelay(code) {
+      return potentialBridgeBrowserCode(code) || potentialHidBrowserCode(code)
+        ? HID_BROWSER_SUPPRESS_MS
+        : 0;
+    }
+
+    function scheduleBrowserBassCodeDown(code) {
+      if (pendingBrowserBassStarts.has(code) || activeBrowserBassCodes.has(code)) return;
+      const entry = { timer: 0, claimTimer: 0, started: false };
+      const start = () => {
+        if (pendingBrowserBassStarts.get(code) !== entry) return;
+        if (shouldSuppressBrowserCode(code)) {
+          window.clearTimeout(entry.claimTimer);
+          pendingBrowserBassStarts.delete(code);
+          return;
+        }
+        entry.started = true;
+        activeBrowserBassCodes.add(code);
+        withBassLayer(mainBassProfile, () => handleBassCodeDown(code));
+      };
+      const delay = browserBassStartDelay(code);
+      if (delay <= 0) {
+        pendingBrowserBassStarts.set(code, entry);
+        start();
+        pendingBrowserBassStarts.delete(code);
+        return;
+      }
+      entry.timer = window.setTimeout(start, delay);
+      entry.claimTimer = window.setTimeout(() => {
+        if (pendingBrowserBassStarts.get(code) === entry) pendingBrowserBassStarts.delete(code);
+      }, HID_BROWSER_SUPPRESS_MS);
+      pendingBrowserBassStarts.set(code, entry);
+    }
+
+    function releaseBrowserBassCode(code) {
+      const hadPending = cancelPendingBrowserBassCode(code);
+      const wasActive = activeBrowserBassCodes.delete(code);
+      if (wasActive) withBassLayer(mainBassProfile, () => handleBassCodeUp(code));
+      return hadPending || wasActive;
+    }
+
+    function hidUsageValue(value) {
+      const number = Number(value);
+      return Number.isFinite(number) ? number >>> 0 : null;
+    }
+
+    function hidUsageId(value) {
+      const usage = hidUsageValue(value);
+      return usage === null ? null : usage & 0xFFFF;
+    }
+
+    function hidUsagePage(value) {
+      const usage = hidUsageValue(value);
+      return usage !== null && usage > 0xFFFF ? (usage >>> 16) & 0xFFFF : null;
+    }
+
+    function hidReportItemPages(item) {
+      return [
+        ...Array.from(item?.usages || []),
+        item?.usageMinimum,
+        item?.usageMaximum
+      ]
+        .map(hidUsagePage)
+        .filter(page => page !== null);
+    }
+
+    function hidKeyboardReportCandidates(profile, reportId) {
+      const candidates = [];
+      const targetReportId = Number(reportId) || 0;
+      const visit = (collections, keyboardContext = false) => {
+        for (const collection of collections || []) {
+          const usagePage = Number(collection.usagePage);
+          const usage = Number(collection.usage);
+          const isKeyboardContext = keyboardContext
+            || usagePage === 0x07
+            || (usagePage === 0x01 && usage === 0x06);
+          for (const report of collection.inputReports || []) {
+            if ((Number(report.reportId) || 0) !== targetReportId) continue;
+            const items = Array.from(report.items || []);
+            const hasKeyboardItem = items.some(item => hidReportItemPages(item).includes(0x07));
+            if (isKeyboardContext || hasKeyboardItem) candidates.push({ items, isKeyboardContext, hasKeyboardItem });
+          }
+          visit(collection.children, isKeyboardContext);
+        }
+      };
+      visit(profile?.device?.collections);
+      return candidates.sort((a, b) =>
+        Number(b.hasKeyboardItem) - Number(a.hasKeyboardItem)
+        || Number(b.isKeyboardContext) - Number(a.isKeyboardContext)
+        || b.items.length - a.items.length
+      );
+    }
+
+    function readHidReportBits(dataView, bitOffset, bitLength) {
+      if (bitLength <= 0 || bitLength > 32) return 0;
+      let value = 0;
+      for (let bit = 0; bit < bitLength; bit += 1) {
+        const absoluteBit = bitOffset + bit;
+        const byteIndex = Math.floor(absoluteBit / 8);
+        if (byteIndex >= dataView.byteLength) break;
+        if ((dataView.getUint8(byteIndex) & (1 << (absoluteBit % 8))) !== 0) {
+          value += 2 ** bit;
+        }
+      }
+      return value >>> 0;
+    }
+
+    function hidVariableItemUsages(item, count) {
+      const explicit = Array.from(item?.usages || [])
+        .map(hidUsageId)
+        .filter(usage => usage !== null);
+      if (explicit.length >= count) return explicit;
+      const minimum = hidUsageId(item?.usageMinimum);
+      const maximum = hidUsageId(item?.usageMaximum);
+      if (minimum === null || maximum === null || maximum < minimum) return explicit;
+      const range = Array.from(
+        { length: Math.min(count, maximum - minimum + 1) },
+        (_, index) => minimum + index
+      );
+      return explicit.length ? [...explicit, ...range.slice(explicit.length)] : range;
+    }
+
+    function pressedCodesFromHidDescriptor(profile, event) {
+      const candidate = hidKeyboardReportCandidates(profile, event.reportId)[0];
+      if (!candidate) return null;
+      const dataView = event.data;
+      const codes = new Set();
+      let bitOffset = 0;
+      let parsedKeyboardData = false;
+      for (const item of candidate.items) {
+        const reportSize = Math.max(0, Number(item.reportSize) || 0);
+        const reportCount = Math.max(0, Number(item.reportCount) || 0);
+        const pages = hidReportItemPages(item);
+        const isKeyboardItem = pages.length ? pages.includes(0x07) : candidate.isKeyboardContext;
+        const usages = item.isArray ? [] : hidVariableItemUsages(item, reportCount);
+        for (let index = 0; index < reportCount; index += 1) {
+          const value = readHidReportBits(dataView, bitOffset + index * reportSize, reportSize);
+          if (!item.isConstant && isKeyboardItem) {
+            parsedKeyboardData = true;
+            const usage = item.isArray ? value : usages[index];
+            if (value !== 0) {
+              const code = hidUsageToCode.get(usage);
+              if (code) codes.add(code);
+            }
+          }
+        }
+        bitOffset += reportSize * reportCount;
+      }
+      return parsedKeyboardData ? codes : null;
+    }
+
+    function pressedCodesFromHidReport(profile, event) {
+      const descriptorCodes = pressedCodesFromHidDescriptor(profile, event);
+      if (descriptorCodes) return descriptorCodes;
+      const dataView = event.data;
+>>>>>>> Stashed changes
       const bytes = Array.from({ length: dataView.byteLength }, (_, index) => dataView.getUint8(index));
       const bootUsages = bytes.length >= 8 ? bytes.slice(2, 8) : bytes;
       let codes = bootUsages
@@ -4207,29 +5016,82 @@
       return new Set(codes);
     }
 
+<<<<<<< Updated upstream
     function suppressBrowserCodeOnce(code) {
       cancelPendingBrowserCode(code);
       hidSuppressedCodeUntil.set(code, performance.now() + 180);
       const profile = browserProfile();
       stopVoiceByPrefix(`computer-${profile.id}-${code}`);
+=======
+    function recordRecentDuplicateBrowserDown(code) {
+      const now = performance.now();
+      const queue = (recentDuplicateBrowserDownEvents.get(code) || []).filter(until => until > now);
+      queue.push(now + HID_BROWSER_SUPPRESS_MS);
+      recentDuplicateBrowserDownEvents.set(code, queue);
+>>>>>>> Stashed changes
     }
 
-    function shouldSuppressBrowserCode(code) {
-      const until = hidSuppressedCodeUntil.get(code) || 0;
-      if (until <= performance.now()) {
-        hidSuppressedCodeUntil.delete(code);
+    function consumeRecentDuplicateBrowserDown(code) {
+      const now = performance.now();
+      const queue = (recentDuplicateBrowserDownEvents.get(code) || []).filter(until => until > now);
+      if (!queue.length) {
+        recentDuplicateBrowserDownEvents.delete(code);
         return false;
       }
+      queue.pop();
+      if (queue.length) recentDuplicateBrowserDownEvents.set(code, queue);
+      else recentDuplicateBrowserDownEvents.delete(code);
       return true;
     }
 
+<<<<<<< Updated upstream
     function handleProfileCodeDown(profile, code) {
+=======
+    function suppressBrowserCodeOnce(code, browserDuplicateMatched = false) {
+      cancelPendingBrowserCode(code);
+      cancelPendingBrowserBassCode(code);
+      cancelPendingBrowserPedalStart(code);
+      cancelPendingBrowserQNavigation(code);
+      if (browserDuplicateMatched) return;
+      const now = performance.now();
+      const queue = (hidSuppressedCodeUntil.get(code) || []).filter(until => until > now);
+      queue.push(now + HID_BROWSER_SUPPRESS_MS);
+      hidSuppressedCodeUntil.set(code, queue);
+    }
+
+    function shouldSuppressBrowserCode(code) {
+      const now = performance.now();
+      const queue = (hidSuppressedCodeUntil.get(code) || []).filter(until => until > now);
+      if (!queue.length) {
+        hidSuppressedCodeUntil.delete(code);
+        return false;
+      }
+      queue.shift();
+      if (queue.length) hidSuppressedCodeUntil.set(code, queue);
+      else hidSuppressedCodeUntil.delete(code);
+      return true;
+    }
+
+    function handleProfileCodeDown(profile, code, { browserDuplicateMatched = false } = {}) {
+      if (bassClaimsProfileCode(profile, code)) {
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
+        handleBassCodeDownForProfile(profile, code);
+        return;
+      }
+      if (!profileIsEnabled(profile)) return;
+      if (isQNavigationCode(code)) {
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
+        moveProfileQByNavigationCode(profile, code);
+        return;
+      }
+>>>>>>> Stashed changes
       if (isSustainCode(code)) {
-        suppressBrowserCodeOnce(code);
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
         setSustainPedal(profile, true);
         return;
       }
       if (isSoftPedalCode(code)) {
+<<<<<<< Updated upstream
         suppressBrowserCodeOnce(code);
         setSoftPedal(profile, true);
         return;
@@ -4238,40 +5100,111 @@
       if (!coord) return;
       suppressBrowserCodeOnce(code);
       const source = sourceFromCoord(coord.row, coord.col);
+=======
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
+        setSoftPedal(profile, true, PHYSICAL_PEDAL_TRANSITION);
+        return;
+      }
+      if (isHarmonicPedalCode(code)) {
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
+        setHarmonicPedal(profile, true, PHYSICAL_PEDAL_TRANSITION);
+        return;
+      }
+      if (isEdgePedalCode(code)) {
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
+        setEdgePedal(profile, edgePedalSide(code), true);
+        return;
+      }
+      const source = sourceForProfileCode(profile, code);
+      if (!source) return;
+      suppressBrowserCodeOnce(code, browserDuplicateMatched);
+>>>>>>> Stashed changes
       startVoice(source, voicePrefixForProfileCode(profile, code), 0, profile);
     }
 
     function handleProfileCodeUp(profile, code) {
+<<<<<<< Updated upstream
+=======
+      const browserDuplicateMatched = cancelPendingBrowserCodeRelease(code);
+      if (bassClaimsProfileCode(profile, code)) {
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
+        handleBassCodeUpForProfile(profile, code);
+        return;
+      }
+      if (!profileIsEnabled(profile)) return;
+      if (isQNavigationCode(code)) {
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
+        return;
+      }
+>>>>>>> Stashed changes
       if (isSustainCode(code)) {
-        suppressBrowserCodeOnce(code);
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
         setSustainPedal(profile, false);
         return;
       }
       if (isSoftPedalCode(code)) {
+<<<<<<< Updated upstream
         suppressBrowserCodeOnce(code);
         setSoftPedal(profile, false);
+=======
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
+        setSoftPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
         return;
       }
-      suppressBrowserCodeOnce(code);
+      if (isHarmonicPedalCode(code)) {
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
+        setHarmonicPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
+        return;
+      }
+      if (isEdgePedalCode(code)) {
+        suppressBrowserCodeOnce(code, browserDuplicateMatched);
+        setEdgePedal(profile, edgePedalSide(code), false);
+>>>>>>> Stashed changes
+        return;
+      }
+      suppressBrowserCodeOnce(code, browserDuplicateMatched);
       releaseVoicePrefixForProfile(voicePrefixForProfileCode(profile, code), profile);
     }
 
     function releaseProfilePressedCodes(profile) {
+<<<<<<< Updated upstream
       for (const code of profile.pressedCodes || []) {
+=======
+      const releasedCodes = [...(profile.pressedCodes || [])];
+      for (const code of releasedCodes) {
+        if (bassClaimsProfileCode(profile, code)) handleBassCodeUpForProfile(profile, code);
+        releaseHidBrowserCode(profile, code);
+>>>>>>> Stashed changes
         stopVoiceByPrefix(voicePrefixForProfileCode(profile, code));
       }
       setSustainPedal(profile, false);
       setSoftPedal(profile, false);
       releaseSustainedVoices(profile, 0.08);
       profile.pressedCodes = new Set();
+      for (const code of releasedCodes) flushDeferredBrowserCodeRelease(code);
     }
 
     function handleHidInputReport(profile, event) {
       const nextCodes = pressedCodesFromHidReport(event.data);
       const previousCodes = profile.pressedCodes || new Set();
 
+<<<<<<< Updated upstream
       for (const code of nextCodes) {
         if (!previousCodes.has(code)) handleProfileCodeDown(profile, code);
+=======
+      if (!profileIsEnabled(profile)) {
+        for (const code of previousCodes) releaseHidBrowserCode(profile, code);
+        profile.pressedCodes = new Set();
+        for (const code of previousCodes) flushDeferredBrowserCodeRelease(code);
+        return;
+      }
+
+      for (const code of nextCodes) {
+        if (!previousCodes.has(code)) {
+          const browserDuplicateMatched = claimHidBrowserCode(profile, code);
+          handleProfileCodeDown(profile, code, { browserDuplicateMatched });
+        }
+>>>>>>> Stashed changes
       }
 
       for (const code of previousCodes) {
@@ -4279,6 +5212,9 @@
       }
 
       profile.pressedCodes = nextCodes;
+      for (const code of previousCodes) {
+        if (!nextCodes.has(code)) flushDeferredBrowserCodeRelease(code);
+      }
     }
 
     function activateProfile(profile, { viewAnchor = null, keepScroll = true } = {}) {
@@ -5025,8 +5961,32 @@
     function stopAllVoices() {
       for (const [code, pending] of pendingBrowserStarts) {
         window.clearTimeout(pending.timer);
+        window.clearTimeout(pending.claimTimer);
         pendingBrowserStarts.delete(code);
       }
+<<<<<<< Updated upstream
+=======
+      for (const [code, pending] of pendingBrowserBassStarts) {
+        window.clearTimeout(pending.timer);
+        window.clearTimeout(pending.claimTimer);
+        pendingBrowserBassStarts.delete(code);
+      }
+      for (const [code, pending] of pendingBrowserPedalStarts) {
+        window.clearTimeout(pending.timer);
+        pendingBrowserPedalStarts.delete(code);
+      }
+      for (const [code, timer] of pendingBrowserQNavigation) {
+        window.clearTimeout(timer);
+        pendingBrowserQNavigation.delete(code);
+      }
+      for (const [code, queue] of pendingBrowserReleases) {
+        for (const entry of queue) window.clearTimeout(entry.timer);
+        pendingBrowserReleases.delete(code);
+      }
+      deferredBrowserCodeReleases.clear();
+      activeBrowserBassCodes.clear();
+      clearGlissandoStates();
+>>>>>>> Stashed changes
       for (const id of [...voices.keys()]) stopVoice(id);
       for (const profile of mappingProfiles) {
         profile.sustainPedal = false;
@@ -5037,19 +5997,67 @@
       updatePedalSwitches();
     }
 
-    function findIntervalCoord(deltaSemitones) {
-      const targetMidi = buttonMidi(qAnchor.row, qAnchor.col) + deltaSemitones;
+    function findIntervalCoordFromAnchor(anchor, deltaSemitones) {
+      const targetMidi = buttonMidi(anchor.row, anchor.col) + deltaSemitones;
       let best = null;
 
-      for (let row = qAnchor.row - 6; row <= qAnchor.row + 6; row += 1) {
-        for (let col = qAnchor.col - 10; col <= qAnchor.col + 10; col += 1) {
+      for (let row = anchor.row - 6; row <= anchor.row + 6; row += 1) {
+        for (let col = anchor.col - 10; col <= anchor.col + 10; col += 1) {
           if (buttonMidi(row, col) !== targetMidi) continue;
-          const score = Math.abs(row - qAnchor.row) * 4 + Math.abs(col - qAnchor.col);
+          const score = Math.abs(row - anchor.row) * 4 + Math.abs(col - anchor.col);
           if (!best || score < best.score) best = { row, col, score };
         }
       }
 
       return best ? { row: best.row, col: best.col } : null;
+    }
+
+    function findIntervalCoord(deltaSemitones) {
+      return findIntervalCoordFromAnchor(qAnchor, deltaSemitones);
+    }
+
+    function qNavigationTarget(profile, code) {
+      const anchor = profile?.anchor;
+      if (!anchor) return null;
+      if (code === "ArrowUp") return { row: anchor.row - 1, col: anchor.col };
+      if (code === "ArrowDown") return { row: anchor.row + 1, col: anchor.col };
+      if (code === "PageUp") return { row: anchor.row - 1, col: anchor.col + 1 };
+      if (code === "PageDown") return { row: anchor.row + 1, col: anchor.col - 1 };
+      if (code !== "ArrowLeft" && code !== "ArrowRight") return null;
+      const direction = code === "ArrowRight" ? 1 : -1;
+      const system = currentSystem();
+      if (system.octaveColStep !== null) {
+        return { row: anchor.row, col: anchor.col + system.octaveColStep * direction };
+      }
+      return findIntervalCoordFromAnchor(anchor, 12 * direction);
+    }
+
+    function qNavigationLabel(code) {
+      if (code === "ArrowUp") return "左上";
+      if (code === "ArrowDown") return "右下";
+      if (code === "PageUp") return "右上";
+      if (code === "PageDown") return "左下";
+      if (code === "ArrowRight") return "+8";
+      if (code === "ArrowLeft") return "-8";
+      return "";
+    }
+
+    function moveProfileQByNavigationCode(profile, code) {
+      if (!profileIsEnabled(profile) || !isQNavigationCode(code)) return false;
+      const next = qNavigationTarget(profile, code);
+      if (!next) return false;
+      const viewAnchor = captureViewAnchor();
+      profile.anchor = { ...next };
+      if (profile.id === activeProfileId) {
+        qAnchor = { ...next };
+        selectedCoord = { ...next };
+      }
+      includeProfileHardwareRange(profile);
+      renderKeyboard({ viewAnchor, preserveVoices: true });
+      renderScaleStaff();
+      updateReadoutForCoord(`${profile.short}:Q ${qNavigationLabel(code)}`, next.row, next.col);
+      scheduleSaveSettings();
+      return true;
     }
 
     function moveQBy(deltaSemitones, prefix) {
@@ -5201,6 +6209,241 @@
       primeAudioFromGesture(event);
     }, { capture: true });
 
+<<<<<<< Updated upstream
+=======
+    document.addEventListener("contextmenu", event => {
+      if (event.target.closest?.(".keyboard-scroll, #bassDock, .touch-vibrato-pan-overlay")) {
+        event.preventDefault();
+      }
+    });
+
+    function shouldAutoSaveSettingsEvent(event) {
+      const target = event.target;
+      if (!target?.closest) return false;
+      if (target === els.qboardImportInput) return false;
+      if (target.closest("[data-touch-vibrato-pan]")) return false;
+      if (els.keyboard?.contains(target) || els.staffSvg?.contains(target) || els.vibratoPad?.contains(target)) return false;
+      if (els.bassDock?.contains(target) && !target.closest("[data-bass-settings]")) return false;
+      return Boolean(target.closest("input, select, textarea, button"));
+    }
+
+    function autoSaveSettingsFromEvent(event) {
+      if (shouldAutoSaveSettingsEvent(event)) scheduleSaveSettings();
+    }
+
+    document.addEventListener("input", autoSaveSettingsFromEvent);
+    document.addEventListener("change", autoSaveSettingsFromEvent);
+    document.addEventListener("click", autoSaveSettingsFromEvent);
+    window.addEventListener("beforeunload", saveQBoardSettings);
+
+    function shiftPhysicalSideFromLocation(event) {
+      if (event?.location === 1) return "left";
+      if (event?.location === 2) return "right";
+      return null;
+    }
+
+    function resolveBrowserShiftEventSide(event) {
+      return shiftPhysicalSideFromCode(event?.code) || shiftPhysicalSideFromLocation(event);
+    }
+
+    function applyBrowserShiftPedalEdge(edge, active) {
+      if (!edge?.profile || !edge.role) return;
+      if (edge.role === "soft") setSoftPedal(edge.profile, active, PHYSICAL_PEDAL_TRANSITION);
+      if (edge.role === "harmonic") setHarmonicPedal(edge.profile, active, PHYSICAL_PEDAL_TRANSITION);
+    }
+
+    function scheduleBrowserShiftPedalStart(side, code) {
+      const pending = pendingBrowserShiftStarts.get(side);
+      if (pending) {
+        pending.browserDownCount += 1;
+        return true;
+      }
+      const profile = browserProfile();
+      const role = shiftPedalRoleForSide(side);
+      if (!role || !profileIsEnabled(profile)) return false;
+      const entry = { profile, role, code, browserDownCount: 1, timer: 0 };
+      entry.timer = window.setTimeout(() => {
+        if (pendingBrowserShiftStarts.get(side) !== entry) return;
+        pendingBrowserShiftStarts.delete(side);
+        if (shouldSuppressBrowserCode(code) || browserShiftPedalEdges.has(side)) return;
+        const edge = { profile: entry.profile, role: entry.role };
+        browserShiftPedalEdges.set(side, edge);
+        applyBrowserShiftPedalEdge(edge, true);
+      }, HID_BROWSER_SUPPRESS_MS);
+      pendingBrowserShiftStarts.set(side, entry);
+      return true;
+    }
+
+    function cancelPendingBrowserShiftStart(side) {
+      const pending = pendingBrowserShiftStarts.get(side);
+      if (!pending) return false;
+      window.clearTimeout(pending.timer);
+      pendingBrowserShiftStarts.delete(side);
+      return true;
+    }
+
+    function claimPendingBrowserShiftStart(code) {
+      const side = shiftPhysicalSideFromCode(code);
+      const pending = pendingBrowserShiftStarts.get(side);
+      if (!pending) return false;
+      if (pending.browserDownCount > 1) {
+        pending.browserDownCount -= 1;
+        return false;
+      }
+      return cancelPendingBrowserShiftStart(side);
+    }
+
+    function releaseBrowserShiftPedalEdge(side) {
+      const edge = browserShiftPedalEdges.get(side);
+      if (!edge) return false;
+      browserShiftPedalEdges.delete(side);
+      applyBrowserShiftPedalEdge(edge, false);
+      return true;
+    }
+
+    function handlePhysicalShiftKeyEvent(event, active) {
+      const side = resolveBrowserShiftEventSide(event);
+      if (!side) return false;
+      if (active) {
+        if (event?.code && shouldSuppressBrowserCode(event.code)) return false;
+        if (!event.repeat && (browserShiftPedalEdges.has(side) || pendingBrowserShiftStarts.has(side))) {
+          recordRecentDuplicateBrowserDown(event.code);
+        }
+        if (!browserShiftPedalEdges.has(side)) {
+          if (pendingBrowserShiftStarts.has(side) || potentialBridgeBrowserCode(event.code) || potentialHidBrowserCode(event.code)) {
+            if (!scheduleBrowserShiftPedalStart(side, event.code)) return false;
+          } else {
+            const profile = browserProfile();
+            const role = shiftPedalRoleForSide(side);
+            if (!role || !profileIsEnabled(profile)) return false;
+            const edge = { profile, role };
+            browserShiftPedalEdges.set(side, edge);
+            applyBrowserShiftPedalEdge(edge, true);
+          }
+        }
+      } else {
+        if (event?.code && shouldSuppressBrowserCode(event.code)) {
+          // The bridge reported this physical keyup before the browser duplicate.
+        } else if ((hidActiveCodeCounts.get(event.code) || 0) > 0 || potentialBridgeBrowserCode(event.code) || potentialHidBrowserCode(event.code)) {
+          scheduleBrowserCodeRelease(event.code, () => handleBrowserCodeUp(event.code, event.target));
+        } else if (!cancelPendingBrowserShiftStart(side)) {
+          releaseBrowserShiftPedalEdge(side);
+        }
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+      return true;
+    }
+
+    function releasePhysicalShiftPedalsOnFocusLoss() {
+      for (const side of [...pendingBrowserShiftStarts.keys()]) {
+        cancelPendingBrowserShiftStart(side);
+      }
+      for (const side of [...browserShiftPedalEdges.keys()]) {
+        releaseBrowserShiftPedalEdge(side);
+      }
+    }
+
+    function externalProfileOccupiesCode(code) {
+      return mappingProfiles.some(profile => (
+        ["hid", "bridge"].includes(profile.source) &&
+        profileIsEnabled(profile) &&
+        profile.pressedCodes?.has(code)
+      ));
+    }
+
+    function flushDeferredBrowserCodeRelease(code) {
+      const deferred = deferredBrowserCodeReleases.get(code);
+      if (!deferred || externalProfileOccupiesCode(code)) return false;
+      deferredBrowserCodeReleases.delete(code);
+      return handleBrowserCodeUp(code, deferred.target, { ignoreExternalOccupancy: true });
+    }
+
+    function handleBrowserCodeUp(code, target, { ignoreExternalOccupancy = false } = {}) {
+      if (isQNavigationCode(code)) return true;
+      if (!ignoreExternalOccupancy && externalProfileOccupiesCode(code)) {
+        deferredBrowserCodeReleases.set(code, { target });
+        return true;
+      }
+      deferredBrowserCodeReleases.delete(code);
+      cancelPendingBrowserPedalStart(code);
+      const shiftSide = shiftPhysicalSideFromCode(code);
+      if (shiftSide) {
+        releaseBrowserShiftPedalEdge(shiftSide);
+        return true;
+      }
+      const profile = browserProfile();
+      const comboUsedReleasedCode = Boolean(edgeOctaveCombo?.triggerCodes.includes(code));
+      if (profileIsEnabled(profile) && isSustainCode(code)) {
+        setSustainPedal(profile, false);
+        return true;
+      }
+      if (profileIsEnabled(profile) && isEdgePedalCode(code)) {
+        if (comboUsedReleasedCode) stopEdgeOctaveCombo(profile);
+        setEdgePedal(profile, edgePedalSide(code), false);
+        if (!comboUsedReleasedCode) syncEdgeOctaveCombo(profile);
+        return true;
+      }
+      if (isTypingTarget(target)) return false;
+      if (comboUsedReleasedCode) {
+        syncEdgeOctaveCombo(profile);
+        return true;
+      }
+      if (isModifierIntervalShortcutCode(code)) return true;
+      if (releaseBrowserBassCode(code)) return true;
+      if (profileIsEnabled(profile) && coordForProfileCode(profile, code)) {
+        profile.pressedCodes.delete(code);
+        cancelPendingBrowserCode(code);
+        releaseVoicePrefixForProfile(`computer-${profile.id}-${code}`, profile);
+        return true;
+      }
+      return false;
+    }
+
+    document.addEventListener("keydown", event => {
+      trackEdgeOctaveComboCode(event, true);
+    }, { capture: true });
+
+    document.addEventListener("keydown", event => {
+      if (externalFunctionBassMayOwnCode(event.code)) event.preventDefault();
+    }, { capture: true });
+
+    document.addEventListener("keyup", event => {
+      trackEdgeOctaveComboCode(event, false);
+    }, { capture: true });
+
+    document.addEventListener("keydown", event => {
+      handlePhysicalShiftKeyEvent(event, true);
+    }, { capture: true });
+
+    document.addEventListener("keyup", event => {
+      handlePhysicalShiftKeyEvent(event, false);
+    }, { capture: true });
+
+    let keyboardSettingsResizeFrame = 0;
+    window.addEventListener("resize", () => {
+      if (keyboardSettingsResizeFrame) cancelAnimationFrame(keyboardSettingsResizeFrame);
+      keyboardSettingsResizeFrame = requestAnimationFrame(() => {
+        keyboardSettingsResizeFrame = 0;
+        syncKeyboardSettingsViewport(els.keyboardLayout?.scrollTop || 0);
+      });
+    });
+
+    window.addEventListener("blur", () => {
+      releasePhysicalShiftPedalsOnFocusLoss();
+      clearEdgeOctaveCombo();
+      stopAllVoices();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) return;
+      releasePhysicalShiftPedalsOnFocusLoss();
+      clearEdgeOctaveCombo();
+      stopAllVoices();
+    });
+
+>>>>>>> Stashed changes
     window.addEventListener("keydown", event => {
       if (shouldSuppressBrowserCode(event.code)) {
         event.preventDefault();
@@ -5209,17 +6452,35 @@
       const profile = browserProfile();
       if (isSustainEvent(event)) {
         event.preventDefault();
-        if (!event.repeat) setSustainPedal(profile, true);
+        if (!event.repeat) {
+          if (profile.sustainPedal || pendingBrowserPedalStarts.has(event.code)) {
+            recordRecentDuplicateBrowserDown(event.code);
+          }
+          scheduleBrowserPedalStart(profile, event.code, () => setSustainPedal(profile, true));
+        }
         return;
       }
       if (isSoftPedalEvent(event)) {
         event.preventDefault();
+<<<<<<< Updated upstream
         if (!event.repeat) setSoftPedal(profile, true);
+=======
+        if (!event.repeat) {
+          const side = edgePedalSide(event.code);
+          const property = side === "left" ? "leftEdgePedal" : "rightEdgePedal";
+          if (profile[property] || pendingBrowserPedalStarts.has(event.code)) {
+            recordRecentDuplicateBrowserDown(event.code);
+          }
+          scheduleBrowserPedalStart(profile, event.code, () => setEdgePedal(profile, side, true));
+        }
+        syncEdgeOctaveCombo(profile);
+>>>>>>> Stashed changes
         return;
       }
       if (isTypingTarget(event.target)) return;
       if (event.ctrlKey || event.metaKey || event.altKey) return;
 
+<<<<<<< Updated upstream
       const arrowMap = {
         ArrowUp: () => moveQToCoord({ row: qAnchor.row - 1, col: qAnchor.col }, "Q 左上"),
         ArrowDown: () => moveQToCoord({ row: qAnchor.row + 1, col: qAnchor.col }, "Q 右下"),
@@ -5228,17 +6489,46 @@
       };
 
       if (arrowMap[event.key]) {
+=======
+      if (isQNavigationCode(event.code)) {
+>>>>>>> Stashed changes
         event.preventDefault();
-        arrowMap[event.key]();
+        if (!event.repeat) scheduleBrowserQNavigation(profile, event.code);
         return;
       }
 
+<<<<<<< Updated upstream
       if (event.repeat) return;
+=======
+      if (bassClaimsBrowserCode(event.code)) {
+        event.preventDefault();
+        if (!event.repeat) {
+          if (pendingBrowserBassStarts.has(event.code) || activeBrowserBassCodes.has(event.code)) {
+            recordRecentDuplicateBrowserDown(event.code);
+          }
+          scheduleBrowserBassCodeDown(event.code);
+        }
+        return;
+      }
+      if (!profileIsEnabled(profile)) return;
+>>>>>>> Stashed changes
       const coord = coordForProfileCode(profile, event.code);
       if (!coord) return;
 
       event.preventDefault();
+<<<<<<< Updated upstream
       scheduleBrowserCodeStart(event.code, profile, coord);
+=======
+      if (profile.pressedCodes.has(event.code)) {
+        if (!event.repeat) recordRecentDuplicateBrowserDown(event.code);
+        const pending = pendingBrowserStarts.get(event.code);
+        if (pending) pending.browserDownCount = (pending.browserDownCount || 1) + 1;
+        return;
+      }
+      if (event.repeat) return;
+      profile.pressedCodes.add(event.code);
+      scheduleBrowserCodeStart(event.code, profile);
+>>>>>>> Stashed changes
     });
 
     window.addEventListener("keyup", event => {
@@ -5246,12 +6536,17 @@
         event.preventDefault();
         return;
       }
+<<<<<<< Updated upstream
       const profile = browserProfile();
       if (isSustainEvent(event)) {
+=======
+      if (((hidActiveCodeCounts.get(event.code) || 0) > 0 || potentialBridgeBrowserCode(event.code) || potentialHidBrowserCode(event.code)) && !isQNavigationCode(event.code)) {
+>>>>>>> Stashed changes
         event.preventDefault();
-        setSustainPedal(profile, false);
+        scheduleBrowserCodeRelease(event.code, () => handleBrowserCodeUp(event.code, event.target));
         return;
       }
+<<<<<<< Updated upstream
       if (isSoftPedalEvent(event)) {
         event.preventDefault();
         setSoftPedal(profile, false);
@@ -5263,6 +6558,9 @@
         cancelPendingBrowserCode(event.code);
         releaseVoicePrefixForProfile(`computer-${profile.id}-${event.code}`, profile);
       }
+=======
+      if (handleBrowserCodeUp(event.code, event.target)) event.preventDefault();
+>>>>>>> Stashed changes
     });
 
     els.centerView.addEventListener("click", centerKeyboard);
