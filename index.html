@@ -1232,6 +1232,10 @@
     .bass-seventh-button,
     .touch-vibrato-pan-overlay {
       -webkit-touch-callout: none;
+      touch-action: none;
+      overscroll-behavior: none;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .keyboard-scroll.is-touch-vibrato-locked {
@@ -4000,6 +4004,7 @@
     let metronomeTimerId = null;
     let metronomeBeat = 0;
     const pointerGlissandoStates = new Map();
+    let keyboardTouchPanState = null;
     let touchVibratoLocked = false;
     let touchVibratoLockedScroll = null;
     let edgeOctaveCombo = null;
@@ -10066,6 +10071,38 @@
     els.keyboard.addEventListener("pointercancel", event => {
       endGlissando(event.pointerId);
     });
+
+    els.keyboardScroll.addEventListener("pointerdown", event => {
+      if (event.pointerType !== "touch" || isTouchVibratoLocked()) return;
+      if (event.target.closest(".key, button, .bass-dock, .bass-config-popover")) return;
+      event.preventDefault();
+      els.keyboardScroll.setPointerCapture?.(event.pointerId);
+      keyboardTouchPanState = {
+        pointerId: event.pointerId,
+        clientX: event.clientX,
+        clientY: event.clientY,
+        scrollLeft: els.keyboardScroll.scrollLeft,
+        scrollTop: els.keyboardScroll.scrollTop
+      };
+    });
+
+    els.keyboardScroll.addEventListener("pointermove", event => {
+      const state = keyboardTouchPanState;
+      if (!state || state.pointerId !== event.pointerId) return;
+      event.preventDefault();
+      els.keyboardScroll.scrollLeft = state.scrollLeft - (event.clientX - state.clientX);
+      els.keyboardScroll.scrollTop = state.scrollTop - (event.clientY - state.clientY);
+    });
+
+    function endKeyboardTouchPan(event) {
+      if (!keyboardTouchPanState || keyboardTouchPanState.pointerId !== event.pointerId) return;
+      keyboardTouchPanState = null;
+    }
+
+    els.keyboardScroll.addEventListener("pointerup", endKeyboardTouchPan);
+    els.keyboardScroll.addEventListener("pointercancel", endKeyboardTouchPan);
+    els.keyboardScroll.addEventListener("gesturestart", event => event.preventDefault());
+    els.keyboardScroll.addEventListener("gesturechange", event => event.preventDefault());
 
     els.keyboard.addEventListener("click", event => {
       const target = event.target.closest(".key");
