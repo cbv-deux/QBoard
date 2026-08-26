@@ -411,6 +411,8 @@ namespace QBoardBridge {
         case 0x10: return makeCode == 0x36 ? "ShiftRight" : "ShiftLeft";
         case 0x1B: return "Escape";
         case 0x20: return "Space";
+        case 0x21: return "PageUp";
+        case 0x22: return "PageDown";
         case 0x25: return "ArrowLeft";
         case 0x26: return "ArrowUp";
         case 0x27: return "ArrowRight";

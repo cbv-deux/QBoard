@@ -350,14 +350,24 @@
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas: "panel";
       gap: 5px;
-      max-height: min(52vh, 560px);
-      max-height: min(52dvh, 560px);
+      height: auto;
+      min-height: 0;
+      max-height: none;
       padding: 6px clamp(7px, 1.4vw, 16px);
-      overflow: auto;
+      overflow: visible;
       border-bottom: 1px solid var(--line);
       background: var(--panel);
       align-items: start;
       overscroll-behavior: contain;
+      resize: none;
+    }
+
+    .controls[data-active-panel="manual"] {
+      min-height: 180px;
+      max-height: min(70vh, 720px);
+      max-height: min(70dvh, 720px);
+      overflow: auto;
+      resize: vertical;
     }
 
     .controls.is-collapsed {
@@ -1080,6 +1090,41 @@
       font-size: 0.86rem;
     }
 
+    .manual-body details {
+      border-bottom: 1px solid var(--line);
+      padding: 0 0 6px;
+    }
+
+    .manual-body summary {
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #17191f;
+      font-size: 0.84rem;
+      font-weight: 850;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .manual-body summary::before {
+      content: "+";
+      width: 18px;
+      color: #59616f;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .manual-body details[open] > summary::before { content: "−"; }
+
+    .manual-details-body {
+      display: grid;
+      gap: 7px;
+      padding: 3px 4px 2px 24px;
+    }
+
+    html[dir="rtl"] .manual-details-body { padding: 3px 24px 2px 4px; }
+
     .manual-body p,
     .manual-body ul {
       margin: 0;
@@ -1224,61 +1269,10 @@
       scrollbar-color: #7b8290 var(--stage);
     }
 
-    .keyboard-scroll,
-    .keyboard,
-    .key,
-    .bass-dock,
-    .bass-button,
-    .bass-seventh-button,
-    .touch-vibrato-pan-overlay {
-      -webkit-touch-callout: none;
-      touch-action: none;
-      overscroll-behavior: none;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
     .keyboard-scroll.is-touch-vibrato-locked {
       overflow: hidden;
       touch-action: none;
       overscroll-behavior: contain;
-    }
-
-    .keyboard-view-controls {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      z-index: 46;
-      display: grid;
-      gap: 6px;
-      transform: translateY(-50%);
-      direction: ltr;
-    }
-
-    .keyboard-view-button {
-      width: 36px;
-      height: 36px;
-      padding: 0;
-      border: 1px solid rgba(255, 255, 255, 0.42);
-      border-radius: 6px;
-      background: rgba(23, 25, 31, 0.88);
-      color: #ffffff;
-      font-size: 1.35rem;
-      font-weight: 700;
-      line-height: 1;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
-    }
-
-    .keyboard-view-button:hover,
-    .keyboard-view-button:focus-visible {
-      border-color: #ffffff;
-      background: #007f78;
-    }
-
-    .keyboard-view-button:disabled {
-      opacity: 0.35;
-      cursor: default;
     }
 
     .touch-vibrato-pan-overlay {
@@ -2037,11 +2031,6 @@
       padding: 10px clamp(16px, 3vw, 34px) 30px;
       display: grid;
       gap: var(--row-gap);
-      zoom: var(--keyboard-zoom, 1);
-    }
-
-    .keyboard.pointer-glissando-enabled .key {
-      touch-action: none;
     }
 
     .button-row {
@@ -2849,6 +2838,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="score/qboard-score.css?v=20260826-06">
 </head>
 <body>
   <div class="app">
@@ -2860,6 +2850,7 @@
       <nav class="menu-tabs" id="menuTabs" aria-label="选项标签">
         <button class="menu-tab is-active" id="menuSettings" type="button" data-menu-panel="settings" aria-controls="controlsPanel" aria-selected="true">设置</button>
         <button class="menu-tab" id="menuManual" type="button" data-menu-panel="manual" aria-controls="controlsPanel" aria-selected="false">说明书</button>
+        <button class="menu-tab" id="menuScore" type="button" aria-controls="qscoreWorkspace" aria-selected="false">打谱</button>
         <button class="menu-tab mobile-menu-tab" id="menuGlobal" type="button" data-mobile-panel="global" aria-controls="controlsPanel" aria-selected="true">全局设置</button>
         <button class="menu-tab mobile-menu-tab" id="menuKeyboard" type="button" data-mobile-panel="keyboard" aria-controls="controlsPanel" aria-selected="false">键盘设置</button>
         <button class="menu-tab mobile-menu-tab" id="menuStaff" type="button" data-mobile-panel="staff" aria-controls="controlsPanel" aria-selected="false">谱表</button>
@@ -3218,13 +3209,11 @@
     </dialog>
     <input id="bridgeDirectoryFallback" type="file" webkitdirectory multiple hidden>
 
+    <section class="qscore-workspace" id="qscoreWorkspace" hidden aria-label="打谱"></section>
+
     <main class="stage-wrap">
       <div class="keyboard-scroll" id="keyboardScroll">
         <div class="keyboard" id="keyboard" aria-label="Q-board button keyboard"></div>
-      </div>
-      <div class="keyboard-view-controls" aria-label="Keyboard zoom">
-        <button class="keyboard-view-button" id="keyboardZoomOut" type="button" aria-label="Zoom keyboard out">−</button>
-        <button class="keyboard-view-button" id="keyboardZoomIn" type="button" aria-label="Zoom keyboard in">+</button>
       </div>
       <div class="bass-dock" id="bassDock" hidden aria-label="贝司声部"></div>
       <div class="touch-vibrato-pan-overlay" id="touchVibratoPanOverlay" hidden aria-hidden="true">
@@ -3316,9 +3305,6 @@
     const MIN_METRONOME_BPM = 30;
     const MAX_METRONOME_BPM = 300;
     const DEFAULT_GLISSANDO_DWELL_MS = 30;
-    const MIN_KEYBOARD_ZOOM = 0.5;
-    const MAX_KEYBOARD_ZOOM = 2;
-    const KEYBOARD_ZOOM_STEP = 0.1;
     const DEFAULT_VIBRATO_SENSITIVITY_CENTS = 25;
     const MAX_VIBRATO_CENTS = 100;
     const SUSTAIN_CODES = new Set(["Space"]);
@@ -3449,9 +3435,12 @@
       [0x33, "Semicolon"], [0x34, "Quote"], [0x35, "Backquote"], [0x36, "Comma"], [0x37, "Period"], [0x38, "Slash"],
       [0x3A, "F1"], [0x3B, "F2"], [0x3C, "F3"], [0x3D, "F4"], [0x3E, "F5"], [0x3F, "F6"],
       [0x40, "F7"], [0x41, "F8"], [0x42, "F9"], [0x43, "F10"], [0x44, "F11"], [0x45, "F12"],
+      [0x4B, "PageUp"], [0x4E, "PageDown"],
+      [0x4F, "ArrowRight"], [0x50, "ArrowLeft"], [0x51, "ArrowDown"], [0x52, "ArrowUp"],
       [0xE1, "ShiftLeft"],
       [0xE5, "ShiftRight"]
     ]);
+    const Q_NAVIGATION_CODES = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "PageUp", "PageDown"]);
 
     const noteLetters = ["C", "D", "E", "F", "G", "A", "B"];
     const naturalPitchClasses = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
@@ -3545,8 +3534,7 @@
       fadeSustainTime: DEFAULT_POINTER_FADE_TIME,
       followSustainPedal: false,
       source: "pointer",
-      monophonic: true,
-      glissandoEnabled: true
+      monophonic: true
     };
     const mainBassProfile = {
       id: "bass",
@@ -3755,10 +3743,6 @@
     const translations = qboardLanguageData.translations || { zh: {}, en: {} };
     const localTranslationFallbacks = {
       zh: {
-        keyboardZoomOut: "缩小键盘",
-        keyboardZoomIn: "放大键盘",
-        pointerGlissandoMode: "滑奏",
-        pointerModeSwitch: "切换单音/滑奏",
         addKeyboard: "添加外接键盘",
         mainBassPart: "主贝司声部",
         bassStateSeventh: "七和弦",
@@ -3808,10 +3792,6 @@
         bridgeManual5: "键盘设置标题中的“+”统一添加桥接键盘；每点一次会新增一个独立声部并等待下一把实体键盘。"
       },
       en: {
-        keyboardZoomOut: "Zoom keyboard out",
-        keyboardZoomIn: "Zoom keyboard in",
-        pointerGlissandoMode: "Glissando",
-        pointerModeSwitch: "Switch mono/glissando",
         addKeyboard: "Add external keyboard",
         mainBassPart: "Main bass part",
         bassStateSeventh: "Seventh chord",
@@ -3960,8 +3940,6 @@
       staffSvg: document.querySelector("#staffSvg"),
       keyboard: document.querySelector("#keyboard"),
       keyboardScroll: document.querySelector("#keyboardScroll"),
-      keyboardZoomOut: document.querySelector("#keyboardZoomOut"),
-      keyboardZoomIn: document.querySelector("#keyboardZoomIn"),
       touchVibratoPanOverlay: document.querySelector("#touchVibratoPanOverlay"),
       touchVibratoPanButtons: [...document.querySelectorAll("[data-touch-vibrato-pan]")],
       currentNote: document.querySelector("#currentNote"),
@@ -3979,16 +3957,16 @@
     let qAnchor = { ...DEFAULT_Q_ANCHOR };
     let manualBendCents = 0;
     let longVibratoState = null;
-    const browserShiftPedalEdges = new Map();
+    const browserShiftDownSides = new Set();
     const longVibratoHolds = new Map();
     let autoVibratoFrame = 0;
     let staffZoom = 1;
-    let keyboardZoom = 1;
     const voices = new Map();
     const codeToCoord = new Map();
     const coordToLabels = new Map();
     const heldBrowserCodes = new Set();
-    const hidSuppressedCodeUntil = new Map();
+    const pendingBrowserInputEvents = new Map();
+    const pendingExternalInputClaims = new Map();
     const hidActiveCodeCounts = new Map();
     const pendingBrowserStarts = new Map();
     const pendingBrowserBassStarts = new Map();
@@ -4004,7 +3982,6 @@
     let metronomeTimerId = null;
     let metronomeBeat = 0;
     const pointerGlissandoStates = new Map();
-    let keyboardTouchPanState = null;
     let touchVibratoLocked = false;
     let touchVibratoLockedScroll = null;
     let edgeOctaveCombo = null;
@@ -4317,12 +4294,12 @@
         const items = section.items
           .map(item => `<li>${escapeSvg(item)}</li>`)
           .join("");
-        return `<section><h3>${escapeSvg(section.title)}</h3><ul>${items}</ul></section>`;
+        return `<details><summary>${escapeSvg(section.title)}</summary><ul>${items}</ul></details>`;
       }).join("");
       const bridgeItems = ["bridgeManual1", "bridgeManual2", "bridgeManual3", "bridgeManual4", "bridgeManual5"]
         .map(key => `<li>${escapeSvg(tr(key))}</li>`)
         .join("");
-      const bridgeSection = `<section><h3>${escapeSvg(tr("bridgeManualTitle"))}</h3><p>${escapeSvg(tr("bridgeManualIntro"))}</p><button class="command primary" type="button" data-bridge-download>${escapeSvg(tr("bridgeDownload"))}</button><ul>${bridgeItems}</ul></section>`;
+      const bridgeSection = `<details><summary>${escapeSvg(tr("bridgeManualTitle"))}</summary><div class="manual-details-body"><p>${escapeSvg(tr("bridgeManualIntro"))}</p><button class="command primary" type="button" data-bridge-download>${escapeSvg(tr("bridgeDownload"))}</button><ul>${bridgeItems}</ul></div></details>`;
       els.manualBody.innerHTML = `<p>${escapeSvg(copy.intro)}</p>${bridgeSection}${sections}`;
     }
 
@@ -4499,10 +4476,6 @@
       document.querySelector(".scale-tools")?.setAttribute("aria-label", tr("staffScale"));
       els.scaleZoomOut.setAttribute("aria-label", tr("zoomOut"));
       els.scaleZoomIn.setAttribute("aria-label", tr("zoomIn"));
-      els.keyboardZoomOut.title = tr("keyboardZoomOut");
-      els.keyboardZoomOut.setAttribute("aria-label", tr("keyboardZoomOut"));
-      els.keyboardZoomIn.title = tr("keyboardZoomIn");
-      els.keyboardZoomIn.setAttribute("aria-label", tr("keyboardZoomIn"));
       els.staffSvg.setAttribute("aria-label", tr("staffAria"));
       els.keyboard.setAttribute("aria-label", tr("keyboardAria"));
       if (els.currentNote.textContent === "--") els.noteMeta.textContent = tr("clickAnyKey");
@@ -4559,6 +4532,7 @@
     function showMenuPanel(panel) {
       if (!["settings", "manual"].includes(panel)) return;
       els.controls.dataset.activePanel = panel;
+      applyMenuPanelHeight(panel);
       els.controls.classList.remove("is-collapsed");
       syncMenuTabs();
       if (panel === "settings") {
@@ -4570,6 +4544,7 @@
     function showMobilePanel(panel) {
       if (!["global", "keyboard", "staff", "shortcuts", "manual"].includes(panel)) return;
       els.controls.dataset.mobilePanel = panel;
+      applyMenuPanelHeight(panel === "manual" ? "manual" : "settings");
       els.controls.classList.remove("is-collapsed");
       syncMenuTabs();
       if (panel === "staff") renderScaleStaff();
@@ -4831,14 +4806,6 @@
       if (!profile) return true;
       if (profile === bassProfile) return Boolean(bassProfile.enabled);
       return profile.enabled !== false;
-    }
-
-    function pointerGlissandoEnabled() {
-      return pointerProfile.glissandoEnabled !== false;
-    }
-
-    function syncPointerInteractionMode() {
-      els.keyboard.classList.toggle("pointer-glissando-enabled", pointerGlissandoEnabled());
     }
 
     function profileFollowsMainPedals(profile) {
@@ -5206,17 +5173,7 @@
       const pointerNameText = document.createElement("span");
       pointerNameText.textContent = tr("mouseTouch");
       const pointerSource = document.createElement("small");
-      pointerSource.className = "bass-source-line";
-      const pointerSourceText = document.createElement("span");
-      pointerSourceText.textContent = tr(pointerGlissandoEnabled() ? "pointerGlissandoMode" : "monoSource");
-      const pointerModeButton = document.createElement("button");
-      pointerModeButton.type = "button";
-      pointerModeButton.className = "bass-key-mode-button";
-      pointerModeButton.dataset.profileAction = "togglePointerMode";
-      pointerModeButton.textContent = "↔";
-      pointerModeButton.title = tr("pointerModeSwitch");
-      pointerModeButton.setAttribute("aria-label", tr("pointerModeSwitch"));
-      pointerSource.append(pointerSourceText, pointerModeButton);
+      pointerSource.textContent = tr("monoSource");
       pointerName.append(pointerNameText, pointerSource);
       pointerRow.append(
         createProfileHeader(pointerProfile, pointerName),
@@ -5440,7 +5397,6 @@
         sustainEnabled: profile.sustainEnabled,
         fadeSustainTime: profile.fadeSustainTime,
         followSustainPedal: profile.followSustainPedal,
-        glissandoEnabled: profile.glissandoEnabled,
         keyMode: profile.keyMode,
         outHarmony: profile.outHarmony,
         edgeMirror: profile.edgeMirror,
@@ -5466,7 +5422,6 @@
       if (typeof data.sustainEnabled === "boolean") profile.sustainEnabled = data.sustainEnabled;
       if (Number.isFinite(data.fadeSustainTime)) profile.fadeSustainTime = data.fadeSustainTime;
       if (typeof data.followSustainPedal === "boolean") profile.followSustainPedal = data.followSustainPedal;
-      if (typeof data.glissandoEnabled === "boolean") profile.glissandoEnabled = data.glissandoEnabled;
       if (data.keyMode && bassKeyModeValues.has(data.keyMode)) profile.keyMode = data.keyMode;
       if (typeof data.outHarmony === "boolean") profile.outHarmony = data.outHarmony;
       if (typeof data.edgeMirror === "boolean") profile.edgeMirror = data.edgeMirror;
@@ -5499,7 +5454,7 @@
 
     function collectQBoardSettings() {
       return {
-        version: 15,
+        version: 14,
         language: currentLanguage,
         controls: {
           keySystem: els.keySystem.value,
@@ -5527,7 +5482,6 @@
           staffZoom,
           transpose: els.staffTranspose?.checked !== false
         },
-        keyboardView: { zoom: keyboardZoom },
         metronome: { bpm: metronomeBpm },
         activeProfileId,
         qAnchor: { ...qAnchor },
@@ -5582,7 +5536,6 @@
         if (Number.isFinite(settings.color?.cColorIndex)) cColorIndex = mod(settings.color.cColorIndex, 12);
         if (Number.isFinite(settings.staff?.staffZoom)) staffZoom = Math.max(0.5, Math.min(2.4, settings.staff.staffZoom));
         if (typeof settings.staff?.transpose === "boolean" && els.staffTranspose) els.staffTranspose.checked = settings.staff.transpose;
-        if (Number.isFinite(settings.keyboardView?.zoom)) keyboardZoom = Math.max(MIN_KEYBOARD_ZOOM, Math.min(MAX_KEYBOARD_ZOOM, settings.keyboardView.zoom));
         if (Number.isFinite(settings.metronome?.bpm)) metronomeBpm = clampNumber(settings.metronome.bpm, DEFAULT_METRONOME_BPM, MIN_METRONOME_BPM, MAX_METRONOME_BPM);
         const profileSettings = Array.isArray(settings.profiles) ? settings.profiles : [];
         for (const savedProfile of profileSettings) {
@@ -5773,8 +5726,6 @@
       updateMetronomeDisplay();
       syncStaffVisibility();
       syncShortcutVisibility();
-      syncPointerInteractionMode();
-      setKeyboardZoom(keyboardZoom, { preserveCenter: false, persist: false });
       renderKeyboard({ keepScroll: false });
       renderScaleStaff();
       renderBassDock();
@@ -6184,30 +6135,6 @@
     function changeStaffZoom(delta) {
       staffZoom = Math.max(0.5, Math.min(2.4, Math.round((staffZoom + delta) * 100) / 100));
       applyStaffZoom();
-    }
-
-    function syncKeyboardZoomControls() {
-      els.keyboardZoomOut.disabled = keyboardZoom <= MIN_KEYBOARD_ZOOM + 0.001;
-      els.keyboardZoomIn.disabled = keyboardZoom >= MAX_KEYBOARD_ZOOM - 0.001;
-    }
-
-    function setKeyboardZoom(value, { preserveCenter = true, persist = true } = {}) {
-      const scroller = els.keyboardScroll;
-      const oldWidth = Math.max(1, scroller.scrollWidth);
-      const oldHeight = Math.max(1, scroller.scrollHeight);
-      const centerRatioX = (scroller.scrollLeft + scroller.clientWidth / 2) / oldWidth;
-      const centerRatioY = (scroller.scrollTop + scroller.clientHeight / 2) / oldHeight;
-      keyboardZoom = Math.max(MIN_KEYBOARD_ZOOM, Math.min(MAX_KEYBOARD_ZOOM, Math.round(Number(value) * 10) / 10));
-      els.keyboard.style.setProperty("--keyboard-zoom", String(keyboardZoom));
-      syncKeyboardZoomControls();
-
-      if (preserveCenter) {
-        requestAnimationFrame(() => {
-          scroller.scrollLeft = centerRatioX * scroller.scrollWidth - scroller.clientWidth / 2;
-          scroller.scrollTop = centerRatioY * scroller.scrollHeight - scroller.clientHeight / 2;
-        });
-      }
-      if (persist) scheduleSaveSettings();
     }
 
     function renderScaleStaff() {
@@ -7152,10 +7079,50 @@
       }
     }
 
+    function syncBassScoreChord(layer, chord) {
+      const signature = chord ? `${chord.label}|${chord.midis.join(",")}` : "";
+      if (signature === (layer.scoreChordSignature || "")) return;
+      if (layer.scoreChordSignature) {
+        emitQBoardInput("qboard:bass-chord", {
+          origin: "performance",
+          source: "bass",
+          sourceType: "bass",
+          sourceId: layer.id,
+          profileId: layer.id,
+          partId: layer.id,
+          partName: layer.label || tr("bassPart"),
+          inputProfileId: layer.inputProfileId,
+          active: false,
+          label: layer.scoreChordLabel || "",
+          midis: layer.scoreChordMidis || []
+        });
+      }
+      layer.scoreChordSignature = signature;
+      layer.scoreChordLabel = chord?.label || "";
+      layer.scoreChordMidis = chord ? [...chord.midis] : [];
+      if (chord) {
+        emitQBoardInput("qboard:bass-chord", {
+          origin: "performance",
+          source: "bass",
+          sourceType: "bass",
+          sourceId: layer.id,
+          profileId: layer.id,
+          partId: layer.id,
+          partName: layer.label || tr("bassPart"),
+          inputProfileId: layer.inputProfileId,
+          active: true,
+          label: chord.label,
+          midis: [...chord.midis],
+          velocity: 92
+        });
+      }
+    }
+
     function performBassVoiceUpdate(releaseOverride = bassFadeTime()) {
       const releaseTime = Math.max(0, Number(releaseOverride ?? bassFadeTime()) || 0);
       const layer = actualBassLayer();
       const chord = bassProfile.enabled ? currentBassChord() : null;
+      syncBassScoreChord(layer, chord);
       const desiredMidis = new Set(chord?.midis || []);
       for (const [id, voice] of [...voices.entries()]) {
         if (voice.profile !== layer) continue;
@@ -7967,26 +7934,24 @@
       const code = String(message.code || "");
       const profile = bridgeProfileForDevice(message);
       if (!profile || !code) return;
-      if (!codeToHardwarePosition.has(code) && !isSustainCode(code) && !isSoftPedalCode(code) && !isHarmonicPedalCode(code) && !isEdgePedalCode(code) && !bassClaimsProfileCode(profile, code)) return;
+      if (!codeToHardwarePosition.has(code) && !Q_NAVIGATION_CODES.has(code) && !isSustainCode(code) && !isSoftPedalCode(code) && !isHarmonicPedalCode(code) && !isEdgePedalCode(code) && !bassClaimsProfileCode(profile, code)) return;
       profile.bridgeReady = true;
       const isDown = message.down !== false && message.type !== "keyup" && message.event !== "up";
       const previousCodes = profile.pressedCodes || new Set();
 
       if (isDown) {
         if (previousCodes.has(code)) {
-          suppressBrowserCodeOnce(code);
           return;
         }
         previousCodes.add(code);
-        claimHidBrowserCode(profile, code);
+        claimHidBrowserCode(profile, code, "down");
         handleProfileCodeDown(profile, code);
       } else {
+        claimBrowserInputEvent(code, "up");
         if (previousCodes.has(code)) {
           previousCodes.delete(code);
           handleProfileCodeUp(profile, code);
           releaseHidBrowserCode(profile, code);
-        } else {
-          suppressBrowserCodeOnce(code);
         }
       }
 
@@ -8170,6 +8135,7 @@
         isSoftPedalCode(code) ||
         isHarmonicPedalCode(code) ||
         isEdgePedalCode(code) ||
+        Q_NAVIGATION_CODES.has(code) ||
         coordForProfileCode(profile, code)
       );
     }
@@ -8187,22 +8153,91 @@
     }
 
     function potentialBridgeBrowserCode(code) {
+      if (bridgeSocket?.readyState !== 1) return false;
       return enabledBridgeProfiles().some(profile => bridgeProfileCanOwnCode(profile, code));
     }
 
     function browserStartDelayForCode(code, profile = browserProfile()) {
-      if (potentialBridgeBrowserCode(code)) {
-        return profile?.id === "main" && profile.instrument === "piano"
-          ? MAIN_PIANO_START_GRACE_MS
-          : BRIDGE_BROWSER_START_GRACE_MS;
-      }
-      return potentialHidBrowserCode(code) ? HID_BROWSER_START_GRACE_MS : 0;
+      return 0;
     }
 
-    function claimHidBrowserCode(profile, code) {
-      if (!["hid", "bridge"].includes(profile?.source) || !profileIsEnabled(profile)) return;
-      clearBrowserCollisionForHidCode(code);
-      hidActiveCodeCounts.set(code, (hidActiveCodeCounts.get(code) || 0) + 1);
+    function browserInputArbitrationKey(code, phase) {
+      return `${phase}:${code}`;
+    }
+
+    function externalInputCanOwnCode(code) {
+      return potentialBridgeBrowserCode(code) || potentialHidBrowserCode(code);
+    }
+
+    function pruneExternalInputClaims(key) {
+      const now = performance.now();
+      const claims = (pendingExternalInputClaims.get(key) || []).filter(until => until > now);
+      if (claims.length) pendingExternalInputClaims.set(key, claims);
+      else pendingExternalInputClaims.delete(key);
+      return claims;
+    }
+
+    function consumeExternalInputClaim(code, phase) {
+      const key = browserInputArbitrationKey(code, phase);
+      const claims = pruneExternalInputClaims(key);
+      if (!claims.length) return false;
+      claims.shift();
+      if (claims.length) pendingExternalInputClaims.set(key, claims);
+      else pendingExternalInputClaims.delete(key);
+      return true;
+    }
+
+    function claimBrowserInputEvent(code, phase) {
+      const key = browserInputArbitrationKey(code, phase);
+      const queue = pendingBrowserInputEvents.get(key) || [];
+      if (queue.length) {
+        const entry = queue.shift();
+        window.clearTimeout(entry.timer);
+        if (queue.length) pendingBrowserInputEvents.set(key, queue);
+        else pendingBrowserInputEvents.delete(key);
+        return true;
+      }
+      const claims = pruneExternalInputClaims(key);
+      claims.push(performance.now() + HID_BROWSER_SUPPRESS_MS);
+      pendingExternalInputClaims.set(key, claims);
+      return false;
+    }
+
+    function queueBrowserInputEvent(code, phase, callback) {
+      if (!externalInputCanOwnCode(code)) {
+        callback();
+        return "main";
+      }
+      if (consumeExternalInputClaim(code, phase)) return "external";
+      const key = browserInputArbitrationKey(code, phase);
+      const queue = pendingBrowserInputEvents.get(key) || [];
+      const entry = { timer: 0 };
+      entry.timer = window.setTimeout(() => {
+        const current = pendingBrowserInputEvents.get(key) || [];
+        const index = current.indexOf(entry);
+        if (index >= 0) current.splice(index, 1);
+        if (current.length) pendingBrowserInputEvents.set(key, current);
+        else pendingBrowserInputEvents.delete(key);
+        callback();
+      }, HID_BROWSER_SUPPRESS_MS);
+      queue.push(entry);
+      pendingBrowserInputEvents.set(key, queue);
+      return "pending";
+    }
+
+    function clearBrowserInputArbitration() {
+      for (const queue of pendingBrowserInputEvents.values()) {
+        for (const entry of queue) window.clearTimeout(entry.timer);
+      }
+      pendingBrowserInputEvents.clear();
+      pendingExternalInputClaims.clear();
+    }
+
+    function claimHidBrowserCode(profile, code, phase = "down") {
+      if (!["hid", "bridge"].includes(profile?.source) || !profileIsEnabled(profile)) return false;
+      const claimed = claimBrowserInputEvent(code, phase);
+      if (phase === "down") hidActiveCodeCounts.set(code, (hidActiveCodeCounts.get(code) || 0) + 1);
+      return claimed;
     }
 
     function releaseHidBrowserCode(profile, code) {
@@ -8212,31 +8247,12 @@
       else hidActiveCodeCounts.set(code, count - 1);
     }
 
-    function clearBrowserCollisionForHidCode(code) {
-      const profile = browserProfile();
-      profile.pressedCodes?.delete(code);
-      heldBrowserCodes.delete(code);
-      if (edgeOctaveCombo?.triggerCodes.includes(code)) stopEdgeOctaveCombo(profile);
-      cancelPendingBrowserCode(code);
-      releaseBrowserBassCode(code);
-      stopVoiceByPrefix(`computer-${profile.id}-${code}`, 0.03);
-      if (isSustainCode(code) && profile.sustainPedal) setSustainPedal(profile, false);
-      const shiftSide = shiftPhysicalSideFromCode(code);
-      if (shiftSide) releaseBrowserShiftPedalEdge(shiftSide);
-      if (isEdgePedalCode(code)) setEdgePedal(profile, edgePedalSide(code), false);
-    }
-
     function scheduleBrowserCodeStart(code, profile) {
       cancelPendingBrowserCode(code);
       const source = sourceForProfileCode(profile, code);
       if (!source) return;
-      const timer = window.setTimeout(() => {
-        pendingBrowserStarts.delete(code);
-        if (!profileIsEnabled(profile)) return;
-        if (shouldSuppressBrowserCode(code)) return;
-        startVoice(source, `computer-${profile.id}-${code}`, 0, profile);
-      }, browserStartDelayForCode(code, profile));
-      pendingBrowserStarts.set(code, { timer, profileId: profile.id });
+      if (!profileIsEnabled(profile)) return;
+      startVoice(source, `computer-${profile.id}-${code}`, 0, profile);
     }
 
     function cancelPendingBrowserBassCode(code) {
@@ -8248,16 +8264,13 @@
     }
 
     function browserBassStartDelay(code) {
-      return potentialBridgeBrowserCode(code) || potentialHidBrowserCode(code)
-        ? Math.max(BRIDGE_BROWSER_START_GRACE_MS, HID_BROWSER_START_GRACE_MS)
-        : 0;
+      return 0;
     }
 
     function scheduleBrowserBassCodeDown(code) {
       if (pendingBrowserBassStarts.has(code) || activeBrowserBassCodes.has(code)) return;
       const start = () => {
         pendingBrowserBassStarts.delete(code);
-        if (shouldSuppressBrowserCode(code)) return;
         activeBrowserBassCodes.add(code);
         withBassLayer(mainBassProfile, () => handleBassCodeDown(code));
       };
@@ -8424,82 +8437,62 @@
       return new Set(codes);
     }
 
-    function suppressBrowserCodeOnce(code) {
-      cancelPendingBrowserCode(code);
-      cancelPendingBrowserBassCode(code);
-      hidSuppressedCodeUntil.set(code, performance.now() + HID_BROWSER_SUPPRESS_MS);
-    }
-
-    function shouldSuppressBrowserCode(code) {
-      const until = hidSuppressedCodeUntil.get(code) || 0;
-      if (until <= performance.now()) {
-        hidSuppressedCodeUntil.delete(code);
-        return false;
-      }
-      return true;
-    }
-
     function handleProfileCodeDown(profile, code) {
+      if (window.QBoardScore?.consumeNavigationKey?.(code, { down: true, sourceId: profile.id })) return;
       if (bassClaimsProfileCode(profile, code)) {
-        suppressBrowserCodeOnce(code);
         handleBassCodeDownForProfile(profile, code);
         return;
       }
       if (!profileIsEnabled(profile)) return;
       if (isSustainCode(code)) {
-        suppressBrowserCodeOnce(code);
         setSustainPedal(profile, true);
         return;
       }
       if (isSoftPedalCode(code)) {
-        suppressBrowserCodeOnce(code);
         setSoftPedal(profile, true, PHYSICAL_PEDAL_TRANSITION);
         return;
       }
       if (isHarmonicPedalCode(code)) {
-        suppressBrowserCodeOnce(code);
         setHarmonicPedal(profile, true, PHYSICAL_PEDAL_TRANSITION);
         return;
       }
       if (isEdgePedalCode(code)) {
-        suppressBrowserCodeOnce(code);
         setEdgePedal(profile, edgePedalSide(code), true);
+        return;
+      }
+      if (Q_NAVIGATION_CODES.has(code)) {
+        moveProfileQByNavigationCode(profile, code);
         return;
       }
       const source = sourceForProfileCode(profile, code);
       if (!source) return;
-      suppressBrowserCodeOnce(code);
       startVoice(source, voicePrefixForProfileCode(profile, code), 0, profile);
     }
 
     function handleProfileCodeUp(profile, code) {
+      if (window.QBoardScore?.consumeNavigationKey?.(code, { down: false, sourceId: profile.id })) return;
       if (bassClaimsProfileCode(profile, code)) {
-        suppressBrowserCodeOnce(code);
         handleBassCodeUpForProfile(profile, code);
         return;
       }
       if (!profileIsEnabled(profile)) return;
       if (isSustainCode(code)) {
-        suppressBrowserCodeOnce(code);
         setSustainPedal(profile, false);
         return;
       }
       if (isSoftPedalCode(code)) {
-        suppressBrowserCodeOnce(code);
         setSoftPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
         return;
       }
       if (isHarmonicPedalCode(code)) {
-        suppressBrowserCodeOnce(code);
         setHarmonicPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
         return;
       }
       if (isEdgePedalCode(code)) {
-        suppressBrowserCodeOnce(code);
         setEdgePedal(profile, edgePedalSide(code), false);
         return;
       }
-      suppressBrowserCodeOnce(code);
+      if (Q_NAVIGATION_CODES.has(code)) return;
       releaseVoicePrefixForProfile(voicePrefixForProfileCode(profile, code), profile);
     }
 
@@ -8532,13 +8525,14 @@
 
       for (const code of nextCodes) {
         if (!previousCodes.has(code)) {
-          claimHidBrowserCode(profile, code);
+          claimHidBrowserCode(profile, code, "down");
           handleProfileCodeDown(profile, code);
         }
       }
 
       for (const code of previousCodes) {
         if (!nextCodes.has(code)) {
+          claimBrowserInputEvent(code, "up");
           handleProfileCodeUp(profile, code);
           releaseHidBrowserCode(profile, code);
         }
@@ -8926,9 +8920,11 @@
       return source;
     }
 
-    function playMetronomeClick(accent = false) {
+    function playMetronomeClick(accentOrOptions = false) {
       const context = ensureAudio();
-      const now = context.currentTime;
+      const options = typeof accentOrOptions === "object" ? accentOrOptions : { accent: Boolean(accentOrOptions) };
+      const accent = Boolean(options.accent);
+      const now = Math.max(context.currentTime, Number(options.when) || context.currentTime);
       const osc = context.createOscillator();
       const gain = context.createGain();
 
@@ -8939,6 +8935,11 @@
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
       osc.connect(gain);
       gain.connect(context.destination);
+      if (options.score) {
+        const tracked = { osc };
+        scoreMetronomeClicks.add(tracked);
+        osc.addEventListener("ended", () => scoreMetronomeClicks.delete(tracked), { once: true });
+      }
       osc.start(now);
       osc.stop(now + 0.07);
     }
@@ -9147,6 +9148,15 @@
       return `${voiceId}:${target.dataset.row}:${target.dataset.col}:${target.dataset.midi}`;
     }
 
+    function emitQBoardInput(type, detail = {}) {
+      document.dispatchEvent(new CustomEvent(type, {
+        detail: {
+          time: performance.now(),
+          ...detail
+        }
+      }));
+    }
+
     function showNote(target, profile = activeProfile()) {
       const bend = manualBendCents ? ` · ${manualBendCents > 0 ? "+" : ""}${manualBendCents}c` : "";
       const totalShift = (Number(profile.outputShift) || 0) + (Number(target.dataset.outputShift) || 0);
@@ -9169,15 +9179,18 @@
       }
 
       const preset = instruments[profile.instrument] || instruments.accordion;
-      const now = context.currentTime;
+      const now = Math.max(context.currentTime, Number(options.when) || context.currentTime);
       const outputShift = Number(profile.outputShift) || 0;
       const transientShift = Number(target.dataset.outputShift) || 0;
       const baseHz = Number(target.dataset.hz) * Math.pow(2, (outputShift + transientShift) / 12);
       const output = context.createGain();
       const profileGain = context.createGain();
-      const envelope = profile?.source === "bass"
+      const baseEnvelope = profile?.source === "bass"
         ? { ...preset.envelope, attack: Math.min(preset.envelope.attack, bassFadeTime() * BASS_ATTACK_FADE_RATIO) }
         : preset.envelope;
+      const envelope = options.holdUntilRelease
+        ? { ...baseEnvelope, sustain: Math.max(0.72, Number(baseEnvelope.sustain) || 0), decay: Math.min(0.12, Number(baseEnvelope.decay) || 0.08) }
+        : baseEnvelope;
       const presetLevel = clampFloat(preset.level, 1, 0.35, 2.2);
       const peakGain = Math.max(0.0001, FIXED_OUTPUT_VOLUME * 0.42 * presetLevel);
       const fadeInTime = Math.max(0, Number(options.fadeInTime) || 0);
@@ -9255,6 +9268,9 @@
       profileGain.connect(context.destination);
 
       const voice = {
+        id,
+        voiceId,
+        notationMidi: Number(options.notationMidi ?? target.dataset.midi),
         target,
         output,
         profileGain,
@@ -9274,7 +9290,10 @@
         sustainProfile: null,
         harmonicGains: [],
         harmonicWaves: [],
-        harmonicFundamentalExtras: []
+        harmonicFundamentalExtras: [],
+        scoreOrigin: options.origin || "performance",
+        scoreEventEmitted: false,
+        scoreReleased: false
       };
 
       for (const spec of preset.oscillators || []) {
@@ -9319,7 +9338,7 @@
         const partialAttack = Math.max(0.001, spec.attack ?? envelope.attack);
         const partialDecay = Math.max(0.001, spec.decay ?? envelope.decay);
         const partialGain = Math.max(0.0001, spec.gain || 0.1);
-        const partialSustain = Math.max(0.0001, partialGain * (spec.sustain ?? 0.02));
+        const partialSustain = Math.max(0.0001, partialGain * (options.holdUntilRelease ? Math.max(0.55, Number(spec.sustain) || 0) : (spec.sustain ?? 0.02)));
 
         osc.type = spec.type || "sine";
         osc.frequency.setValueAtTime(baseHz * (spec.ratio || 1), now);
@@ -9400,6 +9419,24 @@
       }
 
       voices.set(id, voice);
+      if (profile?.source !== "bass") {
+        voice.scoreEventEmitted = true;
+        emitQBoardInput("qboard:note-on", {
+          origin: voice.scoreOrigin,
+          source: profile?.source || "keyboard",
+          sourceType: profile?.source || "keyboard",
+          sourceId: profile?.id || "main",
+          profileId: profile?.id || "main",
+          partId: profile?.id || "main",
+          partName: profile?.label || profile?.short || "Q-board",
+          voiceId,
+          midi: Number(target.dataset.midi),
+          notationMidi: Number(options.notationMidi ?? target.dataset.midi),
+          soundingMidi: Number(target.dataset.midi) + outputShift + transientShift,
+          velocity: Math.round(clampFloat(options.velocity, 92, 1, 127)),
+          instrument: profile?.instrument || "piano"
+        });
+      }
       if (autoStopMs <= 0) beginLongVibratoHold(id, profile);
       target.classList.add("is-active");
       showNote(target, profile);
@@ -9454,7 +9491,24 @@
       const voice = voices.get(id);
       if (!voice || !audioContext) return;
 
-      const now = audioContext.currentTime;
+      if (voice.scoreEventEmitted && !voice.scoreReleased) {
+        voice.scoreReleased = true;
+        emitQBoardInput("qboard:note-off", {
+          origin: voice.scoreOrigin,
+          source: voice.profile?.source || "keyboard",
+          sourceType: voice.profile?.source || "keyboard",
+          sourceId: voice.profile?.id || "main",
+          profileId: voice.profile?.id || "main",
+          partId: voice.profile?.id || "main",
+          partName: voice.profile?.label || voice.profile?.short || "Q-board",
+          voiceId: voice.voiceId,
+          midi: Number(voice.target?.dataset?.midi),
+          notationMidi: Number(voice.notationMidi ?? voice.target?.dataset?.midi),
+          instrument: voice.profile?.instrument || "piano"
+        });
+      }
+
+      const now = Math.max(audioContext.currentTime, Number(options.when) || audioContext.currentTime);
       const release = Math.max(0.03, releaseOverride ?? naturalVoiceReleaseTime(voice));
       const releaseStartGain = voiceEnvelopeGainAt(voice, now);
       if (voice.releaseTimer) {
@@ -9482,7 +9536,7 @@
       if (options.keepTracked) {
         voice.sustained = Boolean(options.sustained);
         voice.sustainProfile = options.sustainProfile || voice.sustainProfile;
-        voice.releaseTimer = window.setTimeout(() => finalizeVoice(id, voice), release * 1000 + 80);
+        voice.releaseTimer = window.setTimeout(() => finalizeVoice(id, voice), Math.max(0, now - audioContext.currentTime + release) * 1000 + 80);
         updateKeyActiveState(voice.target);
         return;
       }
@@ -9533,6 +9587,17 @@
         return;
       }
       profile.sustainPedal = Boolean(active);
+      emitQBoardInput("qboard:pedal", {
+        origin: "performance",
+        source: profile.source || "keyboard",
+        sourceType: profile.source || "keyboard",
+        sourceId: profile.id || "main",
+        profileId: profile.id || "main",
+        partId: profile.id || "main",
+        partName: profile.label || profile.short || "Q-board",
+        pedal: "sustain",
+        active: profile.sustainPedal
+      });
       updatePedalSwitches(profile);
 
       if (profile.sustainPedal) {
@@ -9667,6 +9732,8 @@
     }
 
     function stopAllVoices() {
+      clearBrowserInputArbitration();
+      hidActiveCodeCounts.clear();
       for (const [code, pending] of pendingBrowserStarts) {
         window.clearTimeout(pending.timer);
         pendingBrowserStarts.delete(code);
@@ -9695,14 +9762,14 @@
       updatePedalSwitches();
     }
 
-    function findIntervalCoord(deltaSemitones) {
-      const targetMidi = buttonMidi(qAnchor.row, qAnchor.col) + deltaSemitones;
+    function findIntervalCoord(deltaSemitones, anchor = qAnchor) {
+      const targetMidi = buttonMidi(anchor.row, anchor.col) + deltaSemitones;
       let best = null;
 
-      for (let row = qAnchor.row - 6; row <= qAnchor.row + 6; row += 1) {
-        for (let col = qAnchor.col - 10; col <= qAnchor.col + 10; col += 1) {
+      for (let row = anchor.row - 6; row <= anchor.row + 6; row += 1) {
+        for (let col = anchor.col - 10; col <= anchor.col + 10; col += 1) {
           if (buttonMidi(row, col) !== targetMidi) continue;
-          const score = Math.abs(row - qAnchor.row) * 4 + Math.abs(col - qAnchor.col);
+          const score = Math.abs(row - anchor.row) * 4 + Math.abs(col - anchor.col);
           if (!best || score < best.score) best = { row, col, score };
         }
       }
@@ -9727,12 +9794,39 @@
       updateReadoutForCoord(prefix, qAnchor.row, qAnchor.col);
     }
 
-    function octaveAnchorForDelta(deltaSemitones) {
+    function octaveAnchorForDelta(deltaSemitones, anchor = qAnchor) {
       const system = currentSystem();
       if (Math.abs(deltaSemitones) === 12 && system.octaveColStep !== null) {
-        return { row: qAnchor.row, col: qAnchor.col + system.octaveColStep * Math.sign(deltaSemitones) };
+        return { row: anchor.row, col: anchor.col + system.octaveColStep * Math.sign(deltaSemitones) };
       }
-      return findIntervalCoord(deltaSemitones);
+      return findIntervalCoord(deltaSemitones, anchor);
+    }
+
+    function moveProfileQByNavigationCode(profile, code) {
+      if (!profile || !Q_NAVIGATION_CODES.has(code)) return false;
+      const anchor = profile.anchor || DEFAULT_Q_ANCHOR;
+      const viewAnchor = captureViewAnchor();
+      const directMoves = {
+        ArrowUp: { row: anchor.row - 1, col: anchor.col },
+        ArrowDown: { row: anchor.row + 1, col: anchor.col },
+        PageUp: { row: anchor.row - 1, col: anchor.col + 1 },
+        PageDown: { row: anchor.row + 1, col: anchor.col - 1 }
+      };
+      const next = directMoves[code]
+        || (code === "ArrowRight" ? octaveAnchorForDelta(12, anchor) : null)
+        || (code === "ArrowLeft" ? octaveAnchorForDelta(-12, anchor) : null);
+      if (!next) return false;
+
+      profile.anchor = { ...next };
+      if (profile === activeProfile()) {
+        qAnchor = { ...next };
+        selectedCoord = { ...next };
+      }
+      includeProfileHardwareRange(profile);
+      renderKeyboard({ viewAnchor, preserveVoices: true });
+      updateReadoutForCoord(`${profile.short}:Q`, next.row, next.col);
+      scheduleSaveSettings();
+      return true;
     }
 
     function setTemporaryActiveAnchor(coord) {
@@ -9803,7 +9897,6 @@
 
     function trackEdgeOctaveComboCode(event, active) {
       if (!event?.code || isTypingTarget(event.target)) return;
-      if (shouldSuppressBrowserCode(event.code)) return;
       if (!["Tab", "Backslash", "Digit1", "Backspace"].includes(event.code)) return;
       if (active) heldBrowserCodes.add(event.code);
       else heldBrowserCodes.delete(event.code);
@@ -10037,13 +10130,6 @@
         updatePointerKeyBend(event, state.currentTarget);
         return;
       }
-      if (!pointerGlissandoEnabled()) {
-        clearGlissandoTimer(state);
-        state.pendingIdentity = state.currentIdentity;
-        state.lastClientY = event.clientY;
-        updatePointerKeyBend(event, state.currentTarget);
-        return;
-      }
       const target = keyFromPointerEvent(event);
       if (!target) {
         clearGlissandoTimer(state);
@@ -10070,38 +10156,6 @@
       endGlissando(event.pointerId);
     });
 
-    els.keyboardScroll.addEventListener("pointerdown", event => {
-      if (event.pointerType !== "touch" || isTouchVibratoLocked()) return;
-      if (event.target.closest(".key, button, .bass-dock, .bass-config-popover")) return;
-      event.preventDefault();
-      els.keyboardScroll.setPointerCapture?.(event.pointerId);
-      keyboardTouchPanState = {
-        pointerId: event.pointerId,
-        clientX: event.clientX,
-        clientY: event.clientY,
-        scrollLeft: els.keyboardScroll.scrollLeft,
-        scrollTop: els.keyboardScroll.scrollTop
-      };
-    });
-
-    els.keyboardScroll.addEventListener("pointermove", event => {
-      const state = keyboardTouchPanState;
-      if (!state || state.pointerId !== event.pointerId) return;
-      event.preventDefault();
-      els.keyboardScroll.scrollLeft = state.scrollLeft - (event.clientX - state.clientX);
-      els.keyboardScroll.scrollTop = state.scrollTop - (event.clientY - state.clientY);
-    });
-
-    function endKeyboardTouchPan(event) {
-      if (!keyboardTouchPanState || keyboardTouchPanState.pointerId !== event.pointerId) return;
-      keyboardTouchPanState = null;
-    }
-
-    els.keyboardScroll.addEventListener("pointerup", endKeyboardTouchPan);
-    els.keyboardScroll.addEventListener("pointercancel", endKeyboardTouchPan);
-    els.keyboardScroll.addEventListener("gesturestart", event => event.preventDefault());
-    els.keyboardScroll.addEventListener("gesturechange", event => event.preventDefault());
-
     els.keyboard.addEventListener("click", event => {
       const target = event.target.closest(".key");
       if (!target) return;
@@ -10117,12 +10171,6 @@
       clearFocusedControl(event);
       primeAudioFromGesture(event);
     }, { capture: true });
-
-    document.addEventListener("contextmenu", event => {
-      if (event.target.closest?.(".keyboard-scroll, #bassDock, .touch-vibrato-pan-overlay")) {
-        event.preventDefault();
-      }
-    });
 
     function shouldAutoSaveSettingsEvent(event) {
       const target = event.target;
@@ -10143,6 +10191,23 @@
     document.addEventListener("click", autoSaveSettingsFromEvent);
     window.addEventListener("beforeunload", saveQBoardSettings);
 
+    function snapshotKeyboardEvent(event) {
+      return {
+        code: event.code,
+        key: event.key,
+        location: event.location,
+        repeat: event.repeat,
+        ctrlKey: event.ctrlKey,
+        metaKey: event.metaKey,
+        altKey: event.altKey,
+        shiftKey: event.shiftKey,
+        target: event.target,
+        preventDefault() {},
+        stopPropagation() {},
+        stopImmediatePropagation() {}
+      };
+    }
+
     function shiftPhysicalSideFromLocation(event) {
       if (event?.location === 1) return "left";
       if (event?.location === 2) return "right";
@@ -10153,66 +10218,58 @@
       return shiftPhysicalSideFromCode(event?.code) || shiftPhysicalSideFromLocation(event);
     }
 
-    function applyBrowserShiftPedalEdge(edge, active) {
-      if (!edge?.profile || !edge.role) return;
-      if (edge.role === "soft") setSoftPedal(edge.profile, active, PHYSICAL_PEDAL_TRANSITION);
-      if (edge.role === "harmonic") setHarmonicPedal(edge.profile, active, PHYSICAL_PEDAL_TRANSITION);
-    }
-
-    function releaseBrowserShiftPedalEdge(side) {
-      const edge = browserShiftPedalEdges.get(side);
-      if (!edge) return false;
-      browserShiftPedalEdges.delete(side);
-      applyBrowserShiftPedalEdge(edge, false);
-      return true;
-    }
-
     function handlePhysicalShiftKeyEvent(event, active) {
       const side = resolveBrowserShiftEventSide(event);
-      if (!side) return false;
+      const role = shiftPedalRoleForSide(side);
+      if (!role) return false;
+      const profile = browserProfile();
+      if (!profileIsEnabled(profile)) return false;
       if (active) {
-        if (event?.code && shouldSuppressBrowserCode(event.code)) return false;
-        if (!browserShiftPedalEdges.has(side)) {
-          const profile = browserProfile();
-          const role = shiftPedalRoleForSide(side);
-          if (!role || !profileIsEnabled(profile)) return false;
-          const edge = { profile, role };
-          browserShiftPedalEdges.set(side, edge);
-          applyBrowserShiftPedalEdge(edge, true);
-        }
+        browserShiftDownSides.add(side);
       } else {
-        if (!releaseBrowserShiftPedalEdge(side)) return false;
+        const pedalIsActive = role === "soft" ? profile.softPedal : profile.harmonicPedal;
+        if (!browserShiftDownSides.has(side) && !pedalIsActive) return false;
+        browserShiftDownSides.delete(side);
       }
+      if (role === "soft") setSoftPedal(profile, active, PHYSICAL_PEDAL_TRANSITION);
+      if (role === "harmonic") setHarmonicPedal(profile, active, PHYSICAL_PEDAL_TRANSITION);
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation?.();
       return true;
     }
 
-    function releasePhysicalShiftPedalsOnFocusLoss() {
-      for (const side of [...browserShiftPedalEdges.keys()]) {
-        releaseBrowserShiftPedalEdge(side);
-      }
+    function interceptPhysicalShiftKeyEvent(event, active) {
+      if (!resolveBrowserShiftEventSide(event)) return false;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+      if (active && event.repeat) return true;
+      const snapshot = snapshotKeyboardEvent(event);
+      queueBrowserInputEvent(event.code, active ? "down" : "up", () => {
+        handlePhysicalShiftKeyEvent(snapshot, active);
+      });
+      return true;
     }
 
-    document.addEventListener("keydown", event => {
-      trackEdgeOctaveComboCode(event, true);
-    }, { capture: true });
+    function releasePhysicalShiftPedalsOnFocusLoss() {
+      const profile = browserProfile();
+      browserShiftDownSides.clear();
+      if (!profile) return;
+      if (profile.softPedal) setSoftPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
+      if (profile.harmonicPedal) setHarmonicPedal(profile, false, PHYSICAL_PEDAL_TRANSITION);
+    }
 
     document.addEventListener("keydown", event => {
       if (externalFunctionBassMayOwnCode(event.code)) event.preventDefault();
     }, { capture: true });
 
-    document.addEventListener("keyup", event => {
-      trackEdgeOctaveComboCode(event, false);
-    }, { capture: true });
-
     document.addEventListener("keydown", event => {
-      handlePhysicalShiftKeyEvent(event, true);
+      interceptPhysicalShiftKeyEvent(event, true);
     }, { capture: true });
 
     document.addEventListener("keyup", event => {
-      handlePhysicalShiftKeyEvent(event, false);
+      interceptPhysicalShiftKeyEvent(event, false);
     }, { capture: true });
 
     let keyboardSettingsResizeFrame = 0;
@@ -10237,11 +10294,8 @@
       stopAllVoices();
     });
 
-    window.addEventListener("keydown", event => {
-      if (shouldSuppressBrowserCode(event.code)) {
-        event.preventDefault();
-        return;
-      }
+    function processBrowserKeyDown(event) {
+      trackEdgeOctaveComboCode(event, true);
       const profile = browserProfile();
       if (profileIsEnabled(profile) && isSustainEvent(event)) {
         event.preventDefault();
@@ -10267,18 +10321,10 @@
       }
       if (event.ctrlKey || event.metaKey || event.altKey) return;
 
-      const arrowMap = {
-        ArrowUp: () => moveQToCoord({ row: qAnchor.row - 1, col: qAnchor.col }, "Q 左上"),
-        ArrowDown: () => moveQToCoord({ row: qAnchor.row + 1, col: qAnchor.col }, "Q 右下"),
-        PageUp: () => moveQToCoord({ row: qAnchor.row - 1, col: qAnchor.col + 1 }, "Q 右上"),
-        PageDown: () => moveQToCoord({ row: qAnchor.row + 1, col: qAnchor.col - 1 }, "Q 左下"),
-        ArrowRight: () => moveQBy(12, "Q +8"),
-        ArrowLeft: () => moveQBy(-12, "Q -8")
-      };
-
-      if (arrowMap[event.key]) {
+      if (Q_NAVIGATION_CODES.has(event.code)) {
         event.preventDefault();
-        arrowMap[event.key]();
+        if (window.QBoardScore?.consumeNavigationKey?.(event.code, { down: true, sourceId: profile.id })) return;
+        moveProfileQByNavigationCode(profile, event.code);
         return;
       }
 
@@ -10293,23 +10339,21 @@
       if (!coord) return;
 
       event.preventDefault();
+      if (profile.pressedCodes.has(event.code)) return;
       profile.pressedCodes.add(event.code);
       scheduleBrowserCodeStart(event.code, profile);
-    });
+    }
 
-    window.addEventListener("keyup", event => {
-      if (shouldSuppressBrowserCode(event.code)) {
-        event.preventDefault();
-        return;
-      }
+    function processBrowserKeyUp(event) {
+      trackEdgeOctaveComboCode(event, false);
       const profile = browserProfile();
       const comboUsedReleasedCode = Boolean(edgeOctaveCombo?.triggerCodes.includes(event.code));
-      if (profileIsEnabled(profile) && isSustainEvent(event)) {
+      if (isSustainEvent(event) && (profileIsEnabled(profile) || profile.sustainPedal)) {
         event.preventDefault();
         setSustainPedal(profile, false);
         return;
       }
-      if (profileIsEnabled(profile) && isEdgePedalEvent(event)) {
+      if (isEdgePedalEvent(event) && (profileIsEnabled(profile) || profile.leftEdgePedal || profile.rightEdgePedal)) {
         event.preventDefault();
         if (comboUsedReleasedCode) stopEdgeOctaveCombo(profile);
         setEdgePedal(profile, edgePedalSide(event.code), false);
@@ -10326,16 +10370,63 @@
         event.preventDefault();
         return;
       }
+      if (Q_NAVIGATION_CODES.has(event.code)) {
+        event.preventDefault();
+        window.QBoardScore?.consumeNavigationKey?.(event.code, { down: false, sourceId: profile.id });
+        return;
+      }
       if (releaseBrowserBassCode(event.code)) {
         event.preventDefault();
         return;
       }
-      if (profileIsEnabled(profile) && coordForProfileCode(profile, event.code)) {
+      if (profile.pressedCodes.has(event.code) || coordForProfileCode(profile, event.code)) {
         event.preventDefault();
         profile.pressedCodes.delete(event.code);
         cancelPendingBrowserCode(event.code);
         releaseVoicePrefixForProfile(`computer-${profile.id}-${event.code}`, profile);
       }
+    }
+
+    function isEdgeOctaveComboTriggerCode(code) {
+      return ["Tab", "Backslash", "Digit1", "Backspace"].includes(code);
+    }
+
+    function browserKeyDownCanHandle(event) {
+      const profile = browserProfile();
+      if (profileIsEnabled(profile) && (isSustainEvent(event) || isEdgePedalEvent(event))) return true;
+      if (isTypingTarget(event.target)) return false;
+      if (isEdgeOctaveComboTriggerCode(event.code)) return true;
+      if (isModifierIntervalShortcutCode(event.code)) return true;
+      if (event.ctrlKey || event.metaKey || event.altKey) return false;
+      if (Q_NAVIGATION_CODES.has(event.code)) return true;
+      if (bassClaimsBrowserCode(event.code)) return true;
+      return profileIsEnabled(profile) && Boolean(coordForProfileCode(profile, event.code));
+    }
+
+    function browserKeyUpCanHandle(event) {
+      const profile = browserProfile();
+      if (isSustainEvent(event) && (profileIsEnabled(profile) || profile.sustainPedal)) return true;
+      if (isEdgePedalEvent(event) && (profileIsEnabled(profile) || profile.leftEdgePedal || profile.rightEdgePedal)) return true;
+      if (isTypingTarget(event.target)) return false;
+      if (isEdgeOctaveComboTriggerCode(event.code) || edgeOctaveCombo?.triggerCodes.includes(event.code)) return true;
+      if (isModifierIntervalShortcutCode(event.code) || Q_NAVIGATION_CODES.has(event.code)) return true;
+      if (activeBrowserBassCodes.has(event.code) || pendingBrowserBassStarts.has(event.code) || bassClaimsBrowserCode(event.code)) return true;
+      return profile.pressedCodes.has(event.code) || Boolean(coordForProfileCode(profile, event.code));
+    }
+
+    window.addEventListener("keydown", event => {
+      if (!browserKeyDownCanHandle(event)) return;
+      event.preventDefault();
+      if (event.repeat) return;
+      const snapshot = snapshotKeyboardEvent(event);
+      queueBrowserInputEvent(event.code, "down", () => processBrowserKeyDown(snapshot));
+    });
+
+    window.addEventListener("keyup", event => {
+      if (!browserKeyUpCanHandle(event)) return;
+      event.preventDefault();
+      const snapshot = snapshotKeyboardEvent(event);
+      queueBrowserInputEvent(event.code, "up", () => processBrowserKeyUp(snapshot));
     });
 
     els.centerView.addEventListener("click", centerKeyboard);
@@ -10355,6 +10446,7 @@
       renderScaleStaff();
       renderBassDock();
       updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
+      document.dispatchEvent(new CustomEvent("qboard:language-change", { detail: { language: currentLanguage } }));
     });
 
     els.profileRows.addEventListener("click", event => {
@@ -10414,13 +10506,6 @@
         addHidKeyboard();
       } else if (action === "toggleBassKeyMode") {
         withBassLayer(profile, () => setBassKeyMode(bassUsesFunctionKeys() ? "digits" : "function"));
-      } else if (action === "togglePointerMode" && profile === pointerProfile) {
-        pointerProfile.glissandoEnabled = !pointerGlissandoEnabled();
-        clearGlissandoStates();
-        stopPointerVoices();
-        syncPointerInteractionMode();
-        renderMappingProfileOptions();
-        scheduleSaveSettings();
       } else if (action === "toggleEdgeMirror") {
         setEdgeMirrorSetting(!edgeMirrorActive(), { viewAnchor });
       }
@@ -10840,6 +10925,41 @@
     els.vibratoPad.addEventListener("pointerleave", () => setManualBend(0));
     els.vibratoPad.addEventListener("pointercancel", () => setManualBend(0));
 
+    let storedManualHeight = 0;
+    try {
+      storedManualHeight = Number(localStorage.getItem("qboard-manual-height"));
+    } catch (_) { /* Keep the default panel heights. */ }
+    let settingsPanelHeight = Math.max(180, Math.round(els.controls.getBoundingClientRect().height));
+    let manualPanelHeight = Number.isFinite(storedManualHeight) && storedManualHeight >= 180
+      ? storedManualHeight
+      : settingsPanelHeight;
+    els.controls.dataset.settingsHeight = String(settingsPanelHeight);
+    function applyMenuPanelHeight(panel) {
+      if (panel === "manual") {
+        els.controls.style.height = `${manualPanelHeight}px`;
+        return;
+      }
+      els.controls.style.removeProperty("height");
+      settingsPanelHeight = Math.max(180, Math.round(els.controls.getBoundingClientRect().height));
+      els.controls.dataset.settingsHeight = String(settingsPanelHeight);
+    }
+    applyMenuPanelHeight(activeMenuPanel());
+    let controlsHeightSaveTimer = 0;
+    new ResizeObserver(() => {
+      if (els.controls.classList.contains("is-collapsed") || document.querySelector(".app")?.classList.contains("is-score-mode")) return;
+      const panel = mobileLayoutActive() ? activeMobilePanel() : activeMenuPanel();
+      const height = Math.round(els.controls.getBoundingClientRect().height);
+      if (height < 180) return;
+      if (panel !== "manual") {
+        settingsPanelHeight = height;
+        els.controls.dataset.settingsHeight = String(height);
+        return;
+      }
+      manualPanelHeight = height;
+      window.clearTimeout(controlsHeightSaveTimer);
+      controlsHeightSaveTimer = window.setTimeout(() => { try { localStorage.setItem("qboard-manual-height", String(height)); } catch (_) { /* UI sizing can remain session-only. */ } }, 180);
+    }).observe(els.controls);
+
     els.menuTabs.addEventListener("click", event => {
       const mobilePanelButton = event.target.closest("[data-mobile-panel]");
       if (mobilePanelButton && mobileLayoutActive()) {
@@ -10851,6 +10971,7 @@
       const panelButton = event.target.closest("[data-menu-panel]");
       if (panelButton) {
         releaseControlFocus(event);
+        if (window.QBoardScore?.isOpen?.()) window.QBoardScore.close();
         showMenuPanel(panelButton.dataset.menuPanel);
         return;
       }
@@ -10877,33 +10998,31 @@
       changeStaffZoom(0.15);
     });
 
-    els.keyboardZoomOut.addEventListener("click", event => {
-      releaseControlFocus(event);
-      setKeyboardZoom(keyboardZoom - KEYBOARD_ZOOM_STEP);
-    });
+    let syncingScoreKey = false;
 
-    els.keyboardZoomIn.addEventListener("click", event => {
-      releaseControlFocus(event);
-      setKeyboardZoom(keyboardZoom + KEYBOARD_ZOOM_STEP);
-    });
+    function refreshKeyboardKeyContext() {
+      scheduleRender();
+      renderMappingProfileOptions();
+      renderScaleStaff();
+      renderBassDock();
+      refreshBassConfigIfOpen();
+      updateBassVoices();
+    }
+
+    function pushKeyboardKeyToScore() {
+      if (syncingScoreKey || !window.QBoardScore?.isOpen?.()) return;
+      window.QBoardScore.setCurrentMeasureKey?.({ fifths: scoreKeyFifths(), mode: els.scaleMode.value }, { fromHost: true });
+    }
 
     els.tonicSelect.addEventListener("change", event => {
       releaseControlFocus(event);
-      scheduleRender();
-      renderMappingProfileOptions();
-      renderScaleStaff();
-      renderBassDock();
-      refreshBassConfigIfOpen();
-      updateBassVoices();
+      pushKeyboardKeyToScore();
+      refreshKeyboardKeyContext();
     });
     els.scaleMode.addEventListener("change", event => {
       releaseControlFocus(event);
-      scheduleRender();
-      renderMappingProfileOptions();
-      renderScaleStaff();
-      renderBassDock();
-      refreshBassConfigIfOpen();
-      updateBassVoices();
+      pushKeyboardKeyToScore();
+      refreshKeyboardKeyContext();
     });
 
     if ("hid" in navigator) {
@@ -10924,6 +11043,227 @@
       });
     }
 
+    const scorePlaybackVoices = new Map();
+    const scorePlaybackDrums = new Map();
+    const scoreMetronomeClicks = new Set();
+
+    function playScorePercussion(midi, voiceId, volume = 0.8, part = null, options = {}) {
+      const context = ensureAudio();
+      const now = Math.max(context.currentTime, Number(options.when) || context.currentTime);
+      const output = context.createGain();
+      const level = Math.max(0.02, Math.min(1, Number(volume) || 0.8));
+      const sources = [];
+      output.connect(context.destination);
+      if (midi === 35 || midi === 36) {
+        const osc = context.createOscillator();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(48, now + 0.16);
+        output.gain.setValueAtTime(level * 0.72, now);
+        output.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+        osc.connect(output); osc.start(now); osc.stop(now + 0.26); sources.push(osc);
+      } else {
+        const noise = createNoiseSource(context, 0.6);
+        const filter = context.createBiquadFilter();
+        filter.type = midi >= 42 && midi <= 46 ? "highpass" : "bandpass";
+        filter.frequency.setValueAtTime(midi >= 42 && midi <= 46 ? 6200 : 1800, now);
+        filter.Q.setValueAtTime(midi >= 42 && midi <= 46 ? 0.8 : 1.25, now);
+        const duration = midi === 46 ? 0.42 : midi >= 42 && midi <= 44 ? 0.1 : 0.22;
+        output.gain.setValueAtTime(level * (midi >= 42 && midi <= 46 ? 0.24 : 0.42), now);
+        output.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        noise.connect(filter); filter.connect(output); noise.start(now); noise.stop(now + duration + 0.03); sources.push(noise);
+      }
+      scorePlaybackDrums.set(voiceId, { output, sources, midi, part, cleanupTimer: 0 });
+      emitQBoardInput("qboard:note-on", {
+        origin: "score-playback", source: "score-playback", sourceType: "percussion", sourceId: part?.id,
+        profileId: part?.id, partId: part?.id, partName: part?.name, voiceId, midi, notationMidi: midi,
+        velocity: Math.round(Math.max(1, Math.min(127, volume * 127))), instrument: "percussion"
+      });
+      scorePlaybackDrums.get(voiceId).cleanupTimer = window.setTimeout(() => stopScorePercussion(voiceId), Math.max(0, now - context.currentTime + 1) * 1000);
+    }
+
+    function stopScorePercussion(voiceId, options = {}) {
+      const drum = scorePlaybackDrums.get(voiceId);
+      if (!drum || !audioContext) return false;
+      const now = Math.max(audioContext.currentTime, Number(options.when) || audioContext.currentTime);
+      drum.output.gain.cancelScheduledValues(now);
+      drum.output.gain.setTargetAtTime(0.0001, now, Math.max(0.005, Number(options.releaseSeconds) || 0.015));
+      emitQBoardInput("qboard:note-off", {
+        origin: "score-playback", source: "score-playback", sourceType: "percussion", sourceId: drum.part?.id,
+        profileId: drum.part?.id, partId: drum.part?.id, partName: drum.part?.name, voiceId, midi: drum.midi, notationMidi: drum.midi,
+        instrument: "percussion"
+      });
+      window.clearTimeout(drum.cleanupTimer);
+      if (now <= audioContext.currentTime + 0.001) scorePlaybackDrums.delete(voiceId);
+      else drum.cleanupTimer = window.setTimeout(() => scorePlaybackDrums.delete(voiceId), (now - audioContext.currentTime + 0.2) * 1000);
+      return true;
+    }
+
+    function scoreKeyFifths() {
+      const tonic = selectedTonic();
+      const majorBase = { C: 0, D: 2, E: 4, F: -1, G: 1, A: 3, B: 5 };
+      const minorBase = { C: -3, D: -1, E: 1, F: -4, G: -2, A: 0, B: 2 };
+      const base = els.scaleMode.value === "minor" ? minorBase : majorBase;
+      return (base[tonic.letter] || 0) + tonic.accidental * 7;
+    }
+
+    function scoreProfileSnapshot(profile) {
+      const transposition = instrumentTranspositions[profile.instrument] || {};
+      return {
+        id: profile.id,
+        label: profile.label,
+        short: profile.short,
+        source: profile.source,
+        enabled: profile.enabled !== false,
+        instrument: profile.instrument,
+        outputShift: Number(profile.outputShift) || 0,
+        volume: profileVolume(profile),
+        fadeSustainTime: keyboardFadeTime(profile),
+        colorIndex: mod(Number(profile.colorIndex) || 0, 12),
+        transposition: {
+          chromatic: Number(transposition.soundingOffset) || 0,
+          diatonic: Number(transposition.diatonicOffset) || 0,
+          octave: 0
+        }
+      };
+    }
+
+    window.QBoardScoreHost = {
+      language: () => currentLanguage,
+      instrumentOptions: () => instrumentOptions.map(([id, label]) => ({ id, label })),
+      partHue: colorIndex => hueForPitchClass(colorIndex),
+      enableScoreSource: sourceProfileId => {
+        const profile = profileById(sourceProfileId);
+        if (!profile) return false;
+        if (!profileIsEnabled(profile)) setProfileEnabled(profile, true);
+        if (profile.source === "bass") renderMappingProfileOptions();
+        return true;
+      },
+      syncScoreKey: key => {
+        const mode = key?.mode === "minor" ? "minor" : "major";
+        const tonicName = String(key?.tonic || "C").replace(/x/g, "##");
+        const match = tonicName.match(/^([A-G])((?:#{1,2}|b{1,2})?)$/);
+        const suffix = match?.[2] || "";
+        const accidental = suffix.startsWith("#") ? suffix.length : suffix.startsWith("b") ? -suffix.length : 0;
+        const tonicValue = `${match?.[1] || "C"}:${accidental}`;
+        syncingScoreKey = true;
+        if (els.tonicSelect.querySelector(`option[value="${tonicValue}"]`)) els.tonicSelect.value = tonicValue;
+        els.scaleMode.value = mode;
+        refreshKeyboardKeyContext();
+        syncingScoreKey = false;
+      },
+      snapshotProfiles: () => {
+        const tonic = selectedTonic();
+        const tonicName = noteNameFromSpelling(tonic);
+        return {
+          tempo: metronomeBpm,
+          time: { beats: 4, beatType: 4 },
+          key: { fifths: scoreKeyFifths(), mode: els.scaleMode.value, tonic: tonicName },
+          sustainTime: globalSustainTime(),
+          colorBase: hueForPitchClass(0),
+          profiles: mappingProfiles.map(scoreProfileSnapshot),
+          basses: allBassLayers().map(layer => {
+            const input = bassLayerInputProfile(layer);
+            const transposition = instrumentTranspositions[layer.instrument] || {};
+            return {
+              id: layer.id,
+              label: layer === mainBassProfile ? tr("mainBassPart") : tr("externalBassPart", { name: input.label }),
+              enabled: Boolean(layer.enabled),
+              instrument: layer.instrument,
+              outputShift: Number(layer.outputShift) || 0,
+              transposition: {
+                chromatic: Number(transposition.soundingOffset) || 0,
+                diatonic: Number(transposition.diatonicOffset) || 0,
+                octave: 0
+              },
+              volume: profileVolume(layer),
+              fadeTime: clampFloat(layer.fadeTime, DEFAULT_BASS_FADE_TIME, 0, MAX_BASS_FADE_TIME),
+              colorIndex: mod(Number(input.colorIndex) || 0, 12),
+              inputProfileId: layer.inputProfileId
+            };
+          })
+        };
+      },
+      prepareScoreAudio: async () => {
+        const context = ensureAudio();
+        if (context.state === "suspended") await context.resume();
+        const stamp = context.getOutputTimestamp?.();
+        return {
+          currentTime: context.currentTime,
+          audibleTime: stamp ? stamp.contextTime + (performance.now() - stamp.performanceTime) / 1000 : context.currentTime - Number(context.outputLatency || 0),
+          baseLatency: Number(context.baseLatency || 0),
+          outputLatency: Number(context.outputLatency || 0)
+        };
+      },
+      getScoreAudioClock: () => {
+        const context = ensureAudio();
+        const stamp = context.getOutputTimestamp?.();
+        return {
+          currentTime: context.currentTime,
+          audibleTime: stamp ? stamp.contextTime + (performance.now() - stamp.performanceTime) / 1000 : context.currentTime - Number(context.outputLatency || 0),
+          baseLatency: Number(context.baseLatency || 0),
+          outputLatency: Number(context.outputLatency || 0)
+        };
+      },
+      audioTimeToPerformance: value => {
+        const context = ensureAudio();
+        const stamp = context.getOutputTimestamp?.();
+        return stamp ? stamp.performanceTime + (Number(value) - stamp.contextTime) * 1000 : performance.now() + (Number(value) - context.currentTime) * 1000;
+      },
+      playScoreNote: ({ midi, notationMidi, part, voiceId, velocity = 92, when, origin = "score-playback" }) => {
+        if (part?.notationType === "percussion") {
+          playScorePercussion(Math.round(midi), voiceId, (part?.volume ?? 0.8) * velocity / 127, part, { when });
+          return;
+        }
+        const target = sourceFromMidi(midi, part?.name || "Score");
+        const profile = {
+          id: `score-playback-${part?.id || "part"}`,
+          label: part?.name || "Score",
+          short: part?.shortName || "Sc",
+          source: "score-playback",
+          enabled: true,
+          instrument: part?.instrumentId || "piano",
+          outputShift: 0,
+          volume: Number.isFinite(part?.volume) ? part.volume : 0.8,
+          longVibrato: false,
+          sustainEnabled: true,
+          sustainPedal: false,
+          softPedal: false,
+          harmonicPedal: false
+        };
+        startVoice(target, voiceId, 0, profile, { velocity, notationMidi, origin, when, holdUntilRelease: true });
+        scorePlaybackVoices.set(voiceId, { id: voiceKey(target, voiceId), partId: part?.id, cleanupTimer: 0 });
+      },
+      stopScoreNote: ({ voiceId, when, releaseSeconds = 0.08, sustained = false }) => {
+        if (stopScorePercussion(voiceId, { when, releaseSeconds })) return;
+        const tracked = scorePlaybackVoices.get(voiceId);
+        if (!tracked) return;
+        stopVoice(tracked.id, releaseSeconds, { when, keepTracked: true, sustained });
+        window.clearTimeout(tracked.cleanupTimer);
+        const delay = Math.max(0, Number(when) - audioContext.currentTime + Number(releaseSeconds)) * 1000 + 120;
+        tracked.cleanupTimer = window.setTimeout(() => scorePlaybackVoices.delete(voiceId), delay);
+      },
+      releaseScoreSustain: ({ partId, when, releaseSeconds = 0.2 }) => {
+        scorePlaybackVoices.forEach(tracked => {
+          const voice = voices.get(tracked.id);
+          if (tracked.partId === partId && voice?.sustained) stopVoice(tracked.id, releaseSeconds, { when, keepTracked: true, sustained: false });
+        });
+      },
+      stopAllScoreNotes: ({ releaseSeconds = 0.03 } = {}) => {
+        scorePlaybackVoices.forEach(tracked => {
+          window.clearTimeout(tracked.cleanupTimer);
+          stopVoice(tracked.id, releaseSeconds);
+        });
+        scorePlaybackVoices.clear();
+        [...scorePlaybackDrums.keys()].forEach(voiceId => stopScorePercussion(voiceId, { releaseSeconds }));
+      },
+      cancelScoreMetronome: () => {
+        scoreMetronomeClicks.forEach(item => { try { item.osc.stop(); } catch (_) { /* The click may already have ended. */ } });
+        scoreMetronomeClicks.clear();
+      },
+      metronomeClick: options => playMetronomeClick({ ...(options || {}), score: true })
+    };
+
     populateTonicSelect();
     loadStoredQBoardSettings();
     if (enabledBridgeProfiles().length) ensureBridgeSocket();
@@ -10937,12 +11277,15 @@
     updateMetronomeDisplay();
     syncStaffVisibility();
     syncShortcutVisibility();
-    syncPointerInteractionMode();
-    setKeyboardZoom(keyboardZoom, { preserveCenter: false, persist: false });
     renderKeyboard({ keepScroll: false });
     renderScaleStaff();
     renderBassDock();
     updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
   </script>
+  <script src="vendor/vexflow-4.2.5.js"></script>
+  <script src="score/qboard-score-core.js?v=20260826-06"></script>
+  <script src="score/qboard-score-print.js?v=20260826-06"></script>
+  <script src="score/qboard-score.js?v=20260826-06"></script>
+  <script>window.QBoardScore?.init({ host: window.QBoardScoreHost });</script>
 </body>
 </html>
