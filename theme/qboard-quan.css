@@ -1,0 +1,772 @@
+@scope (html[data-qboard-theme="quan"]) {
+:scope {
+  --paper: #f4f7fb;
+  --paper-warm: #edf0ea;
+  --wash: #e9eef4;
+  --ink: #17191f;
+  --muted: #5c6270;
+  --line: #9da8b5;
+  --line-dark: #6f7885;
+  --panel: #ffffff;
+  --panel-2: var(--wash);
+  --accent: #007f78;
+  --teal: #007f78;
+  --acid: #c7ff38;
+  --red: #f04c32;
+  --blue: #2c78c8;
+  --violet: #8759c4;
+  --sans: Inter, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --condensed: "Arial Narrow", "Roboto Condensed", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --bg: var(--paper);
+  --stage: var(--paper-warm);
+  font-family: var(--sans);
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--sans);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  z-index: 100;
+  inset: 0 0 auto;
+  height: 3px;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--red), #d39a28 24%, var(--acid) 43%, var(--teal) 63%, var(--blue) 82%, var(--violet));
+}
+
+::selection {
+  color: var(--ink);
+  background: var(--acid);
+}
+
+:is(button, input, select, textarea, [tabindex]):focus-visible {
+  outline-color: var(--blue);
+}
+
+.topbar {
+  border-bottom-color: var(--ink);
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  box-shadow: none;
+}
+
+.brand {
+  font-family: var(--condensed);
+  font-weight: 900;
+}
+
+.mark {
+  border: 1px solid var(--ink);
+  background:
+    radial-gradient(circle, var(--paper) 0 21%, transparent 23%),
+    conic-gradient(from calc(10deg + var(--logo-rotation)), #c93c3c, #d39a28, var(--acid), #00957f, var(--blue), var(--violet), #c93c3c);
+  box-shadow: none;
+  transition: transform 0.45s cubic-bezier(.2, .8, .2, 1);
+}
+
+.brand:hover .mark {
+  transform: rotate(130deg);
+}
+
+.menu-tabs {
+  gap: 0;
+  align-self: stretch;
+  align-items: stretch;
+  border-inline-start: 1px solid var(--ink);
+}
+
+.menu-tab {
+  border: 0;
+  border-inline-end: 1px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--mono);
+  transition: background 0.18s, color 0.18s;
+}
+
+.menu-tab:hover {
+  color: var(--ink);
+  background: var(--acid);
+}
+
+.menu-tab.is-active,
+.menu-tab.menu-collapse.is-active {
+  border-color: var(--ink);
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.menu-tab.menu-collapse {
+  border-radius: 0;
+  background: transparent;
+}
+
+.app-tagline,
+.readout,
+.readout strong,
+.language-picker {
+  font-family: var(--mono);
+}
+
+.language-picker,
+.top-staff-toggle,
+.top-shortcuts-toggle,
+.readout strong {
+  border-color: var(--ink);
+  border-radius: 0;
+}
+
+.language-picker {
+  background: var(--panel);
+}
+
+.flag-badge {
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px rgba(23, 25, 31, 0.32);
+}
+
+.readout strong {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+}
+
+.controls {
+  border-bottom-color: var(--ink);
+  background: var(--paper);
+}
+
+.control-section {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--panel);
+}
+
+.section-heading,
+.keyboard-section-head,
+.group-label,
+.control label,
+.shortcut-key,
+.profile-name,
+.profile-volume output,
+.bridge-panel-title,
+.bridge-panel-status,
+.manual-body summary,
+.bass-config-title,
+.bass-config-section-title {
+  font-family: var(--mono);
+}
+
+.section-heading {
+  border-bottom: 0;
+  color: var(--ink);
+  box-shadow: inset 0 -1px 0 var(--ink);
+}
+
+.shortcut-item {
+  border-color: var(--line);
+  border-radius: 0;
+  background: var(--paper);
+}
+
+.shortcut-key {
+  border-color: var(--ink);
+  border-bottom-width: 1px;
+  border-radius: 0;
+  background: var(--wash);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+select,
+input[type="number"],
+input[type="text"],
+input[type="range"] {
+  border-color: var(--line-dark);
+  border-radius: 0;
+  background-color: var(--panel);
+}
+
+input[type="checkbox"] {
+  accent-color: var(--teal);
+}
+
+.command,
+.toggle,
+.color-step,
+.metro-step,
+.metro-display,
+.bridge-head-button,
+.add-hid-button,
+.pedal-mirror-toggle,
+.bridge-panel-button,
+.profile-color-button,
+.bass-key-mode-button,
+.bass-settings-button,
+.bass-touch-lock-button,
+.touch-vibrato-pan-button,
+.bass-config-reset,
+.bass-config-close,
+.options-reset-button,
+.scale-zoom {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: none;
+  font-family: var(--mono);
+  transition: transform 0.18s, box-shadow 0.18s, background 0.18s, color 0.18s;
+}
+
+:is(.command, .toggle, .color-step, .metro-step, .metro-display, .bridge-head-button, .add-hid-button, .pedal-mirror-toggle, .bridge-panel-button, .bass-key-mode-button, .bass-settings-button, .bass-touch-lock-button, .touch-vibrato-pan-button, .bass-config-reset, .bass-config-close, .options-reset-button, .scale-zoom):hover:not(:disabled) {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--acid);
+  box-shadow: 2px 2px 0 var(--ink);
+  transform: translate(-1px, -1px);
+}
+
+.command.primary {
+  border-color: var(--ink);
+  background: var(--acid);
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.toggle:has(input:checked),
+.metro-display.is-active,
+.pedal-toggle.is-active,
+.bass-settings-button.is-open,
+.bass-touch-lock-button.is-active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.color-swatch,
+.profile-color-button {
+  border-color: var(--ink);
+  border-radius: 0;
+  box-shadow: inset 0 0 0 2px var(--paper);
+}
+
+.profile-color-button {
+  background: hsl(var(--profile-hue) 62% 46%);
+}
+
+@supports (color: oklch(60% 0.1 30)) {
+  .profile-color-button {
+    background: oklch(63% 0.11 var(--profile-hue));
+  }
+}
+
+.vibrato-pad {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--wash);
+  font-family: var(--mono);
+}
+
+.vibrato-pad::after {
+  border: 1px solid var(--ink);
+  background: var(--acid);
+  box-shadow: none;
+}
+
+#harmonicPedalToggle {
+  padding-inline: 2px;
+}
+
+.keyboard-section,
+.keyboard-layout {
+  background: var(--panel);
+}
+
+.bridge-panel,
+.profile-row,
+.profile-action-dialog,
+.bridge-directory-dialog {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--panel);
+}
+
+.bridge-panel,
+.profile-action-dialog,
+.bridge-directory-dialog {
+  box-shadow: 5px 5px 0 color-mix(in srgb, var(--ink) 20%, transparent);
+}
+
+.profile-row[data-profile-color] {
+  border-inline-start: 4px solid hsl(var(--profile-hue) 62% 46%);
+}
+
+.profile-row.is-pointer {
+  border-style: dashed;
+  background: var(--paper);
+}
+
+.profile-row.is-bass,
+.profile-row.is-external-bass {
+  border-style: dashed;
+  background: color-mix(in srgb, hsl(var(--profile-hue) 62% 46%) 8%, var(--panel));
+}
+
+.profile-name,
+.profile-static-name {
+  border-radius: 0;
+}
+
+.manual-body details {
+  border-bottom-color: var(--ink);
+}
+
+.stage-wrap {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--ink) 9%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in srgb, var(--ink) 8%, transparent) 1px, transparent 1px),
+    var(--paper-warm);
+  background-size: 28px 28px;
+  box-shadow: inset 0 1px 0 var(--ink);
+}
+
+.stage-wrap::before {
+  content: "";
+  position: absolute;
+  z-index: 31;
+  inset: 0 0 auto;
+  height: 3px;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--red), #d39a28 24%, var(--acid) 43%, var(--teal) 63%, var(--blue) 82%, var(--violet));
+}
+
+.keyboard-scroll {
+  scrollbar-color: var(--ink) var(--wash);
+}
+
+.row-label {
+  color: var(--muted);
+  font-family: var(--mono);
+  opacity: 1;
+}
+
+.keyboard .key {
+  --key-stroke: var(--ink);
+  font-family: var(--sans);
+  filter: none;
+}
+
+.keyboard .key::before {
+  background: var(--ink);
+  transition: filter 0.18s;
+}
+
+.keyboard .key:hover {
+  transform: translate(-2px, -2px);
+  filter: none;
+}
+
+.keyboard .key:hover::before {
+  filter: drop-shadow(3px 3px 0 var(--ink));
+}
+
+.keyboard .key.is-active {
+  --key-stroke: var(--ink);
+  transform: translate(2px, 2px) scale(0.97);
+  filter: brightness(0.88);
+}
+
+.keyboard .key.is-active::before {
+  filter: none;
+}
+
+.keyboard .key.is-selected {
+  --key-outline: var(--acid);
+}
+
+.keyboard .key.is-q-anchor {
+  --key-outline: var(--blue);
+}
+
+.note {
+  font-family: var(--condensed);
+  font-weight: 900;
+  text-shadow: none;
+}
+
+.octave,
+.key-map {
+  font-family: var(--mono);
+}
+
+.key-map,
+.key-map.is-bass-reserved,
+.key-map.is-edge-octave-trigger {
+  border-color: var(--ink);
+  border-radius: 0;
+  box-shadow: 1px 1px 0 color-mix(in srgb, var(--ink) 24%, transparent);
+}
+
+.key-map.is-edge-octave-trigger {
+  background: var(--acid);
+  color: var(--ink);
+}
+
+.bass-dock {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  box-shadow: 6px 6px 0 color-mix(in srgb, var(--ink) 24%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.bass-source-frame {
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: color-mix(in srgb, hsl(var(--profile-hue) 62% 46%) 10%, var(--panel));
+  box-shadow: inset 5px 0 0 hsl(var(--profile-hue) 62% 46%);
+}
+
+html[dir="rtl"] .bass-source-frame {
+  box-shadow: inset -5px 0 0 hsl(var(--profile-hue) 62% 46%);
+}
+
+.bass-source-label {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mono);
+}
+
+.bass-dock-hint,
+.bass-chord-name,
+.bass-seventh-name,
+.bass-button,
+.bass-seventh-button {
+  font-family: var(--mono);
+}
+
+.bass-button,
+.bass-seventh-button {
+  border-color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  text-shadow: none;
+  transition: transform 0.12s, box-shadow 0.12s, filter 0.12s;
+}
+
+.bass-button:hover,
+.bass-seventh-button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.bass-button.is-active,
+.bass-seventh-button.is-active {
+  box-shadow: none;
+}
+
+.bass-config-popover {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--paper);
+  box-shadow: 7px 7px 0 color-mix(in srgb, var(--ink) 26%, transparent);
+  backdrop-filter: none;
+}
+
+.bass-config-head {
+  border-bottom-color: var(--ink);
+  background: var(--wash);
+}
+
+.bass-config-card {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--panel);
+}
+
+.bass-config-field select {
+  border-color: var(--line-dark);
+  border-radius: 0;
+  background: var(--panel);
+}
+
+/* Score editor: the same paper, grid, and command language. */
+.qscore-workspace {
+  border-bottom-color: var(--ink);
+  background: var(--wash);
+  color: var(--ink);
+  font-family: var(--sans);
+}
+
+.qscore-height-divider {
+  border-color: var(--ink);
+  background: var(--acid);
+}
+
+.qscore-menubar,
+.qscore-palette,
+.qscore-statusbar,
+.qscore-transport {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+
+.qscore-palette {
+  background: var(--wash);
+}
+
+.qscore-toolbar-group {
+  border-inline-end-color: var(--ink);
+}
+
+.qscore-icon,
+.qscore-command,
+.qscore-segment,
+.qscore-part-action,
+.qscore-duration-button {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: none;
+  font-family: var(--mono);
+  transition: transform 0.18s, box-shadow 0.18s, background 0.18s, color 0.18s;
+}
+
+.qscore-duration-button,
+.qscore-rest-button {
+  font-family: "Bravura", "Noto Music", "Segoe UI Symbol", serif;
+}
+
+:is(.qscore-icon, .qscore-command, .qscore-part-action, .qscore-duration-button):hover:not(:disabled) {
+  border-color: var(--ink);
+  outline: 0;
+  color: var(--ink);
+  background: var(--acid);
+  box-shadow: 2px 2px 0 var(--ink);
+  transform: translate(-1px, -1px);
+}
+
+.qscore-command > .qscore-icon {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  font-family: inherit;
+}
+
+.qscore-icon.is-active,
+.qscore-command.is-active,
+.qscore-segment.is-active,
+.qscore-duration-button.is-active,
+.qscore-part-action.is-active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.qscore-record.is-active,
+.qscore-record.is-recording {
+  border-color: var(--ink);
+  background: var(--red);
+}
+
+.qscore-field,
+.qscore-palette-label,
+.qscore-panel-head,
+.qscore-part-select,
+.qscore-part-copy,
+.qscore-position-readout,
+.qscore-current-duration,
+.qscore-measure-card,
+.qscore-inspector-section h3,
+.qscore-dialog-head,
+.qscore-dialog-actions {
+  font-family: var(--mono);
+}
+
+.qscore-field input,
+.qscore-field select,
+.qscore-inspector input,
+.qscore-inspector select,
+.qscore-inspector textarea,
+.qscore-part-select,
+.qscore-dialog-body input,
+.qscore-dialog-body select {
+  border-color: var(--line-dark);
+  border-radius: 0;
+  background: var(--panel);
+}
+
+.qscore-sidebar,
+.qscore-inspector {
+  background: var(--paper);
+}
+
+.qscore-sidebar,
+.qscore-inspector,
+.qscore-panel-head,
+.qscore-part-track-spacer,
+.qscore-part,
+.qscore-measure-strip,
+.qscore-measure-card,
+.qscore-transport,
+.qscore-inspector-section {
+  border-color: var(--ink);
+}
+
+.qscore-panel-head {
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+}
+
+.qscore-part-track-spacer,
+.qscore-measure-strip {
+  background: var(--wash);
+  box-shadow: none;
+}
+
+.qscore-part {
+  background: var(--panel);
+}
+
+.qscore-part.is-active {
+  background: color-mix(in srgb, var(--acid) 35%, var(--panel));
+  box-shadow: inset 4px 0 0 var(--teal);
+}
+
+.qscore-part.is-drop-before {
+  box-shadow: inset 0 3px 0 var(--acid);
+}
+
+.qscore-part.is-drop-after {
+  box-shadow: inset 0 -3px 0 var(--acid);
+}
+
+.qscore-part-color,
+.qscore-part-drag,
+.qscore-clipboard-item {
+  border-radius: 0;
+}
+
+.qscore-viewport {
+  background: var(--wash);
+  scrollbar-color: var(--ink) var(--wash);
+}
+
+.qscore-page {
+  background: var(--panel);
+}
+
+.qscore-measure-card {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.qscore-measure-card:hover,
+.qscore-measure-card:focus-visible {
+  background: color-mix(in srgb, var(--acid) 36%, var(--paper));
+  outline-color: var(--blue);
+}
+
+.qscore-measure-card.is-active {
+  border-bottom-color: var(--teal);
+  background: color-mix(in srgb, var(--acid) 24%, var(--paper));
+}
+
+.qscore-measure-card.is-range-selected {
+  background: color-mix(in srgb, var(--acid) 44%, var(--paper));
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.qscore-current-duration {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--ink);
+}
+
+.qscore-transport > [data-score-action="play"],
+.qscore-transport > [data-score-action="stop"],
+.qscore-transport > [data-score-action="record"] {
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: var(--paper);
+  box-shadow: none;
+}
+
+.qscore-transport > [data-score-action="play"]:hover,
+.qscore-transport > [data-score-action="stop"]:hover {
+  color: var(--ink);
+  background: var(--acid);
+}
+
+.qscore-timeline-track {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--wash);
+}
+
+.qscore-timeline-window {
+  border-color: var(--teal);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--acid) 22%, transparent);
+}
+
+.qscore-timeline-window > [data-score-timeline-resize] {
+  border-color: var(--ink);
+  background: var(--acid);
+}
+
+.qscore-selection-layer rect,
+.qscore-segment {
+  fill: color-mix(in srgb, var(--acid) 24%, transparent);
+  stroke: var(--teal);
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--acid) 24%, transparent);
+}
+
+.qscore-dialog {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--panel);
+  box-shadow: 7px 7px 0 color-mix(in srgb, var(--ink) 28%, transparent);
+}
+
+.qscore-dialog-head,
+.qscore-dialog-actions {
+  border-color: var(--ink);
+  background: var(--wash);
+}
+
+.qscore-clipboard-item {
+  border-color: var(--line-dark);
+  background: var(--panel);
+}
+
+.qscore-clipboard-item.is-selected {
+  border-color: var(--ink);
+  background: var(--acid);
+  color: var(--ink);
+}
+
+.qscore-toast {
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: var(--ink);
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--ink) 24%, transparent);
+  font-family: var(--mono);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+}

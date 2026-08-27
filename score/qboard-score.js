@@ -846,6 +846,8 @@
       });
     }
     if (event.dots && VF.Dot?.buildAndAttach) for (let index = 0; index < event.dots; index += 1) VF.Dot.buildAndAttach([note], { all: true });
+    if (event.dots === 1) note.applyTickMultiplier?.(3, 2);
+    else if (event.dots === 2) note.applyTickMultiplier?.(7, 4);
     if (event.articulations?.length && VF.Articulation) event.articulations.forEach(codeValue => note.addModifier(new VF.Articulation(codeValue).setPosition(VF.Modifier.Position.ABOVE), 0));
     if (event.ornament && VF.Ornament) {
       const ornament = ({ "trill-mark": "tr", turn: "turn", mordent: "mordent" })[event.ornament] || event.ornament;
@@ -860,9 +862,31 @@
     return note;
   }
 
-  function fillMeasureEvents(part, measureIndex, staff, voiceNumber, clef, accidentalMap) {
-    const events = Core.buildVoiceTimeline(doc, part, measureIndex, staff, voiceNumber);
-    return events.map(event => ({ event, note: eventToVex(event, part, clef, accidentalMap.get(event.id)) }));
+  function measureVoiceTimelines(part, measureIndex, staff, voiceNumber) {
+    const events = part.events
+      .filter(event => event.measure === measureIndex && event.staff === staff && event.voice === voiceNumber && ["note", "rest"].includes(event.type))
+      .sort((a, b) => a.tick - b.tick || b.durationTicks - a.durationTicks || a.id.localeCompare(b.id));
+    const lanes = [];
+    events.forEach(event => {
+      const lane = lanes.find(item => item.end <= event.tick) || (() => {
+        const created = { events: [], end: 0 };
+        lanes.push(created);
+        return created;
+      })();
+      lane.events.push(event);
+      lane.end = Math.max(lane.end, event.tick + event.durationTicks);
+    });
+    if (!lanes.length) lanes.push({ events: [], end: 0 });
+    return lanes.map((lane, laneIndex) => Core.buildVoiceTimeline(doc, {
+      ...part,
+      id: `${part.id}-render-${measureIndex}-${staff}-${voiceNumber}-${laneIndex}`,
+      events: lane.events
+    }, measureIndex, staff, voiceNumber));
+  }
+
+  function fillMeasureEventLanes(part, measureIndex, staff, voiceNumber, clef, accidentalMap = new Map()) {
+    return measureVoiceTimelines(part, measureIndex, staff, voiceNumber)
+      .map(events => events.map(event => ({ event, note: eventToVex(event, part, clef, accidentalMap.get(event.id)) })));
   }
 
   function tupletGroupsForPairs(pairs) {
@@ -935,11 +959,18 @@
 
   function eventToTabVex(event, part) {
     const code = durationCode(event);
-    if (event.type === "rest") return new VF.GhostNote({ duration: code });
+    if (event.type === "rest") {
+      const rest = new VF.GhostNote({ duration: code });
+      if (event.dots === 1) rest.applyTickMultiplier?.(3, 2);
+      else if (event.dots === 2) rest.applyTickMultiplier?.(7, 4);
+      return rest;
+    }
     Core.normalizeTabPositions(event, part);
     const positions = event.tab.positions.map(position => ({ str: position.string, fret: position.fret }));
     const note = new VF.TabNote({ positions, duration: code });
     if (event.dots && VF.Dot?.buildAndAttach) for (let index = 0; index < event.dots; index += 1) VF.Dot.buildAndAttach([note], { all: true });
+    if (event.dots === 1) note.applyTickMultiplier?.(3, 2);
+    else if (event.dots === 2) note.applyTickMultiplier?.(7, 4);
     return note;
   }
 
@@ -1044,14 +1075,16 @@
           if (clef === "tab") return;
           const staffVoices = [];
           for (let voiceNumber = 1; voiceNumber <= 4; voiceNumber += 1) {
-            const pairs = fillMeasureEvents(part, measureIndex, staffIndex, voiceNumber, clef);
-            if (pairs[0].event.id.startsWith("empty-") && voiceNumber > 1) continue;
-            const voice = new VF.Voice({ num_beats: measure.time.beats, beat_value: measure.time.beatType }).setMode(VF.Voice.Mode.SOFT).addTickables(pairs.map(pair => pair.note));
-            voices.push(voice);
-            staffVoices.push(voice);
-            pairs.forEach(({ event }) => {
-              const text = [event.chordSymbol, event.text, ...(event.lyrics || []).map(item => item.text)].filter(Boolean).join(" ");
-              annotationWidth = Math.max(annotationWidth, 34 + text.length * 7);
+            const lanes = fillMeasureEventLanes(part, measureIndex, staffIndex, voiceNumber, clef);
+            if (voiceNumber > 1 && !part.events.some(event => event.measure === measureIndex && event.staff === staffIndex && event.voice === voiceNumber && ["note", "rest"].includes(event.type))) continue;
+            lanes.forEach(pairs => {
+              const voice = new VF.Voice({ num_beats: measure.time.beats, beat_value: measure.time.beatType }).setMode(VF.Voice.Mode.SOFT).addTickables(pairs.map(pair => pair.note));
+              voices.push(voice);
+              staffVoices.push(voice);
+              pairs.forEach(({ event }) => {
+                const text = [event.chordSymbol, event.text, ...(event.lyrics || []).map(item => item.text)].filter(Boolean).join(" ");
+                annotationWidth = Math.max(annotationWidth, 34 + text.length * 7);
+              });
             });
           }
           if (staffVoices.length) voiceGroups.push(staffVoices);
@@ -1175,10 +1208,126 @@
     return left.tick + (right.tick - left.tick) * ratio;
   }
 
-  function adaptiveRulerMajor() {
+  function rhythmAnchorX(pair) {
+    const note = pair?.note;
+    const event = pair?.event;
+    if (!note || !event) return NaN;
+    const absoluteX = Number(note.getAbsoluteX?.());
+    if (Number.isFinite(absoluteX)) return absoluteX;
+    if (event.type === "note") {
+      const begin = Number(note.getNoteHeadBeginX?.());
+      const end = Number(note.getNoteHeadEndX?.());
+      if (Number.isFinite(begin) && Number.isFinite(end)) return (begin + end) / 2;
+    }
+    const box = note.getBoundingBox?.();
+    if (box) {
+      const x = Number(box.getX?.());
+      const width = Number(box.getW?.());
+      if (Number.isFinite(x) && Number.isFinite(width)) return x + width / 2;
+    }
+    return NaN;
+  }
+
+  function buildRhythmMap(measureIndex, alignedVoices, geometry) {
+    const measure = doc.measures[measureIndex];
+    if (!measure || !geometry) return fallbackRhythmMap(measureIndex);
+    const size = Core.measureTicks(measure.time);
+    const startX = geometry.left + geometry.prefixWidth;
+    const endX = startX + geometry.noteWidth;
+    const xsByTick = new Map();
+    alignedVoices.forEach(item => item.pairs.forEach(pair => {
+      if (pair.event.derived || !["note", "rest"].includes(pair.event.type)) return;
+      const tick = Math.max(0, Math.min(size, Number(pair.event.tick) || 0));
+      const x = rhythmAnchorX(pair);
+      if (!Number.isFinite(x)) return;
+      if (!xsByTick.has(tick)) xsByTick.set(tick, []);
+      xsByTick.get(tick).push(x);
+    }));
+    const anchors = [...xsByTick.entries()].map(([tick, values]) => {
+      values.sort((a, b) => a - b);
+      return { tick, x: values[Math.floor(values.length / 2)] };
+    }).sort((a, b) => a.tick - b.tick);
+    const points = anchors.slice();
+    if (!points.some(point => point.tick === 0)) points.unshift({ tick: 0, x: startX });
+    if (!points.some(point => point.tick === size)) points.push({ tick: size, x: endX });
+    let previousX = startX;
+    points.forEach(point => {
+      point.x = Math.max(previousX, Math.min(endX, point.x));
+      previousX = point.x;
+    });
+    return { actual: anchors.length > 0, anchorTicks: anchors.map(point => point.tick), points };
+  }
+
+  function interpolatedX(points, tick) {
+    if (!points.length) return 0;
+    const value = Math.max(points[0].tick, Math.min(points.at(-1).tick, Number(tick) || 0));
+    const rightIndex = points.findIndex(point => point.tick >= value);
+    if (rightIndex <= 0) return points[0].x;
+    if (rightIndex < 0) return points.at(-1).x;
+    const left = points[rightIndex - 1];
+    const right = points[rightIndex];
+    return left.x + (right.x - left.x) * (value - left.tick) / Math.max(1, right.tick - left.tick);
+  }
+
+  function alignVoicesToNotationRhythm(alignedVoices, measure, geometry) {
+    const size = Core.measureTicks(measure.time);
+    // Before Voice.draw(), VexFlow tick contexts are local to the note area.
+    const startX = 0;
+    const endX = geometry.noteWidth;
+    const source = alignedVoices.map((item, order) => ({
+      item,
+      order,
+      preferred: item.partId === activePartId ? 1 : 0,
+      realEvents: item.pairs.filter(pair => !pair.event.derived && ["note", "rest"].includes(pair.event.type)).length
+    })).filter(candidate => candidate.realEvents)
+      .sort((a, b) => b.preferred - a.preferred || b.realEvents - a.realEvents || a.order - b.order)[0]?.item;
+    if (!source) return;
+    const xsByTick = new Map();
+    source.pairs.forEach(pair => {
+      if (pair.event.derived) return;
+      const tick = Math.max(0, Math.min(size, Number(pair.event.tick) || 0));
+      const x = Number(pair.note.getAbsoluteX?.());
+      if (!Number.isFinite(x)) return;
+      if (!xsByTick.has(tick)) xsByTick.set(tick, []);
+      xsByTick.get(tick).push(x);
+    });
+    const points = [...xsByTick.entries()].map(([tick, values]) => ({ tick, x: Math.max(...values) })).sort((a, b) => a.tick - b.tick);
+    if (!points.some(point => point.tick === 0)) points.unshift({ tick: 0, x: startX });
+    if (!points.some(point => point.tick === size)) points.push({ tick: size, x: endX });
+    let previousX = startX;
+    points.forEach(point => {
+      point.x = Math.max(previousX, Math.min(endX, point.x));
+      previousX = point.x;
+    });
+    const movedContexts = new Set();
+    alignedVoices.forEach(item => item.pairs.forEach(pair => {
+      const context = pair.note.getTickContext?.();
+      if (!context || movedContexts.has(context)) return;
+      const currentX = Number(pair.note.getAbsoluteX?.());
+      const contextX = Number(context.getX?.());
+      if (!Number.isFinite(currentX) || !Number.isFinite(contextX)) return;
+      const tick = Math.max(0, Math.min(size, Number(pair.event.tick) || 0));
+      const targetX = interpolatedX(points, tick);
+      context.setX?.(contextX + targetX - currentX);
+      movedContexts.add(context);
+    }));
+  }
+
+  function rulerScreenSpacing(measureIndex, step) {
+    const measure = doc.measures[measureIndex];
+    if (!measure) return 0;
+    const size = Core.measureTicks(measure.time);
     const zoom = Math.max(0.1, Number(doc?.settings?.page?.zoom) || 1);
-    const targetTicks = (Core.WHOLE / 16) / zoom;
-    return MEASURE_RULER_MAJOR_OPTIONS.reduce((best, option) => Math.abs(Math.log(option.ticks / targetTicks)) < Math.abs(Math.log(best.ticks / targetTicks)) ? option : best, MEASURE_RULER_MAJOR_OPTIONS[3]);
+    const positions = [];
+    for (let tick = 0; tick <= size; tick += step) positions.push(rhythmXForTick(measureIndex, Math.min(size, tick)) * zoom);
+    const gaps = positions.slice(1).map((x, index) => x - positions[index]).filter(gap => gap > 0.25).sort((a, b) => a - b);
+    return gaps.length ? gaps[Math.floor(gaps.length / 2)] : 0;
+  }
+
+  function adaptiveRulerMajor(measureIndex) {
+    const finestFirst = [...MEASURE_RULER_MAJOR_OPTIONS].sort((a, b) => b.division - a.division);
+    return finestFirst.find(option => rulerScreenSpacing(measureIndex, option.ticks) >= 11)
+      || MEASURE_RULER_MAJOR_OPTIONS[0];
   }
 
   function rulerPath(measureIndex, step, length) {
@@ -1196,16 +1345,18 @@
 
   function updateMeasureRulers() {
     if (!workspace || !doc) return;
-    const major = adaptiveRulerMajor();
     workspace.querySelectorAll("[data-score-measure-ruler]").forEach(svg => {
       const card = svg.closest("[data-score-measure-settings]");
       const index = Number(card?.dataset.scoreMeasureSettings);
       if (!Number.isFinite(index)) return;
+      const major = adaptiveRulerMajor(index);
       svg.querySelector(".is-fine")?.setAttribute("d", rulerPath(index, MEASURE_RULER_FINE_TICKS, 2));
       svg.querySelector(".is-major")?.setAttribute("d", rulerPath(index, major.ticks, 5));
       card.dataset.scoreRulerMajor = `1/${major.division}`;
       card.dataset.scoreRulerFine = "1/96";
-      card.dataset.scoreRulerSource = rhythmMapForMeasure(index)?.actual ? "notation" : "fallback";
+      const map = rhythmMapForMeasure(index);
+      card.dataset.scoreRulerSource = map?.actual ? "notation" : "fallback";
+      card.dataset.scoreRulerAnchors = (map?.anchorTicks || []).join(",");
     });
   }
 
@@ -1307,6 +1458,7 @@
             }
             if (measure.repeatStart && VF.Barline) stave.setBegBarType(VF.Barline.type.REPEAT_BEGIN);
             if (measure.repeatEnd && VF.Barline) stave.setEndBarType(VF.Barline.type.REPEAT_END);
+            stave.format?.();
             stave.setNoteStartX(left + geometry.prefixWidth);
             stave.setContext(context).draw();
             topStave ||= stave;
@@ -1316,13 +1468,15 @@
               for (let voiceNumber = 1; voiceNumber <= 4; voiceNumber += 1) {
                 const hasRealEvents = partMeasureEvents.some(event => event.staff === 0 && event.voice === voiceNumber && ["note", "rest"].includes(event.type));
                 if (voiceNumber > 1 && !hasRealEvents) continue;
-                const pairs = Core.buildVoiceTimeline(doc, part, measureIndex, 0, voiceNumber).map(event => ({ event, note: eventToTabVex(event, part) }));
-                const voice = new VF.Voice({ num_beats: measure.time.beats, beat_value: measure.time.beatType }).setMode(VF.Voice.Mode.SOFT).addTickables(pairs.map(pair => pair.note));
-                alignedVoices.push({ voice, stave, pairs, isTab: true });
-                pairs.filter(pair => pair.event.type === "note" && !pair.event.derived).forEach(pair => tabRefs.push({ ...pair, part, stave, voiceNumber }));
-                tupletGroupsForPairs(pairs).forEach(group => {
-                  if (!VF.Tuplet) return;
-                  try { tuplets.push(new VF.Tuplet(group.map(item => item.note), { num_notes: group[0].event.tuplet.num, notes_occupied: group[0].event.tuplet.inTimeOf })); } catch (_) { /* Keep TAB timing editable if a group cannot be drawn. */ }
+                measureVoiceTimelines(part, measureIndex, 0, voiceNumber).forEach(events => {
+                  const pairs = events.map(event => ({ event, note: eventToTabVex(event, part) }));
+                  const voice = new VF.Voice({ num_beats: measure.time.beats, beat_value: measure.time.beatType }).setMode(VF.Voice.Mode.SOFT).addTickables(pairs.map(pair => pair.note));
+                  alignedVoices.push({ voice, stave, pairs, isTab: true, partId: part.id, staffIndex, voiceNumber });
+                  pairs.filter(pair => pair.event.type === "note" && !pair.event.derived).forEach(pair => tabRefs.push({ ...pair, part, stave, voiceNumber }));
+                  tupletGroupsForPairs(pairs).forEach(group => {
+                    if (!VF.Tuplet) return;
+                    try { tuplets.push(new VF.Tuplet(group.map(item => item.note), { num_notes: group[0].event.tuplet.num, notes_occupied: group[0].event.tuplet.inTimeOf })); } catch (_) { /* Keep TAB timing editable if a group cannot be drawn. */ }
+                  });
                 });
               }
               continue;
@@ -1330,13 +1484,14 @@
             for (let voiceNumber = 1; voiceNumber <= 4; voiceNumber += 1) {
               const hasRealEvents = partMeasureEvents.some(event => event.staff === staffIndex && event.voice === voiceNumber && ["note", "rest"].includes(event.type));
               if (voiceNumber > 1 && !hasRealEvents) continue;
-              const pairs = fillMeasureEvents(part, measureIndex, staffIndex, voiceNumber, clef, partAccidentals);
-              const voice = new VF.Voice({ num_beats: measure.time.beats, beat_value: measure.time.beatType }).setMode(VF.Voice.Mode.SOFT).addTickables(pairs.map(pair => pair.note));
-              alignedVoices.push({ voice, stave, pairs, isTab: false });
-              pairs.forEach(pair => noteRefs.push({ ...pair, part, stave, voiceNumber }));
-              tupletGroupsForPairs(pairs).forEach(group => {
-                if (!VF.Tuplet) return;
-                try { tuplets.push(new VF.Tuplet(group.map(item => item.note), { num_notes: group[0].event.tuplet.num, notes_occupied: group[0].event.tuplet.inTimeOf })); } catch (_) { /* Keep the rhythm editable if a partial group cannot be drawn. */ }
+              fillMeasureEventLanes(part, measureIndex, staffIndex, voiceNumber, clef, partAccidentals).forEach(pairs => {
+                const voice = new VF.Voice({ num_beats: measure.time.beats, beat_value: measure.time.beatType }).setMode(VF.Voice.Mode.SOFT).addTickables(pairs.map(pair => pair.note));
+                alignedVoices.push({ voice, stave, pairs, isTab: false, partId: part.id, staffIndex, voiceNumber });
+                pairs.forEach(pair => noteRefs.push({ ...pair, part, stave, voiceNumber }));
+                tupletGroupsForPairs(pairs).forEach(group => {
+                  if (!VF.Tuplet) return;
+                  try { tuplets.push(new VF.Tuplet(group.map(item => item.note), { num_notes: group[0].event.tuplet.num, notes_occupied: group[0].event.tuplet.inTimeOf })); } catch (_) { /* Keep the rhythm editable if a partial group cannot be drawn. */ }
+                });
               });
             }
           }
@@ -1347,15 +1502,16 @@
           y += trackHeight;
         });
         if (alignedVoices.length) {
-          const voices = alignedVoices.map(item => item.voice);
-          const formatter = new VF.Formatter();
-          const groups = new Map();
+          // Keep temporary overlap lanes independent. Sharing one Formatter can
+          // merge TickContexts that represent different model ticks when an old
+          // score contains overlapping events, which makes the ruler drift away
+          // from those noteheads.
           alignedVoices.forEach(item => {
-            if (!groups.has(item.stave)) groups.set(item.stave, []);
-            groups.get(item.stave).push(item.voice);
+            const formatter = new VF.Formatter();
+            formatter.joinVoices([item.voice]);
+            formatter.format([item.voice], Math.max(80, geometry.noteWidth - 10));
           });
-          groups.forEach(group => formatter.joinVoices(group));
-          formatter.format(voices, Math.max(80, geometry.noteWidth - 10));
+          alignVoicesToNotationRhythm(alignedVoices, measure, geometry);
           alignedVoices.forEach(item => {
             if (!item.isTab) beams.push(...beamsForPairs(item.pairs));
           });
@@ -1365,33 +1521,7 @@
           tuplets.forEach(tuplet => { try { tuplet.setContext(context).draw(); } catch (_) { /* Cross-window tuplets remain in the model. */ } });
           beams.forEach(beam => { try { beam.setContext(context).draw(); } catch (_) { /* Manual beam metadata remains available. */ } });
 
-          const referenceVoice = alignedVoices.filter(item => !item.isTab).map((item, order) => ({
-            item,
-            order,
-            realEvents: item.pairs.filter(pair => !pair.event.derived && pair.event.type === "note").length
-          })).sort((a, b) => b.realEvents - a.realEvents || a.order - b.order)[0]?.item || alignedVoices[0];
-          const xsByTick = new Map();
-          referenceVoice?.pairs.forEach(pair => {
-            const tick = Math.max(0, Math.min(Core.measureTicks(measure.time), Number(pair.event.tick) || 0));
-            const x = Number(pair.note.getAbsoluteX?.());
-            if (!Number.isFinite(x)) return;
-            if (!xsByTick.has(tick)) xsByTick.set(tick, []);
-            xsByTick.get(tick).push(x);
-          });
-          const startX = left + geometry.prefixWidth;
-          const endX = startX + geometry.noteWidth;
-          const points = [...xsByTick.entries()].map(([tick, values]) => {
-            values.sort((a, b) => a - b);
-            return { tick, x: values[Math.floor(values.length / 2)] };
-          }).sort((a, b) => a.tick - b.tick);
-          if (!points.some(point => point.tick === 0)) points.unshift({ tick: 0, x: startX });
-          points.push({ tick: Core.measureTicks(measure.time), x: endX });
-          let previousX = startX;
-          points.forEach(point => {
-            point.x = Math.max(previousX, Math.min(endX, point.x));
-            previousX = point.x;
-          });
-          stagedRhythmMaps.set(measureIndex, { actual: xsByTick.size > 0, points });
+          stagedRhythmMaps.set(measureIndex, buildRhythmMap(measureIndex, alignedVoices, geometry));
         }
       });
       const svg = staging.querySelector("svg");
@@ -1412,6 +1542,12 @@
           node.classList.add("qscore-event-node");
           node.dataset.qscoreEvent = ref.event.id;
           node.dataset.eventId = ref.event.id;
+          node.dataset.scorePart = ref.part.id;
+          node.dataset.scoreMeasure = String(ref.event.measure);
+          node.dataset.scoreTick = String(ref.event.tick);
+          node.dataset.scoreStaff = String(ref.event.staff);
+          node.dataset.scoreVoice = String(ref.event.voice);
+          node.dataset.scoreRhythmX = String(Number(ref.note.getAbsoluteX?.()));
           if (selection.has(ref.event.id)) node.classList.add("is-selected");
           if (contextEventId === ref.event.id) node.classList.add("is-cursor-target");
         }
@@ -1424,6 +1560,8 @@
           node.classList.add("qscore-tab-node");
           node.dataset.qscoreTabEvent = ref.event.id;
           node.dataset.eventId = ref.event.id;
+          node.dataset.scoreMeasure = String(ref.event.measure);
+          node.dataset.scoreTick = String(ref.event.tick);
         }
         const ys = ref.note.getYs?.() || [];
         const centerX = box.getX() + box.getW() / 2;
@@ -1520,10 +1658,22 @@
     const size = Core.measureTicks(measure.time);
     const raw = Math.max(0, Math.min(size, Number(rawTick) || 0));
     const fine = Math.max(1, MEASURE_RULER_FINE_TICKS);
-    const fineTick = Math.max(0, Math.min(size, Math.round(raw / fine) * fine));
     const rhythm = Math.max(1, requestedDurationTicks({ grace: false }));
-    const rhythmTick = Math.max(0, Math.min(size, Math.round(raw / rhythm) * rhythm));
-    return Math.abs(raw - rhythmTick) <= fine * 0.75 ? rhythmTick : fineTick;
+    const rawX = rhythmXForTick(measureIndex, raw);
+    const nearestMultiple = step => {
+      const candidates = [Math.floor(raw / step) * step, Math.ceil(raw / step) * step]
+        .map(tick => Math.max(0, Math.min(size, tick)));
+      return candidates.reduce((best, tick) => Math.abs(rhythmXForTick(measureIndex, tick) - rawX) < Math.abs(rhythmXForTick(measureIndex, best) - rawX) ? tick : best, candidates[0]);
+    };
+    const fineTick = nearestMultiple(fine);
+    const rhythmTick = nearestMultiple(rhythm);
+    const map = rhythmMapForMeasure(measureIndex);
+    const notationTick = (map?.anchorTicks || []).reduce((best, tick) => best == null || Math.abs(rhythmXForTick(measureIndex, tick) - rawX) < Math.abs(rhythmXForTick(measureIndex, best) - rawX) ? tick : best, null);
+    const fineSpacing = Math.max(1, rulerScreenSpacing(measureIndex, fine));
+    const rhythmDistance = Math.abs(rhythmXForTick(measureIndex, rhythmTick) - rawX) * Math.max(0.1, Number(doc.settings.page.zoom) || 1);
+    if (rhythmDistance <= Math.max(5, fineSpacing * 0.75)) return rhythmTick;
+    const candidates = notationTick == null ? [fineTick] : [fineTick, notationTick];
+    return candidates.reduce((best, tick) => Math.abs(rhythmXForTick(measureIndex, tick) - rawX) < Math.abs(rhythmXForTick(measureIndex, best) - rawX) ? tick : best, candidates[0]);
   }
 
   function positionReadout(position = playbackPosition) {

@@ -1,9 +1,12 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-qboard-theme="quan">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Q-board / Q-键盘</title>
+  <script>
+    try { document.documentElement.dataset.qboardTheme = localStorage.getItem("qboard-theme") === "classic" ? "classic" : "quan"; } catch (_) {}
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -195,6 +198,14 @@
       line-height: 1;
       flex: 0 0 auto;
       white-space: nowrap;
+    }
+
+    .theme-toggle {
+      width: 24px;
+      min-width: 24px;
+      padding: 0;
+      flex: 0 0 24px;
+      font-weight: 900;
     }
 
     .language-picker:focus-within {
@@ -1186,6 +1197,13 @@
     .toggle.is-tiny-label,
     .menu-tab.is-tiny-label {
       font-size: 0.64rem;
+    }
+
+    .command.is-fit-label,
+    .toggle.is-fit-label,
+    .menu-tab.is-fit-label {
+      padding-inline: 2px;
+      font-size: var(--qboard-fit-font-size);
     }
 
     .command:disabled {
@@ -2838,7 +2856,8 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="score/qboard-score.css?v=20260826-06">
+  <link rel="stylesheet" href="score/qboard-score.css?v=20260827-16">
+  <link rel="stylesheet" href="theme/qboard-quan.css?v=20260828-01">
 </head>
 <body>
   <div class="app">
@@ -2867,6 +2886,7 @@
           <input id="showShortcuts" type="checkbox" checked aria-controls="shortcutSection">
           <span>快捷键</span>
         </label>
+        <button class="command theme-toggle" id="themeToggle" type="button" aria-pressed="true"><span aria-hidden="true">◐</span></button>
         <div class="language-picker" id="languagePicker" title="语言">
           <label class="sr-only" for="languageSelect">语言</label>
           <span class="flag-badge" id="languageFlag" data-flag="cn" aria-hidden="true"></span>
@@ -3357,6 +3377,13 @@
       return supportedLanguages.has(browserLanguage) ? browserLanguage : "zh";
     }
     let currentLanguage = initialLanguage();
+    let currentTheme = document.documentElement.dataset.qboardTheme === "classic" ? "classic" : "quan";
+    const themeNames = {
+      zh: ["主题", "原版"], en: ["Theme", "Classic"], fr: ["Thème", "Classique"], de: ["Design", "Klassisch"],
+      es: ["Tema", "Clásico"], pt: ["Tema", "Clássico"], ja: ["テーマ", "クラシック"], ar: ["السمة", "كلاسيكي"],
+      ru: ["Тема", "Классика"], it: ["Tema", "Classico"], ms: ["Tema", "Klasik"], vi: ["Giao diện", "Cổ điển"],
+      tr: ["Tema", "Klasik"], ko: ["테마", "클래식"]
+    };
     const sharpNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     const flatNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
     const dualNames = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
@@ -3884,6 +3911,7 @@
       languagePicker: document.querySelector("#languagePicker"),
       languageSelect: document.querySelector("#languageSelect"),
       languageFlag: document.querySelector("#languageFlag"),
+      themeToggle: document.querySelector("#themeToggle"),
       keySystem: document.querySelector("#keySystem"),
       lowCol: document.querySelector("#lowCol"),
       highCol: document.querySelector("#highCol"),
@@ -4000,6 +4028,25 @@
       const dictionary = translations[currentLanguage] || translations.zh;
       const template = dictionary[key] ?? localTranslationFallbacks[currentLanguage]?.[key] ?? translations.en[key] ?? localTranslationFallbacks.en[key] ?? translations.zh[key] ?? localTranslationFallbacks.zh[key] ?? key;
       return String(template).replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
+    }
+
+    function syncThemeToggle() {
+      if (!els.themeToggle) return;
+      const names = themeNames[currentLanguage] || themeNames.en;
+      const label = `${names[0]}: ${currentTheme === "quan" ? "Q/Quan" : names[1]}`;
+      els.themeToggle.title = label;
+      els.themeToggle.setAttribute("aria-label", label);
+      els.themeToggle.setAttribute("aria-pressed", String(currentTheme === "quan"));
+    }
+
+    function applyTheme(theme, persist = true) {
+      currentTheme = theme === "classic" ? "classic" : "quan";
+      document.documentElement.dataset.qboardTheme = currentTheme;
+      syncThemeToggle();
+      if (persist) {
+        try { localStorage.setItem("qboard-theme", currentTheme); } catch (_) {}
+      }
+      document.dispatchEvent(new CustomEvent("qboard:theme-change", { detail: { theme: currentTheme } }));
     }
 
     function setText(selector, key, values) {
@@ -4307,11 +4354,25 @@
       const isForeignLanguage = currentLanguage !== "zh";
       const controls = root.querySelectorAll?.(".command, .toggle, .menu-tab") || [];
       for (const control of controls) {
+        control.classList.remove("is-tight-label", "is-tiny-label", "is-fit-label");
+        control.style.removeProperty("--qboard-fit-font-size");
         const length = Array.from(control.textContent.trim()).length;
-        const tight = isForeignLanguage && length > 14;
-        const tiny = isForeignLanguage && length > 22;
+        const overflows = () => control.clientWidth > 0 && (
+          control.scrollWidth > control.clientWidth + 1 || control.scrollHeight > control.clientHeight + 1
+        );
+        const tight = isForeignLanguage && (length > 14 || overflows());
         control.classList.toggle("is-tight-label", tight);
+        const tiny = tight && (length > 22 || overflows());
         control.classList.toggle("is-tiny-label", tiny);
+        if (tiny && overflows()) {
+          let fittedSize = Number.parseFloat(getComputedStyle(control).fontSize) || 10;
+          control.style.setProperty("--qboard-fit-font-size", `${fittedSize}px`);
+          control.classList.add("is-fit-label");
+          for (let pass = 0; pass < 3 && overflows(); pass += 1) {
+            fittedSize = Math.max(7.5, fittedSize * Math.max(0.5, (control.clientWidth - 1) / Math.max(1, control.scrollWidth)) * 0.97);
+            control.style.setProperty("--qboard-fit-font-size", `${fittedSize}px`);
+          }
+        }
         if (tight && !control.title) control.title = control.textContent.trim();
       }
     }
@@ -4340,6 +4401,7 @@
       document.documentElement.dir = meta.dir;
       document.title = tr("appTitle");
       updateLanguagePicker();
+      syncThemeToggle();
 
       const mainProfile = mappingProfiles.find(profile => profile.id === "main");
       if (mainProfile) {
@@ -5143,13 +5205,13 @@
         exportButton.type = "button";
         exportButton.className = "command primary";
         exportButton.dataset.profileAction = "exportSettings";
-        exportButton.textContent = tr("exportAllSettings");
+        exportButton.textContent = "⇩";
         setHelp(exportButton, "command", "exportAllSettings");
         const importButton = document.createElement("button");
         importButton.type = "button";
         importButton.className = "command";
         importButton.dataset.profileAction = "importSettings";
-        importButton.textContent = tr("importAllSettings");
+        importButton.textContent = "⇧";
         setHelp(importButton, "command", "importAllSettings");
         const resetButton = document.createElement("button");
         resetButton.type = "button";
@@ -10449,6 +10511,11 @@
       document.dispatchEvent(new CustomEvent("qboard:language-change", { detail: { language: currentLanguage } }));
     });
 
+    els.themeToggle?.addEventListener("click", event => {
+      releaseControlFocus(event);
+      applyTheme(currentTheme === "quan" ? "classic" : "quan");
+    });
+
     els.profileRows.addEventListener("click", event => {
       const row = event.target.closest(".profile-row");
       const actionTarget = event.target.closest("[data-profile-action]");
@@ -11283,9 +11350,9 @@
     updateReadoutForCoord(`${activeProfile().short}:Q`, qAnchor.row, qAnchor.col);
   </script>
   <script src="vendor/vexflow-4.2.5.js"></script>
-  <script src="score/qboard-score-core.js?v=20260826-06"></script>
-  <script src="score/qboard-score-print.js?v=20260826-06"></script>
-  <script src="score/qboard-score.js?v=20260826-06"></script>
+  <script src="score/qboard-score-core.js?v=20260827-16"></script>
+  <script src="score/qboard-score-print.js?v=20260827-16"></script>
+  <script src="score/qboard-score.js?v=20260827-16"></script>
   <script>window.QBoardScore?.init({ host: window.QBoardScoreHost });</script>
 </body>
 </html>

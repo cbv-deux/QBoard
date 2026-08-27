@@ -12,8 +12,9 @@ function referencePattern(tag, attribute, reference) {
   return new RegExp(`<${tag}([^>]*?)${attribute}="${escaped}(?:\\?[^\"]*)?"([^>]*)>(?:<\\/${tag}>)?`);
 }
 
-async function inlineStyle(reference) {
-  const css = (await fs.readFile(path.join(appDir, reference), "utf8")).replace(/<\/style/gi, "<\\/style");
+async function inlineStyle(reference, compact = false) {
+  let css = (await fs.readFile(path.join(appDir, reference), "utf8")).replace(/<\/style/gi, "<\\/style");
+  if (compact) css = css.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ").replace(/\s*([{}:;,>])\s*/g, "$1").replace(/;}/g, "}").trim();
   html = html.replace(referencePattern("link", "href", reference), `<style data-portable-source="${reference}">\n${css}\n</style>`);
 }
 
@@ -23,6 +24,7 @@ async function inlineScript(reference) {
 }
 
 await inlineStyle("score/qboard-score.css");
+await inlineStyle("theme/qboard-quan.css", true);
 for (const reference of [
   "language/qboard-languages.js",
   "musics/qboard-music-packs.js",
